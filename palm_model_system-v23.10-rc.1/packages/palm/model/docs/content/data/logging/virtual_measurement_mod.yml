@@ -1,0 +1,61 @@
+VME0001:
+  loglevel: ERROR
+  message: |
+    virtual measurements require a setup input file for the site locations
+  description: ''
+
+VME0002:
+  loglevel: ERROR
+  message: |
+    virtual measurements require parallel netCDF.
+  description: |
+    If virtual measurements are taken, the PALM code need to be compiled with parallel netCDF support by setting preprocessor switches `-D__netcdf -D__netcdf4 -D__netcdf4_parallel` in the `%cpp_options` line of the configuration file.
+
+VME0003:
+  loglevel: ERROR
+  message: |
+    for virtual measurements the number of surrounding grid points must not be larger than the number of ghost points - 1, which is ...
+  description: |
+    When virtual measurements are taken, data is sampled at given station grid coordinates. It is possible that also the adjoining grid points can be sampled, however, the number of grid points additionally sampled in each direction must not be larger than the number of ghost points - 1 to avoid any segmentations faults. In the future we will improve this to allow a more flexible number of offset grid points.
+
+VME0004:
+  loglevel: ERROR
+  message: |
+    dt_virtual_measurement(pr/ts/tr) must be > 0.0
+  description: |
+    This parameter is used to estimate the number of output timesteps in the output netCDF files. With zero-valued numbers this is not possible.
+
+VME0005:
+  loglevel: ERROR
+  message: |
+    no reference coordinate for the lower-left model domain corner are provided, neither in the static driver nor in the measurement input file
+  description: |
+    The origin of the PALM model domain needs to be specified if the virtual sampling module is employed. The origin UTM coordinates (origin_x and origin_y) can be either specified via the static input file, or the sampling coordinate file. Note, an exact prescription of the origin coordinates is required to correctly locate the sampling grid points within PALM. Further, please note, in case of a nested run, the origin coordinates are different for each model domain.
+
+VME0006:
+  loglevel: ERROR
+  message: |
+    attribute feature_type = "..." is not allowed
+  description: |
+    Only 'timeseries', 'timeseriesProfile', or 'trajectory' is allowed.
+
+VME0007:
+  loglevel: ERROR
+  message: |
+    sampling coordinates of site "..." do not lie within the PALM domain'
+  description: |
+    Check the coordinates in your virtual measurement input file, or extend the model domain.
+
+VME0008:
+  loglevel: ERROR
+  message: |
+    error while defining output: "..."
+  description: |
+    Internal error, while while trying to define the respective variable in the output file. In case that no user-interface is used, contact the PALM developers, e.g. via the trouble-ticket system.
+
+VME0009:
+  loglevel: ERROR
+  message: |
+    error while writing output: "..."
+  description: |
+    Internal error, while trying to write the respective variable to the output file. In case that no user-interface is used, contact the PALM developers, e.g. via the trouble-ticket system.

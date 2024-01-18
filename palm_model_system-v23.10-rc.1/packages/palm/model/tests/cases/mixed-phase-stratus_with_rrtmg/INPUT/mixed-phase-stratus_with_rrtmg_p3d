@@ -1,0 +1,184 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- grid parameters
+!-------------------------------------------------------------------------------
+    nx                         = 23, ! Number of gridboxes in x-direction (nx+1)
+    ny                         = 23, ! Number of gridboxes in y-direction (ny+1)
+    nz                         = 48, ! Number of gridboxes in z-direction (nz)
+
+    dx                         = 50.0, ! Size of single gridbox in x-direction
+    dy                         = 50.0, ! Size of single gridbox in y-direction
+    dz                         = 30.0, ! Size of single gridbox in z-direction
+
+    dz_stretch_level           = 1440.0, ! Height (in m) where stretching starts
+    dz_stretch_factor          = 1.08,   ! dz(k+1) = dz(k) * dz_stretch_factor
+!
+!-- initialization of vertical profiles
+!-------------------------------------------------------------------------------
+    initializing_actions       = 'set_constant_profiles', ! initial conditions
+    ug_surface                 = -7.0, ! u-comp of geostrophic wind at surface
+    vg_surface                 = -2.0, ! v-comp of geostrophic wind at surface
+
+    pt_surface                 = 263.0,                     ! temperature at surface
+    pt_vertical_gradient       = 0.5, 0.0, 1.16             ! vertical gradient of temperature
+    pt_vertical_gradient_level = 0.0, 400.0, 800.0, 1400.0, ! height level of temp gradients
+
+    q_surface                  = 0.0018,                    ! mixing ratio at surface
+    q_vertical_gradient        = -8.0e-5, 0.0, -0.001,      ! gradient for mix. ratio
+    q_vertical_gradient_level  = 0.0, 400.0, 800.0, 810.,   ! height lev. for gradients
+
+    humidity                   = .TRUE.,   ! turn on humidity, i.e. prog. q
+!
+!-- numerics
+!-------------------------------------------------------------------------------
+    fft_method                 = 'temperton-algorithm',   ! build-in fft method
+
+!
+!-- surface
+!-------------------------------------------------------------------------------
+    surface_pressure  = 1020.0,    ! pressure on surface in hPa
+    roughness_length  = 4.0E-4,    ! roughness length in m
+
+!
+!-- geographical and temporal setup
+!-------------------------------------------------------------------------------
+    latitude         = 71.32,                      ! latitude in °N
+    longitude        = -156.61,                    ! longitude in °E
+    origin_date_time = '2018-04-26 18:00:00 +00',  ! date and time
+    omega             = 0.0,                       ! Turnoff Coriolis Force
+
+!
+!-- large scale subsidence and nudging
+!-------------------------------------------------------------------------------
+    large_scale_subsidence       = .TRUE.,
+    subs_vertical_gradient_level =  0.0, 825.0,
+    subs_vertical_gradient       = -5.0E-4,
+
+!
+!-- allow to start with supersaturated environment
+!-------------------------------------------------------------------------------
+   check_realistic_q = .FALSE.,
+
+/ ! end of initialization parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                   = 80.0, ! simulation time of the 3D model
+    debug_output               = .FALSE.,
+
+    create_disturbances        = .TRUE., ! randomly perturbate horiz. velocity
+    dt_disturb                 = 150.0,  ! interval for random perturbations
+    disturbance_energy_limit   = 0.1,    ! upper limit for perturbation energy
+
+    data_output_2d_on_each_pe  = .FALSE., ! don't do 2D output on each MPI rank
+
+!
+!-- data output
+!-------------------------------------------------------------------------------
+    netcdf_data_format         = 2,     ! use NetCDF3
+    dt_run_control             = 0.0,   ! output interval for run control
+    dt_data_output             = 900.0, ! output interval for general data
+    dt_dopr                    = 10.0,  ! output interval for profile data
+
+    data_output                = 'w_xz',
+                                 'theta_xz',
+!
+!-- data output: profiles
+!-------------------------------------------------------------------------------
+    data_output_pr             = '#u',
+                                 '#v',
+                                 '#q',
+                                 'theta',
+                                 'w_subs',
+                                 'rho',
+                                 'hyp',
+                                 'ql',
+                                 'qi',
+                                 'rad_lw_hr',
+                                 'rad_sw_hr',
+
+    section_xz                 = -1,    ! averaged along y
+
+    averaging_interval         = 150.0, ! averaging interval general data
+    dt_averaging_input         = 10.0,  ! averaging general data sampling rate
+
+    averaging_interval_pr      = 10.0,  ! averaging interval profile data
+    dt_averaging_input_pr      = 0.0,   ! averaging profile data sampling rate
+
+/ ! end of runtime parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- BULK CLOUD PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/bcmpar
+!-------------------------------------------------------------------------------
+&bulk_cloud_parameters
+!
+!-- set microphyiscs scheme
+!-------------------------------------------------------------------------------
+    cloud_scheme              = 'seifert_beheng', ! two-moment liquid water microphysics
+                                                  ! including autoconversion,
+                                                  ! accretion, sedimentation, precipitation
+!
+!-- steering of liquid phase
+!-------------------------------------------------------------------------------
+    collision_turbulence              = .TRUE.,   ! parametize turbulence effects for collision
+    cloud_water_sedimentation         = .TRUE.,   ! enable cloud water sedimentation
+    nc_const                          = 200.0E6,  ! cloud droplet concentration
+    call_microphysics_at_all_substeps = .FALSE.,  ! microphysics every sub-timestep disabled
+
+!
+!-- steering of ice phase
+!-------------------------------------------------------------------------------
+    microphysics_ice_phase    = .TRUE.,           ! turn on ice microphysics
+    in_init                   = 4000.0,           ! set ice nucleii concentration
+    ice_crystal_sedimentation = .TRUE.,           ! turn on ice sedimentation
+    snow                      = .TRUE.,           ! turn on prog. quantities for snow
+    graupel                   = .TRUE.,           ! turn on prog. quantities for graupel
+    start_ice_microphysics    = 0.0,              ! start with ice microphysics at model start
+
+/ ! end of bulk cloud parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- RADIATION TRANSFER MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+&radiation_parameters
+!
+!-- set radiation scheme
+!-------------------------------------------------------------------------------
+    radiation_scheme = 'rrtmg',
+
+!-- rrtmg initialization
+    skip_time_do_radiation     = 0.0,    !Time after which the radiation model is switched on.
+    dt_radiation               = 10.0,   !Timp step of the radiation model (in s).
+/ ! end of radiation parameter namelist
+!-------------------------------------------------------------------------------
+!-- LAND SURFACE PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!-------------------------------------------------------------------------------
+&land_surface_parameters
+!
+!-- set land surface model
+!-------------------------------------------------------------------------------
+    vegetation_type            = 12,           ! semidesert
+    soil_type                  = 3,            ! medium-fine
+    surface_type               = 'vegetation', ! vegetation as surface
+!
+!-- lsm initialization
+!-------------------------------------------------------------------------------
+    dz_soil                    = 0.07,   0.28,   ! soil depths
+    soil_temperature           = 263.0, 263.0,   ! soil temperature
+    soil_moisture              = 0.0, 0.0,       ! soil moisture
+    deep_soil_temperature      = 263.0,
+
+/ ! end of land surface parameter namelist

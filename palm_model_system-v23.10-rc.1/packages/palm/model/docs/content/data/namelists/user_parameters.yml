@@ -1,0 +1,75 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "user_parameters"
+
+data_output_masks_user:
+  category: Data output
+  type: C*30
+  shape: (300,100)
+  default:
+    value: ~
+  description:
+    short: User-defined quantities for which masked data are to be output (see [masked data output](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput)).
+    long: |
+      Beside the standard output quantities (which can be selected via parameter [data_output_masks](#runtime_parameters--data_output_masks)), the user can define (without any restriction) additional output quantities (e.g. the temperature variance, etc.) of masked data. Each of these quantities must be given a unique identifier (string), which must be different from the strings that define the standard output quantities (see list in the description of [data_output_masks](#runtime_parameters--data_output_masks)). Data output can be switched on by assigning the respective strings to [data_output_masks_user](#user_parameters--data_output_masks_user).
+
+      The user must calculate/provide the respective data array(s) by appropriately extending the [user interface](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output).
+
+      For further steering of masked output (output times, defining mask locations, time averaging, etc.), the steering parameters for [data_output_masks](#runtime_parameters--data_output_masks) apply accordingly.
+
+      The first dimension of the shape depends on the variable `max_masks` in source file  {{ link_palm_repo_file('modules.f90', 'src/modules.f90') }}.
+
+
+data_output_pr_user:
+  category: Data output
+  type: C*30
+  shape: (300)
+  default:
+    value: ~
+  description:
+    short: User defined quantities for which horizontally averaged profile data is to be output.
+    long: |
+      Beside the standard output quantities (which can be selected via parameter [data_output_pr](#runtime_parameters--data_output_pr)), the user can define (without any restriction) additional output quantities (e.g. turbulent resolved-scale horizontal momentum fluxes, etc.). Each of these quantities must be given a unique identifier (string), which must be different from the strings that define the standard output quantities (see list in the description of [data_output_pr](#runtime_parameters--data_output_pr)). Data output can be switched on by assigning the respective strings to [data_output_user](#user_parameters--data_output_user).
+
+      The user must calculate/provide the respective data array(s) by appropriately extending the [user interface](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output).
+
+
+data_output_user:
+  category: Data output
+  type: C*30
+  shape: (500)
+  default:
+    value: ~
+  description:
+    short: User defined quantities for which 2d cross section and/or 3d volume data are to be output.
+    long: |
+      Beside the standard output quantities (which can be selected via parameter [data_output](#runtime_parameters--data_output)), the user can define (without any restriction) additional output quantities (e.g. the temperature variance, etc.). Each of these quantities must be given a unique identifier (string), which must be different from the strings that define the standard output quantities (see list in the description of [data_output](#runtime_parameters--data_output)). Data output can be switched on by assigning the respective strings to [data_output_user](#user_parameters--data_output_user).
+
+      The user must calculate/provide the respective data array(s) by appropriately extending the [user interface](#Guide/LES_Model/Modules/User).
+
+      For further steering of the user defined output (output times, cross section levels, time averaging, etc.), the steering parameters for [data_output](#runtime_parameters--data_output) apply accordingly.
+
+      **Example:** <br>
+      If the user defines a new output quantity named 'pt2', then output of horizontal cross sections can be selected by assigning [data_output_user](#user_parameters--data_output_user) = *'pt2_xy'*.
+
+
+region:
+  category: General Settings
+  type: C*40
+  shape: (9)
+  default:
+    value: 'total domain'
+  description:
+    short: Names of the subdomains defined by the user.
+    long: |
+      With this variable, names can be assigned to the subdomains defined by the user (see [statistic_regions](#initialization_parameters--statistic_regions)). Up to 9 subdomains are allowed ([region](#initialization_parameters--region)(1) to [region](#initialization_parameters--region)(9)). The total domain has the index 0 ([region](#initialization_parameters--region)(0)).
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to switch on/off the user module.
+    long: |
+      If [switch_off_module](#user_parameters--switch_off_module) = *.T.*, the user module is not activated even if the namelist is present in the parameter file.

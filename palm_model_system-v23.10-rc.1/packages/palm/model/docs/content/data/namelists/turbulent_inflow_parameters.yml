@@ -1,0 +1,103 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "turbulent_inflow_parameters"
+
+
+inflow_damping_height:
+  category: Numerics
+  type: R
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: Height below which the turbulence signal recycled.
+    long:  |
+      In case of a turbulence recycling (see [turbulent_inflow_method](turbulent_inflow_parameters--turbulent_inflow_method)), this parameter defines the vertical thickness of the turbulent layer up to which the turbulence is extracted at the position of the recycling plane (see [recycling_width](#turbulent_inflow_parameters--recycling_width)), and then imposed to the inflow. Above this level, the turbulence signal is linearly damped to zero. The transition zone within which the signal falls to zero is controlled via parameter [inflow_damping_width](#turbulent_inflow_parameters--inflow_damping_width).
+
+      By default, [inflow_damping_height](#turbulent_inflow_parameters--inflow_damping_height) is set as the height of the convective boundary layer as calculated from a precursor run. Information about proper settings for getting this CBL height from a precursor run can be found [here](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/turbinf).
+
+
+inflow_damping_width:
+  category: Numerics
+  type: R
+  default:
+    value_of: 0.1 * [inflow_damping_height](#turbulent_inflow_parameters--inflow_damping_height)
+  si-unit: m
+  description:
+    short: Transition range within which the turbulence signal is damped to zero.
+    long: |
+      For explanation see [inflow_damping_height](#turbulent_inflow_parameters--inflow_damping_height).
+
+
+input_block_size:
+  category: General Settings
+  type: I
+  default:
+    value: 30
+  description:
+    short: Number of data input time layers read in per data input call.
+    long: |
+      In case of [turbulent_inflow_method](turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'*, data needs to be input from the dynamic input file. To avoid data input each timestep, boundary data is read in a blockwise manner, i.e. multiple time layers are read at once. With [input_block_size](#turbulent_inflow_parameters--input_block_size) the block size can be controlled by the user. The optimum block size is a trade-off between IO speed (usually the less IO calls the better) and memory consumption (too large block sizes could lead to interal memory faults). [input_block_size](#turbulent_inflow_parameters--input_block_size) must be *>= 2* and must not exceed the subdomain size in x-direction.
+
+
+recycling_width:
+  category: Boundary Conditions
+  type: R
+  default:
+    value: ~
+  description:
+    short: Distance of the recycling plane from the inflow boundary (in m).
+    long: |
+      The parameter is only in effect when turbulence recycling (see [turbulent_inflow_method](turbulent_inflow_parameters--turbulent_inflow_method)) is used.
+      This parameter sets the horizontal extension (along the direction of the main flow) of the so-called recycling domain which is used to generate a turbulent inflow. [recycling_width](#turbulent_inflow_parameters--recycling_width) must be larger than the grid spacing [dx](#initialization_parameters--dx) and smaller than the length of the total domain ([nx](#initialization_parameters--nx) * [dx](#initialization_parameters--dx)).
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to switch on/off the user module.
+    long: |
+      If [switch_off_module](turbulent_inflow_parameters--switch_off_module) = *.T.*, the user module is not activated even if the namelist is present in the parameter file.
+
+turbulent_inflow_method:
+  category: Boundary Conditions
+  type: C*80
+  default:
+    value: 'recycle_turbulent_fluctuation'
+  description:
+    short: Specifies the kind of the turbulent inflow method.
+    long: |
+      Different approaches to generate a turbulent inflow at the left boundary exit. There exist two general approaches, a recycling method and a read-from file method. With the recycling method, turbulent signals of all prognostic variables are recycled within a certain distance from the inflow boundary and are imposed onto the inflow boundary. With the read-from-file methode, inflow boundary data of the prognostic quantities are read from the dynamic input file and are imposed onto the inflow boundary.
+
+      A turbulent inflow requires Dirichlet conditions at the respective inflow boundary. So far, a turbulent inflow is realized from the left (west) side only, i.e. [bc_lr](#initialization_parameters--bc_lr) = *'dirichlet/radiation'* is required.
+
+      A few notes concerning the turbulence recycling: The distance of the recycling plane from the inflow boundary can be set with parameter [recycling_width](turbulent_inflow_parameters--recycling_width). The height above ground above which the turbulence signal is not used for recycling and the width of the layer within the magnitude of the turbulence signal is damped from 100% to 0% can be set with parameters [inflow_damping_height](turbulent_inflow_parameters--inflow_damping_height) and [inflow_damping_width](turbulent_inflow_parameters--inflow_damping_width).
+
+      For the recycling method, the initial (quasi-stationary) turbulence field must be generated by a precursor run and used via setting [initializing_actions](#initialization_parameters--initializing_actions) = *'cyclic_fill'*. This is not necessarily required if [turbulent_inflow_method](turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'* is set, where also [initializing_actions](#initialization_parameters--initializing_actions) = *'set_constant_profiles' or *'read_from_file'* is an option.
+
+      A detailed setup for a turbulent inflow using the turbulence recycling method is described in [here](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/turbinf).
+
+  allowed_values:
+    - value: 'read_from_file'
+      description: |
+        Turbulent inflow is realized using a direct forcing method, where *yz*-cross-sections of the prognostic variables are read from the dynamic input file and are imposed onto the inflow boundary with high temporal resolution. The respective cross-sections can be obtained from a precursor run. The pre-processing tool *palm_cti* (link!) processes the *yz*-cross-section data accordingly and write it into the dynamic input file.
+
+        The boundary data must be generated by a precursor simulation which features the same grid spacing along the *x, y, z*-dimension as well as the same domain height. The domain extent along the *y* dimension of the precursor simulation can be smaller or equal the domain extent along *y* of the main simulation. Starting from the point in time where the precursor simulation reaches a quasi-stationary state (*yz* cross-section output can be skipped via [skip_time_do2d_yz](#runtime_parameters--skip_time_do2d_yz)), it is recommended to output *yz*-cross-section data each timestep, in order to provide high temporal resolution inflow data. The provided output interval of the precursor simulation needs to cover the entire simulation time of the main simulation.
+
+        It is recommended to set [initializing_actions](#initialization_parameters--initializing_actions) = *'cyclic_fill'*, though [turbulent_inflow_method](turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'* also works with other initialization methods.
+
+        Compared to the turbulent recycling method, this direct method is more robust in setups where the boundary-layer characteristics change. Even complete daily cycles can be considered.
+    - value: 'recycle_turbulent_fluctuation'
+      description: |
+        Turbulent fluctuations of all prognostic variables are recycled and added to the mean inflow profile. A turbulent inflow is realized using the turbulence recycling method from Lund et al. (1998, J. Comp. Phys., 140, 233-258) modified by Kataoka and Mizuno (2002, Wind and Structures, 5, 379-392).
+
+        **Attention'** <br>
+        If surface heating/cooling or a surface waterflux is applied, a horizontal temperature (humidity) gradient inside the boundary layer will build up, because the temperature/humidity profiles at the inflow are constant in time. The resulting horizontal differences in buoyancy can trigger an undesired circulation inside the entire domain and instabilities at the inflow boundary (see [pt_damping_factor](#initialization_parameters--pt_damping_factor)).
+    - value: 'recycle_absolute_value'
+      description: |
+        This is a variation of the original recycling method, where the absolute instantaneous values of all prognostic variables are recycled, so that the values at the inflow boundary and the recycling plane are identical (for vertical velocity, still only the turbulent fluctuations are recycled). With this method there is no horizontal temperature (humidity) gradient and thus any thermal circulation and instabilities at the inflow boundary will not occur. Note that the mean inflow profiles of all prognostic variables but vertical velocity will now change in time, which means that the boundary layer height at the inflow is changing.
+    - value: 'recycle_absolute_value_thermodynamic'
+      description: |
+        This is a further variation of the original recycling method, where the absolute instantaneous values of potential temperature and (if present) humidity are recycled. For all other prognostic variables only the turbulent fluctuations are recycled. With this method there is no horizontal temperature (humidity) gradient and thus any thermal circulation and instabilities at the inflow boundary will not occur. Note that the mean inflow profiles of potential temperature (humidity) will now change in time (i.e. the boundary layer height at the inflow is changing), in contrast to the inflow profile of all other quantities (e.g. u, v, w) that are constant. In order to avoid this mismatch, the boundary layer height should and can be kept constant by applying a [large_scale_subsidence](#initialization_parameters--large_scale_subsidence) to scalar quantities.
+

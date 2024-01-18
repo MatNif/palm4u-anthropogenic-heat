@@ -1,0 +1,22 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds:
+  - gfortran_default
+  - intel_default
+
+allowed_number_of_cores:
+# temporarily disable the 2-core test - results depend on domain decomposition
+#  - 2
+  - 4
+
+activation_strings:
+  - "d3r"
+  - "restart"
+
+use_binary_files_from: urban_environment
+
+significant_digits_for_netcdf_checks:
+  timeseries: 4
+  profiles: 2
+  other: 8

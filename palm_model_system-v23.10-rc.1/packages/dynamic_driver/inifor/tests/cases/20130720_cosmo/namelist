@@ -1,0 +1,7 @@
+ &inipar nx = 9, ny = 9, nz = 10
+         dx = 250.000000, dy = 250.000000, dz = 10
+         longitude = 9.771094, latitude = 53.538582
+ /
+
+ &d3par  end_time = 7200.000000
+ /

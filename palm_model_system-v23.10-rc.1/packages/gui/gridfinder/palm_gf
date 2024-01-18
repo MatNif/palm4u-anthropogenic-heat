@@ -1,0 +1,260 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+#
+# Description:
+# ------------
+#
+#
+# Instructions:
+# -------------
+#
+#------------------------------------------------------------------------------!
+
+from PyQt5 import QtWidgets, uic
+from PyQt5.QtWidgets import QDesktopWidget
+from palm_gf_files.palm_gf_conf import cfg_write, cfg_read
+import sys
+import os
+from palm_gf_files.palm_gf_exec import MyThread
+from palm_gf_files.palm_gf_tools import MyTable
+
+try:
+   devnull = open(os.devnull, 'w')
+   palm_dir = os.getcwd()
+   palm_bin = palm_dir + '/trunk/SCRIPTS'
+   job_dir = palm_dir + '/JOBS'
+   user_dir = palm_dir + '/USER_CODE'
+   with open(palm_bin + '/palmrungui', 'r') as fh:
+      # file found
+      out = None
+except:
+   print ('Error. palm_gf probably called in wrong directory.')
+   raise SystemExit
+
+class AppMain(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(AppMain, self).__init__()
+        uic.loadUi(palm_bin + '/palm_gf_files/palm_gf.ui', self)
+        self.center_window()
+        
+        
+        # initial hiding of results ui elements
+        self.result_visibility(False)
+        # dis/enable ui elements when un/checked
+        self.strict_matching_check.stateChanged.connect(self.strict_matching_able)
+        self.npex_npey_ratio_check.stateChanged.connect(self.npex_npey_ratio_able)
+        self.nx_ny_ratio_check.stateChanged.connect(self.nx_ny_ratio_able)
+        self.psolver_combo_box.currentIndexChanged.connect(self.fft_method_able)
+        # loading last used values into ui
+        self.startup_values()
+        # making sure max is not less than min
+        self.nx_min_box.valueChanged.connect(self.input_min_max_check)
+        self.ny_min_box.valueChanged.connect(self.input_min_max_check)
+        self.nz_min_box.valueChanged.connect(self.input_min_max_check)
+        self.proc_min_box.valueChanged.connect(self.input_min_max_check)
+        # connects main buttons to subroutines
+        self.start_button.clicked.connect(self.initialize)
+        self.view_button.clicked.connect(self.load_table)
+        self.reset_button.clicked.connect(self.reset_values)
+
+    def load_table(self):
+        # opens table Ui
+        self.table = MyTable()
+        self.table.show()
+
+    def initialize(self):
+        # translating Ui input into checks used during calculation
+        if self.psolver_combo_box.currentIndex() != 0:
+            if self.psolver_combo_box.currentIndex() == 1:
+                poisfft = True
+                switch = True
+                if self.fft_combo_box.currentIndex() == 2:
+                    temperton = True
+                else:
+                    temperton = False
+            else:
+                poisfft = False
+                temperton = False
+                switch = False
+
+            if self.psolver_combo_box.currentIndex() == 2:
+                multigrid = True
+            else:
+                multigrid = False
+
+            if self.spectra_box.checkState() == 2:
+                spectra = True
+                poisfft = True
+            else:
+                spectra = False
+
+            if self.nx_ny_ratio_check.checkState() == 2:
+                dnxny = self.nx_ny_ratio_box.value()
+            else:
+                dnxny = 0
+
+            if self.npex_npey_ratio_check.checkState() == 2:
+                dpxpy = self.npex_npey_ratio_box.value()
+                dpxpy_dev = self.npex_npey_deviation_box.value()
+            else:
+                dpxpy = 0
+                dpxpy_dev = 0
+
+            if self.strict_matching_check.checkState() == 2:
+                tpn = self.strict_matching_box.value()
+            else:
+                tpn = 0
+
+            # writing the config
+            cfg_write(self.nx_min_box.value(), self.nx_max_box.value(), self.ny_min_box.value(),
+                      self.ny_max_box.value(), self.nz_min_box.value(), self.nz_max_box.value(),
+                      self.proc_min_box.value(), self.proc_max_box.value(), tpn,
+                      poisfft, switch, temperton, multigrid, spectra, dnxny, dpxpy, dpxpy_dev)
+
+            self.progressbar.setVisible(True)
+            self.progressbar.setValue(0)
+            # connects PyQtsignals to subroutines
+            self.thread = MyThread()
+            self.thread.change_value.connect(self.setprogressval)
+            self.thread.completed.connect(self.result_label_update)
+            self.thread.busy.connect(self.info_label_update)
+            # starts thread to calculate
+            self.thread.start()
+
+    def info_label_update(self):
+        # standby information during search of the limits of all results
+        self.results_information_label.setText('Standby please.')
+        self.results_information_label.setVisible(True)
+
+    def result_label_update(self, counter, timer):
+        self.result_visibility(True)
+        self.progressbar.setVisible(False)
+        if int(timer) == 0:
+            self.results_information_label.setText('Success! Gridfinder found ' + str(counter) +
+                                                   ' results in less than 1 second.')
+        else:
+            self.results_information_label.setText('Success! Gridfinder found ' + str(counter) +
+                                                   ' results in ' + str(timer) + ' seconds.')
+
+    def setprogressval(self, val):
+        # updates the value of the progressbar, data received from PyQtsignal
+        self.progressbar.setValue(val)
+
+    def startup_values(self):
+        # reads the .ini and updates default values to last used values
+        if os.path.exists('./palm_gf_config.ini') is False:
+            pass
+        else:
+            value_list = cfg_read()
+            self.nx_min_box.setValue(int(value_list[0]))
+            self.nx_max_box.setValue(int(value_list[1]))
+            self.ny_min_box.setValue(int(value_list[2]))
+            self.ny_max_box.setValue(int(value_list[3]))
+            self.nz_min_box.setValue(int(value_list[4]))
+            self.nz_max_box.setValue(int(value_list[5]))
+            self.proc_min_box.setValue(int(value_list[6]))
+            self.proc_max_box.setValue(int(value_list[7]))
+            if int(value_list[8]) != 0:
+                self.strict_matching_check.setCheckState(2)
+                self.strict_matching_box.setValue(int(value_list[8]))
+            if float(value_list[9]) != 0:
+                self.nx_ny_ratio_check.setCheckState(2)
+                self.nx_ny_ratio_box.setValue(float(value_list[9]))
+            if float(value_list[10]) != 0:
+                self.npex_npey_ratio_check.setCheckState(2)
+                self.npex_npey_ratio_box.setValue(float(value_list[10]))
+                self.npex_npey_deviation_box.setValue(float(value_list[11]))
+
+    def reset_values(self):
+        # resets values to default, does not update .ini
+        self.nx_min_box.setValue(0)
+        self.nx_max_box.setValue(1)
+        self.ny_min_box.setValue(0)
+        self.ny_max_box.setValue(1)
+        self.nz_min_box.setValue(0)
+        self.nz_max_box.setValue(1)
+        self.proc_min_box.setValue(0)
+        self.proc_max_box.setValue(1)
+        self.strict_matching_check.setCheckState(0)
+        self.nx_ny_ratio_check.setCheckState(0)
+        self.nx_ny_ratio_box.setValue(1.00)
+        self.npex_npey_ratio_check.setCheckState(0)
+        self.npex_npey_ratio_box.setValue(1.00)
+        self.npex_npey_deviation_box.setValue(1)
+
+    def input_min_max_check(self):
+        # setting chosen min values as minimum of maxima
+        self.nx_max_box.setMinimum(self.nx_min_box.value())
+        self.ny_max_box.setMinimum(self.ny_min_box.value())
+        self.nz_max_box.setMinimum(self.nz_min_box.value())
+        self.proc_max_box.setMinimum(self.proc_min_box.value())
+
+    def center_window(self):
+        # moving window to middle of the screen
+        frame = self.frameGeometry()
+        center = QDesktopWidget().availableGeometry().center()
+        frame.moveCenter(center)
+        self.move(frame.topLeft())
+
+    def fft_method_able(self):
+        # enable/disable QComboBox of fft method
+        if self.psolver_combo_box.currentIndex() == 1:
+            self.fft_combo_box.setEnabled(True)
+        else:
+            self.fft_combo_box.setEnabled(False)
+            self.fft_combo_box.setCurrentIndex(0)
+
+    def nx_ny_ratio_able(self):
+        # enable/disable QSpinBox of nx/ny-ratio
+        if int(self.nx_ny_ratio_check.checkState()) == 0:
+            self.nx_ny_ratio_box.setEnabled(False)
+        else:
+            self.nx_ny_ratio_box.setEnabled(True)
+
+    def strict_matching_able(self):
+        # enable/disable QSpinBox of strict matching
+        if int(self.strict_matching_check.checkState()) == 0:
+            self.strict_matching_box.setEnabled(False)
+        else:
+            self.strict_matching_box.setEnabled(True)
+
+    def npex_npey_ratio_able(self):
+        # enable/disable UI elements of npex/npey-ratio
+        if int(self.npex_npey_ratio_check.checkState()) == 0:
+            self.npex_npey_ratio_box.setEnabled(False)
+            self.npex_npey_deviation_slider.setEnabled(False)
+            self.npex_npey_deviation_box.setEnabled(False)
+        else:
+            self.npex_npey_ratio_box.setEnabled(True)
+            self.npex_npey_deviation_slider.setEnabled(True)
+            self.npex_npey_deviation_box.setEnabled(True)
+
+    def result_visibility(self, boolean):
+        # making certain ui elements in/visible
+        self.progressbar.setVisible(boolean)
+        self.results_information_label.setVisible(boolean)
+        self.view_button.setVisible(boolean)
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    window = AppMain()
+    window.setWindowTitle('palm_gf')
+    window.show()
+    sys.exit(app.exec_())

@@ -1,0 +1,33 @@
+OLN0001:
+  loglevel: ERROR
+  message: |
+    offline nesting is only applicable in root model
+  description: ''
+
+OLN0002:
+  loglevel: ERROR
+  message: |
+    offline nesting requires initializing_actions = "read_from_file"
+  description: |
+    If lateral and top boundary conditions are obtained from a mesoscale model simulation, the initial profiles of the velocity components, potential temperature and mixing ratio need to be in line with the mesoscale data. As boundary conditions from mesoscale model data are handed over via the dynamic input file, the initial profiles should also handed over this way. If other initial data is used instead, this could result in large discrepancies between the initial data and the boundary data at the inflow boundaries, which can lead to strong numerical oscillations. In particular for the mixing ratio, this could produce even values close to zero or supersaturated conditions, possibly leading to numerical instabilities in conjunction with the energy-balance schemes.
+
+OLN0003:
+  loglevel: ERROR
+  message: |
+    mixture of different LOD for the provided boundary data is not possible
+  description: |
+    In case of mesoscale (offline) nesting the boundary data can be provided as level-of-detail (LOD) 1 or as LOD 2. However, a mixture of both in one simulation is not possible.
+
+OLN0004:
+  loglevel: ERROR
+  message: |
+    nesting_offline = .TRUE. requires dynamic input file
+  description: ''
+
+OLN0005:
+  loglevel: ERROR
+  message: |
+    end_time of the simulation exceeds the time dimension in the dynamic input file
+  description: |
+    The time dimension in the dynamic input file must cover the entire simulation time.
+

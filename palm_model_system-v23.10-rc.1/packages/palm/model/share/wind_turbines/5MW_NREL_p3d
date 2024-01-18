@@ -1,0 +1,63 @@
+ &initialization_parameters
+         nx = 63, ny = 63, nz = 64,
+    
+         dx = 15.0, dy = 15.0, dz = 15.0,
+
+         bc_lr = 'cyclic',
+         bc_ns = 'cyclic',
+
+         initializing_actions = 'set_constant_profiles',
+         ug_surface = 6.0, vg_surface = 0.0,
+
+         bc_uv_b = 'dirichlet',
+         fft_method = 'temperton-algorithm',
+         
+         constant_flux_layer = .F., /
+
+ &runtime_parameters
+         end_time = 60.0,
+         
+         create_disturbances = .T.,
+         
+         dt_run_control = 0.,
+         
+         dt_dopr = 20.0, 
+         
+         data_output_pr = '#u', '#v',
+                          'u*2', 'v*2', 'w*2',
+           
+         mask_x_loop(1,:) = 200.0, 800.0, 15.0,
+         mask_y_loop(1,:) = 200.0, 800.0, 15.0,
+         mask_z_loop(1,:) = 400.0, 560.0, 30.0,
+         
+         data_output_masks(1,:) = 'u', 'v','w',
+
+         dt_domask = 20.,/
+
+ &wind_turbine_parameters
+         time_turbine_on  = 1.0,
+
+         n_turbines = 4,
+         hub_x =   300.0, 600.0, 300.0, 600.0,
+         hub_y =   300.0, 300.0, 600.0, 600.0,
+         hub_z =   480.0, 480.0, 480.0, 480.0,
+         rotor_radius  =    63.0, 63.0, 63.0, 63.0,
+         nacelle_radius =    1.5, 1.5, 1.5, 1.5,
+         tower_diameter =    4.0, 4.0, 4.0, 4.0,
+
+         rotor_speed = 0.9, 0.9, 0.9, 0.9,
+         yaw_angle = -20.0, 10.0, 0.0, 30.0,
+         tilt_angle = 0.0,
+         generator_power_rated = 5296610.0,
+         speed_control = .T.,
+         pitch_control = .T.,
+         pitch_angle = 0.0,
+         yaw_control = .T.,
+         yaw_speed = 0.01,
+    
+         tower_cd   = 1.2, 1.2, 1.2, 1.2,
+        
+         segment_length_tangential = 1.0,
+         segment_width_radial  = 0.5,
+        
+         n_airfoils = 8, /

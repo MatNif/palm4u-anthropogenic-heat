@@ -1,0 +1,10 @@
+
+{passive1.eqn
+Former revisions
+----------------
+ $Id$
+}
+#EQUATIONS
+
+{ passive1: does nothing }
+  { 1.}  PM10 = PM10 :                   1.0_dp  ;

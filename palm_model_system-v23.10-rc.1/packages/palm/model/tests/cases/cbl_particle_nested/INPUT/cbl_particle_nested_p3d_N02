@@ -1,0 +1,94 @@
+!------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!------------------------------------------------------------------------------
+ &initialization_parameters
+!
+!-- grid parameters
+!------------------------------------------------------------------------------
+    nx                         = 39,
+    ny                         = 39,
+    nz                         = 40,
+
+    dx                         = 25.0,
+    dy                         = 25.0,
+    dz                         = 25.0,
+!
+!-- Pressure solver
+!------------------------------------------------------------------------------
+    psolver   = 'multigrid',
+    cycle_mg  = 'w',
+    mg_cycles = 2,
+!
+!-- initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'set_constant_profiles',
+    ug_surface           = 1.0,
+    vg_surface           = 1.0,
+
+    pt_surface                 = 285.0,
+    pt_vertical_gradient       = 32.0, 0.7,
+    pt_vertical_gradient_level = 793.75, 846.25,
+    surface_heatflux           = 0.1,
+
+    roughness_length = 0.1,
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+    scalar_advec   = 'ws-scheme',
+    momentum_advec = 'ws-scheme',
+!
+!-- Boundary conditions
+!------------------------------------------------------------------------------
+    bc_lr   = 'nested',
+    bc_ns   = 'nested',
+
+    bc_p_b  = 'neumann',
+    bc_p_t  = 'nested',
+
+    bc_uv_b = 'dirichlet',
+    bc_uv_t = 'nested',
+
+    bc_pt_b = 'neumann',
+    bc_pt_t = 'nested',
+!
+!-- Topography
+!------------------------------------------------------------------------------
+    building_height   = 200.0,
+    building_length_x = 200.0,
+    building_length_y = 200.0,
+    topography        = 'single_building',
+
+ /  ! end of initialization_parameters namelist
+
+
+!------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!------------------------------------------------------------------------------
+ &runtime_parameters
+!
+!-- run steering
+!------------------------------------------------------------------------------
+    end_time = 100.0,
+
+    create_disturbances      = .T.,
+    disturbance_energy_limit = 0.01,
+
+!
+!-- general output settings
+!------------------------------------------------------------------------------
+    dt_run_control = 0.0,
+
+
+    dt_data_output        = 3600.0,
+    dt_averaging_input    = 0.0,
+    averaging_interval    = 3600.0,
+    data_output           = 'u',  'u_av',
+                            'v',  'v_av',
+                            'w',  'w_av',
+
+    dt_dots               = 0.0,
+
+ /  ! end of runtime_parameters namelist
+

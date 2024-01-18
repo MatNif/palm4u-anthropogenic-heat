@@ -1,0 +1,286 @@
+DRV0001:
+  loglevel: ERROR
+  message: |
+    static driver coordinates coordinates "origin_lon" and/or "origin_lat" are outside the allowed range of values
+  description: |
+    The valid range of values is: *-180.0* <= `origin_lon` <= *180.0*  and *-90.0* <= `origin_lat` <= *90.0*.
+
+DRV0002:
+  loglevel: ERROR
+  message: |
+    We are in the DEFAULT chemistry emissions mode: !no time-factor type specified!Please specify the value of time_fac_type: either "MDH" or "HOUR"
+  description: ''
+
+DRV0003:
+  loglevel: ERROR
+  message: |
+    initialization with data from dynamic driver - dimension(s): "..." not found in dynamic driver
+  description: |
+    Check the dynamic driver and add the respective dimension(s).
+
+DRV0004:
+  loglevel: ERROR
+  message: |
+    number of grid points along ... in dynamic driver (=...) does not match the number of grid points in this run (...=...)
+  description: |
+    Dimensions in dynamic driver must match the dimension of computational grid points of the respective run.
+
+DRV0005:
+  loglevel: ERROR
+  message: |
+    vertical grid coordinate ... in dynamic driver does not match the computational grid (...) in this run at ...(...)
+  description: |
+    Check the respective vertical grid point coordinates in the dynamic driver.
+
+DRV0006:
+  loglevel: ERROR
+  message: |
+    missing initial data for ...
+  description: |
+    Data for named variable is missing in dynamic driver.
+
+DRV0007:
+  loglevel: ERROR
+  message: |
+    for chemistry variables only LOD=1 is allowed
+  description: |
+    Initialization of chemistry via dynamic input file is only allowed with profiles (LOD=1).
+
+DRV0008:
+  loglevel: ERROR
+  message: |
+    netCDF input for ... must not contain any _FillValues
+  description: |
+    Respective data in dynamic driver must not contain any _FillValues.
+
+DRV0009:
+  loglevel: ERROR
+  message: |
+    initializing_actions = "read_from_file" requires dynamic requires dynamic driver file "..."
+  description: ''
+
+DRV0010:
+  loglevel: ERROR
+  message: |
+    nsurface_fraction must not be larger than 3
+  description: ''
+
+DRV0011:
+  loglevel: ERROR
+  message: |
+    minimum requirement for surface classification is not fulfilled
+  description: |
+    At least `vegetation_type`, `pavement_type`, `soil_type`, and `water_type` are required. If urban-surface model is applied, also `building_type` ist required.
+
+DRV0012:
+  loglevel: ERROR
+  message: |
+    if vegetation_type = 0 at any location, ... is required
+  description: ''
+
+DRV0013:
+  loglevel: ERROR
+  message: |
+    if soil_type = 0 at any location, soil_pars is required
+  description: ''
+
+DRV0014:
+  loglevel: ERROR
+  message: |
+    if buildings are provided, also ... is required
+  description: ''
+
+DRV0015:
+  loglevel: ERROR
+  message: |
+    if building_type = 0 at any location, building_pars is required
+  description: ''
+
+DRV0016:
+  loglevel: ERROR
+  message: |
+    if building_type is provided, also building_id is required
+  description: ''
+
+DRV0017:
+  loglevel: ERROR
+  message: |
+    if albedo_type = 0 at any location, albedo_pars is required
+  description: ''
+
+DRV0018:
+  loglevel: ERROR
+  message: |
+    if pavement_type = 0 at any location, pavement_pars is required
+  description: ''
+
+DRV0019:
+  loglevel: ERROR
+  message: |
+    if pavement_type = 0 at any location, pavement_subsurface_pars is required
+  description: ''
+
+DRV0020:
+  loglevel: ERROR
+  message: |
+    if water_type = 0 at any location, water_pars is required
+  description: ''
+
+DRV0021:
+  loglevel: ERROR
+  message: |
+    at least one of the parameters vegetation_type, pavement_type, or water_type must be set to a non-missing value at grid point (i,j) = (...,...)
+  description: |
+    If the land-surface and building-surface model is employed at least one of the four "_type" variables must be set to a non fill-value to classify the surfaces accordingly. If only the land-surface model is employed, at least one of the variables `water_type`, `pavement_type` or `vegetation_type` must be set.
+
+DRV0022:
+  loglevel: ERROR
+  message: |
+    at least one of the parameters vegetation_type, pavement_type, building_type, or water_type must be set to a non-missing value at grid point (i,j) = (...,...)
+  description: |
+    If the land-surface and building-surface model is employed at least one of the four "_type" variables must be set to a non fill-value to classify the surfaces accordingly. If only the land-surface model is employed, at least one of the variables `water_type`, `pavement_type` or `vegetation_type` must be set.
+
+DRV0023:
+  loglevel: ERROR
+  message: |
+    soil_type is required for each location (x,y) where vegetation_type or pavement_type is a non-missing value
+  description: ''
+
+DRV0024:
+  loglevel: ERROR
+  message: |
+    more than one surface type (vegetation, pavement, water) is given at location  (i,j) = (...,...)
+  description: |
+    This is not allowed as no tile approach has yet been implemented.
+
+DRV0025:
+  loglevel: ERROR
+  message: |
+    surface_fraction is given for more than one type at location (i,j) = (...,...)
+  description: |
+    This is not allowed as no tile approach has yet been implemented.
+
+DRV0026:
+  loglevel: ERROR
+  message: |
+    sum of all land-surface fractions does not equal 1 at location (i,j) = (...,...)
+  description: ''
+
+DRV0027:
+  loglevel: ERROR
+  message: |
+    mismatch in setting of surface_fraction at location (i,j) = (...,...)
+  description: |
+    Vegetation-, pavement-, or water surface is given at the respective location, but surface fraction is 0 for the given type.
+
+DRV0028:
+  loglevel: ERROR
+  message: |
+    mismatch in setting of surface_fraction at location (i,j) = (...,...)
+  description: |
+    Vegetation-, pavement-, or water surface is not given at the respective location, but surface fraction is not 0 for the given type.
+
+DRV0029:
+  loglevel: ERROR
+  message: |
+    vegetation_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location vegetation_type is set 0, and therefore all parameters of vegetation_pars must be set at this location.
+
+DRV0030:
+  loglevel: ERROR
+  message: |
+    root_area_dens_s missing at location (i,j) = (...,...)
+  description: |
+    At the given location vegetation_type is set 0, and therefore all levels of root_area_dens_s must be set at this location.
+
+DRV0031:
+  loglevel: ERROR
+  message: |
+    soil_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location soil_type is set 0, and therefore all levels of soil_pars must be set at this location.
+
+DRV0032:
+  loglevel: ERROR
+  message: |
+    building_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location building_type is set 0, and therefore all parameters of buildings_pars must be set at this location.
+
+DRV0033:
+  loglevel: ERROR
+  message: |
+    building_type missing at location (i,j) = (...,...)
+  description: |
+    Each location where a building is set requires a type ( and vice versa ) in case the urban-surface model is applied.
+
+    Apart from the obvious inconsistent setting of building input data, please check if building_id has reasonable numbers. Even though building_id's can be set arbitrary, only values representable on a 32-bit integer can be used. For ids that cannot be represented, errors in the building processing can happen, causing this error. Another reason could be that the model domain is too shallow and thus the building and surface classification does not work properly.
+
+DRV0034:
+  loglevel: ERROR
+  message: |
+    building_id missing at location (i,j) = (...,...)
+  description: |
+    Each location where a building is set requires an ID ( and vice versa ).
+
+    Apart from the obvious inconsistent setting of building input data, please check if building_id has reasonable numbers. Even though building_id's can be set arbitrary, only values representable on a 32-bit integer can be used. For ids that cannot be represented, errors in the building processing can happen, causing this error.
+
+DRV0035:
+  loglevel: ERROR
+  message: |
+    albedo_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location `albedo_type` is set *0*, and therefore all parameters of `albedo_pars` must be set at this location.
+
+DRV0036:
+  loglevel: ERROR
+  message: |
+    pavement_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location `pavement_type` is set *0*, and therefore all parameters of `pavement_pars` must be set at this location.
+
+DRV0037:
+  loglevel: ERROR
+  message: |
+    pavement_subsurface_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location `pavement_type` is set *0*, and therefore all parameters of `pavement_subsurface_pars` must be set at this location.
+
+DRV0038:
+  loglevel: ERROR
+  message: |
+    water_pars missing at location (i,j) = (...,...)
+  description: |
+    At the given location `water_type` is set *0*, and therefore all parameters of `water_pars` must be set at this location.
+
+DRV0039:
+  loglevel: ERROR
+  message: |
+    required input file "..." does not exist
+  description: |
+    A required netCDF file is not available. Either this file is not given in your INPUT folder or has a wrong name (check the `.palm.iofiles` file for the correct naming).
+
+DRV0040:
+  loglevel: ERROR
+  message: |
+    found building surface on non-building coordinates (xs, ys, zenith, azimuth): ..., ..., ..., ...
+  description: |
+    If the variable building_surface_pars has been specified within a static driver, the coordinates xs/ys/zs define the location of a horizontal/vertical buildings surface, while zenith/azimuth define the orientantion of the surface (upward-, northward-, southward-, eastward-, westward-facing). In case this error message appears, the coordinates xs, ys, zs, zenith, and azimuth describing a surface element do not match with the location of a building. Even if xs, ys, zs, are prescribed correctly, mismatches in zenith and azimuth may cause this error. In such a case, please check carefully your pre-processor code that you used to create the static driver. Further information about the data input for surface elements can be found [here](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids#static_input).
+
+DRV0041:
+  loglevel: ERROR
+  message: |
+    static driver attribute "rotation_angle" is outside the allowed range of 0-360 degrees
+  description: |
+    The valid range of values is: *0.0* <= `rotation_angle` <= *360.0*.
+
+DRV0042:
+  loglevel: ERROR
+  message: |
+    static driver gloabl attribute(s): ... is (are) set to "NaN"
+  description: |
+    Global attributes must not be set to NaN values.
+
+
+

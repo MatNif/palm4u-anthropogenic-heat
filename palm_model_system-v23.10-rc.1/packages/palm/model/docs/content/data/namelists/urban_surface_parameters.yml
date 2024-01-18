@@ -1,0 +1,112 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "urban_surface_parameters"
+
+building_type:
+  category: General Settings
+  type: I
+  default: 
+    value: 1
+    depends_on: static driver file
+  description:
+    short: Building type according to internal classification.
+    long: |
+      Building type according to internal classification my means of the year of construction and usage. This type is assumed for all buildings that are present in the simulation setup. Individual building types can be provided via [static driver file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids#static_input) (see [building_type(#urban_surface_parameters--building_type) = *0*.
+      
+      At the moment six types of buildings are offered as outlined in the following table:
+      
+      | [building_type](#urban_surface_parameters--building_type) | Description | [albedo_type](#urban_surface_parameters--albedo_type) | Notes                                                 |
+      |--------:|:------------------------------------------------|-----------------------------------------------:|:---------------------------------------------------------------------------|
+      | 0       | User defined                                    | -                                              | All building parameters must be explicity set by the user in the [static driver file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids#static_input) |
+      | 1       | Residential building, built before 1950         | 33                                             |
+      | 2       | Residential building, built from 1950-2000      | 33                                             |
+      | 3       | Residential building, built after 2000          | 33                                             |
+      | 4       | Non-residential building, built before 1950     | 33                                             |
+      | 5       | Non-residential building, built from 1950-2000  | 33                                             |
+      | 6       | Non-residential building, built after 2000      | 33                                             |
+
+
+roof_category:
+  category: General Settings
+  type: I
+  default:
+    value: 2
+  description:
+    short: Roof category.
+    long: ''
+
+
+roof_inner_temperature:
+  category: General Settings
+  type: R
+  default: 
+    value: 295.0
+  si-unit: K
+  description:
+    short: Initial temperature of the inner roof surface (inside the buildings). 
+    long: |
+      This parameter is only used, if the indoor model is not used.
+
+
+roughness_concrete:
+  category: General Settings
+  type: R
+  default:
+    value: 0.001
+  si-unit: m
+  description:
+    short: Average roughness length of concrete surfaces.
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default: 
+    value: .F.
+  description:
+    short: If [switch_off_module]((#urban_surface_parameters--switch_off_module) = *.T.*, the urban surface model is switched off, despite the namelist is set.
+    long: ''
+
+
+usm_wall_mod:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description: 
+    short: Flag parameter to activate a thermal wall conductivity reduction.
+    long: |
+      This flag parameter activates a reduction of thermal conductivity of the outermost two wall layers during the spinup-mechanism by a factor of 10. This can become necessary to avoid model instabilities when long time steps shall be used during spin-up.
+
+
+wall_category:
+  category: General Settings
+  type: I
+  default:
+    value: 2
+  description:
+    short: Wall category for wall surface over pedestrian zone.
+    long: ''
+
+
+wall_inner_temperature:
+  category: General Settings
+  type: R
+  default: 
+    value: 295.0
+  si-unit: K
+  description:
+    short: Initial temperature of the inner wall surface (inside the buildings).
+    long: |
+      This parameter is only used, if the indoor model is not used.
+
+
+window_inner_temperature:
+  category: General Settings
+  type: R
+  default: 
+    value: 295.0
+  si-unit: K
+  description:
+    short: Initial temperatur of the inner window surface (inside the buildings).
+    long: |
+      This parameter is only used, if the indoor model is not used.

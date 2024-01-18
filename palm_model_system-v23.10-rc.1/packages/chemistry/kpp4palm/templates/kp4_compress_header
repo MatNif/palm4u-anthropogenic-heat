@@ -1,0 +1,34 @@
+!
+!
+!module kp4_compress
+!
+! Module to compress data for ros_Integrator using variable time step 
+! in vector mode. This module is not dependent on chemistry setup and
+! can be use for multiple chemistry setups in one job.
+!
+
+!     COPYRIGHT Klaus Ketelsen and MPI-CH              May 2007
+
+! implicit none
+! private
+! save
+
+! KPP DP - Double precision kind
+  INTEGER, PARAMETER :: ep = SELECTED_REAL_KIND(12,307)
+
+
+! variables
+  integer                                   :: kpoints
+  integer                                   :: kpoints_save
+  integer,dimension(:),allocatable,public   :: index_org
+  integer,dimension(:),allocatable          :: index_step
+  logical,dimension(:),allocatable,public   :: cell_done
+  logical,dimension(:),allocatable          :: done_check
+
+! Data arrays
+  real(kind=ep),dimension(:,:),allocatable  :: f_done
+  integer,      dimension(:),  allocatable  :: Kacc_done, Krej_done
+  integer,      dimension(:),  allocatable  :: ierr_done
+
+  logical  :: compress_done
+

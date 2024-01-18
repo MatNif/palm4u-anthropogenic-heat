@@ -1,0 +1,281 @@
+#!/usr/bin/env bash
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+# install script
+#--------------------------------------------------------------------------------#
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_LOCATION="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+project_root_dir=$(readlink -f "${SCRIPT_LOCATION}/")
+project_docs_dir=$(readlink -f "${project_root_dir}/docs/")
+project_build_dir=$(readlink -f "${project_root_dir}/build/")
+project_packages_dir=$(readlink -f "${project_root_dir}/packages/")
+
+logfile_all="${project_root_dir}/install.log"
+rm -f ${logfile_all}
+exec >  >(tee -ia ${logfile_all})
+exec 2> >(tee -ia ${logfile_all} >&2)
+number_of_cols=70
+
+install_prefix="${project_build_dir}"
+
+program_name="PALM model system"
+
+if command -v nf-config &> /dev/null
+then
+    fortran_compiler="$(nf-config --fc)"
+elif command -v nc-config &> /dev/null
+then
+    fortran_compiler="$(nc-config --fc)"
+fi
+
+palm_installer_check_software_all() {
+   hrule
+   printf "%s\n" "Checking general software requirements..."
+   palm_installer_check_software_required "a Fortran compiler" ifort ftn gfortran mpif90
+   palm_installer_check_software_required "mpirun" mpirun
+   palm_installer_check_software_required "make" make
+   palm_installer_check_software_required "cmake" cmake
+   palm_installer_check_software_optional "python3" "The GUI will not be available" python3
+   if [[ "${required_software_available}" == "false" ]]; then
+      hrule
+      printf "| \e[1;31m%-${number_of_cols}s\e[0m |\n" "Please provide missing software and try again!"
+      palm_installer_abort_message
+   fi
+   if [[ "${optional_software_available}" == "false" ]]; then
+      printf "\e[1;33m%s\e[0m\n" "Some optional software is missing."
+      palm_read_yn "Do you wish to continue anyways?" "RESPONSE_CONTINUE"
+      hrule
+      if [[ "$RESPONSE_CONTINUE" == "y" ]]; then
+         printf "| \e[1;33m%-${number_of_cols}s\e[0m |\n"  "Some optional software is missing. Continue anyways..."
+      else
+         printf "| \e[1;31m%-${number_of_cols}s\e[0m |\n" "Please provide missing software and try again!"
+         palm_installer_abort_message
+      fi
+   else
+      hrule
+      printf "| \e[1;32m%-${number_of_cols}s\e[0m |\n"  "All required software found. Lets continue..."
+   fi
+}
+
+palm_installer_check_software() {
+   local software_found="false"
+   for current_software in ${@}; do
+      if command -v ${current_software} > /dev/null; then
+         local software_found="true"
+         local found_software="${found_software} ${current_software}"
+      fi
+   done
+   if [[ "${software_found}" == "false" ]]; then
+      return 1
+   else
+      echo "${found_software}"
+      return 0
+   fi
+
+}
+
+palm_installer_check_software_required() {
+   local description=${1}
+   shift
+   printf "%s %-25s " "-- Looking for" "${description}..."
+   if palm_installer_check_software ${@} > /dev/null; then
+      printf "\e[1;32mfound\e[0m$(palm_installer_check_software ${@})"
+   else
+      printf "\e[1;31mnot found!\e[0m"
+      required_software_available="false"
+   fi
+   printf "\n"
+}
+
+palm_installer_check_software_optional() {
+   local description=${1}
+   shift
+   local feature=${1}
+   shift
+   printf "%s %-25s " "-- Looking for" "${description} (optional)..."
+   if palm_installer_check_software ${@} > /dev/null; then
+      printf "\e[1;32mfound\e[0m$(palm_installer_check_software ${@})"
+   else
+      printf "\e[1;33mnot found!\e[0m (${feature})"
+      optional_software_available="false"
+   fi
+   printf "\n"
+}
+
+install_packages() {
+   hrule
+   printf "# %s\n" "Installing ${program_name} packages..."
+   hrule
+   mkdir -p ${install_prefix}
+   cd ${install_prefix}
+   install_bin_dir=${install_prefix}/bin
+   mkdir -p ${install_bin_dir}
+   # link palmdoc to install_bin_dir
+   chmod a+x $(realpath "${project_docs_dir}/palmdocs")
+   ln -s -f $(realpath --relative-to="${install_bin_dir}" "${project_docs_dir}/palmdocs") ${install_bin_dir}
+   # Automatic detection of install scripts in all packages
+   # Disabled for now, as the installation of most of the packages is not yet homogenized
+   #for package_installer in $(find ${project_packages_dir} -mindepth 3 -maxdepth 3 -type f -name "install"); do
+   #   bash ${package_installer} \
+   #        -p "${install_prefix}" \
+   #        ${fortran_compiler:+-c }${fortran_compiler} \
+   #        ${netcdf_c_prefix:+-s }${netcdf_c_prefix} \
+   #        ${netcdf_fortran_prefix:+-t }${netcdf_fortran_prefix} \
+   #        ${do_clean:+-x }
+   #done
+   # call all PALM model system installers
+   bash ${project_packages_dir}/chemistry/kpp4palm/install \
+        -p "${install_prefix}" \
+        ${do_clean:+-x }
+   bash ${project_packages_dir}/dynamic_driver/inifor/install \
+        -p "${install_prefix}" \
+        ${fortran_compiler:+-c }${fortran_compiler} \
+        ${netcdf_c_prefix:+-s }${netcdf_c_prefix} \
+        ${netcdf_fortran_prefix:+-t }${netcdf_fortran_prefix} \
+        ${do_clean:+-x }
+   bash ${project_packages_dir}/gui/palmrungui/install \
+        -p "${install_prefix}" \
+        ${do_clean:+-x }
+   bash ${project_packages_dir}/palm/model/install \
+        -p "${install_prefix}" \
+        ${fortran_compiler:+-c }${fortran_compiler} \
+        ${netcdf_c_prefix:+-s }${netcdf_c_prefix} \
+        ${netcdf_fortran_prefix:+-t }${netcdf_fortran_prefix} \
+        ${do_clean:+-x }
+   bash ${project_packages_dir}/static_driver/palm_csd/install \
+        -p "${install_prefix}" \
+        ${do_clean:+-x }
+   bash ${project_packages_dir}/visualization/palmplot/install \
+        -p "${install_prefix}" \
+        ${do_clean:+-x }
+   hrule
+   printf "# %s\n" "Installing ${program_name} packages finished."
+   printf "# %s\n" ""
+   printf "# %s\n" "Use the following command to make the executables available"
+   printf "# %s\n" "inside your environment:"
+   printf "# %s\n" ""
+   printf "# %s\n" "   export PATH=${install_prefix}/bin:\${PATH}"
+   printf "# %s\n" ""
+   hrule
+}
+
+# startup message
+palm_installer_startup_message() {
+   printf "\n"
+   hrule
+   printf "|                                                                        |\n"
+   printf "|                      PALM model system installer                       |\n"
+   printf "|                                                                        |\n"
+}
+
+# shutdown message
+palm_installer_shutdown_message() {
+   hrule
+   printf "| %-${number_of_cols}s |\n" "${program_name} installer finished."
+   hrule
+   rm -f ${logfile_all}
+   exit 0
+}
+
+# shutdown message
+palm_installer_abort_message() {
+   hrule
+   printf "| \e[1;31m%-${number_of_cols}s\e[0m |\n" "${program_name} installer aborted."
+   hrule
+   exit 0
+}
+
+# error wrap-up message
+palm_installer_error_message() {
+   hrule
+   printf "| \e[1;31m%-${number_of_cols}s\e[0m \n" "${program_name} installer crashed."
+   palm_installer_ticket_message
+   hrule
+   exit 1
+}
+
+hrule() {
+   printf "#"
+   printf -- '-%.0s' {1..72}
+   printf "#\n"
+}
+
+palm_read_yn() {
+   sleep 0.1
+   while true; do
+   read -p "-- ${1} (y|n): " CURRENT_RESPONSE
+   if [[ "${CURRENT_RESPONSE}" == "y" ]] || [[ "${CURRENT_RESPONSE}" == "n" ]]; then
+      eval ${2}="${CURRENT_RESPONSE}"
+      break
+   fi
+   done
+}
+
+show_usage() {
+   echo "Usage: $0 [-h] [-p <install_prefix>] [-c <compiler>] [-s <path>] [-t <path>] [-x]"
+}
+
+show_help() {
+   show_usage
+   echo "      -h                     show this help message"
+   echo "      -p <install_prefix>    set installation directory"
+   echo "      -c <compiler>          set desired compiler"
+   echo "      -s <path>              set existing NetCDF-C library installation prefix (helps to find library)"
+   echo "      -t <path>              set existing NetCDF-Fortran library installation prefix (helps to find library)"
+   echo "      -x                     clean already existing build files"
+}
+
+while getopts ":p:c:s:t:hx" o; do
+   case "${o}" in
+      p)
+         install_prefix="$(readlink -m "${OPTARG}")"
+         ;;
+      c)
+         fortran_compiler="${OPTARG}"
+         ;;
+      s)
+         netcdf_c_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      t)
+         netcdf_fortran_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      x)
+         do_clean="true"
+         ;;
+      h)
+         show_help
+         exit 0
+         ;;
+      *)
+         show_usage
+         exit 1
+         ;;
+   esac
+done
+# strip all parsed options from the options list
+shift $((OPTIND-1))
+
+palm_installer_startup_message
+palm_installer_check_software_all
+install_packages
+palm_installer_shutdown_message

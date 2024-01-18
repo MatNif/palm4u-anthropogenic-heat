@@ -1,0 +1,25 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds:
+  - gfortran_default
+  - intel_default
+  - cray_default
+
+allowed_number_of_cores:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 9
+
+activation_strings:
+  - "d3r"
+  - "restart"
+
+use_binary_files_from: example_cbl
+
+significant_digits_for_netcdf_checks:
+  timeseries: 3
+  profiles: 5
+  other: 8

@@ -1,0 +1,29 @@
+---
+# this is a palmtest environments file
+
+palm_config_template:
+
+environments:
+
+  GNU:
+    c_executable: gcc
+    executable: gfortran
+    mpi_wrapper: mpif90
+    include:
+      netcdf: "-I /usr/include"
+      fftw: "-I /usr/include"
+      rrtmg: "-I ${HOME}/opt/rrtmg/gnu/include"
+      tenstream: "TENSTREAM_CFLAGS_FROM_PKGCONFIG"
+    lib:
+      netcdf: "/usr/lib/x86_64-linux-gnu/libnetcdff.so"
+      fftw: "/usr/lib/x86_64-linux-gnu/libfftw3.so"
+      rrtmg: "${HOME}/opt/rrtmg/gnu/lib/librrtmg.so"
+      tenstream: "TENSTREAM_LDFLAGS_FROM_PKGCONFIG"
+
+  NVIDIA:
+    c_executable: nvc
+    executable: nvfortran
+    mpi_wrapper: mpif90
+    mpi_execution_command: "mpirun --allow-run-as-root --use-hwthread-cpus -n {{mpi_tasks}}"
+    include: []
+    lib: []

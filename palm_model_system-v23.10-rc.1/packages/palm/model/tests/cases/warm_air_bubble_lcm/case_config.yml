@@ -1,0 +1,14 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds: []
+
+allowed_number_of_cores: []
+
+activation_strings:
+  - "d3#"
+
+significant_digits_for_netcdf_checks:
+  timeseries: 2
+  profiles: 3
+  other: 4

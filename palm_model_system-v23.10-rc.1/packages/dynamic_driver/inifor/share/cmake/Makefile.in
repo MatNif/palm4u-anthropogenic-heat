@@ -1,0 +1,101 @@
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+#
+# WARNING: don't write filenames with extension .f90 in this header!!!!
+#
+# Description:
+# ------------
+# Makefile for the RRTMG library
+#------------------------------------------------------------------------------!
+
+SOURCES = \
+	inifor_control.f90 \
+	inifor_defs.f90 \
+	inifor_grid.f90 \
+	inifor_io.f90 \
+	inifor_transform.f90 \
+	inifor_types.f90 \
+	inifor_util.f90 \
+
+# List of executables names of tests, i.e. .f90 files with extension removed
+TESTS = $(patsubst %.f90,%,$(wildcard test-*.f90))
+
+OBJS=$(SOURCES:.f90=.o)
+
+PROG = inifor
+F90 = @CMAKE_Fortran_COMPILER@
+F90FLAGS = @INIFOR_COMPILER_OPTIONS@
+LDFLAGS = @INIFOR_LINKER_OPTIONS@
+
+.SUFFIXES:
+.SUFFIXES: .o .f90
+
+.PHONY: all clean test
+
+all: $(PROG)
+
+test: $(OBJS) $(TESTS)
+
+clean:
+	rm -f $(PROG) $(OBJS) *.mod *.smod *.i *.lst
+
+# Link inifor executable
+$(PROG): $(OBJS) inifor.o
+	$(F90) -o $(PROG) $(OBJS) inifor.o $(LDFLAGS)
+
+# Link any test executable
+test-%: $(OBJS) util.o test-%.o
+	$(F90) -o $@ $(OBJS) util.o $@.o $(LDFLAGS)
+	./$@
+
+# Build any .f90 file that way
+.f90.o:
+	$(F90) $(F90FLAGS) -c $<
+
+inifor_types.o: \
+	inifor_defs.o
+inifor_util.o: \
+	inifor_types.o \
+	inifor_defs.o
+inifor_control.o: \
+	inifor_util.o \
+	inifor_defs.o
+inifor_transform.o: \
+	inifor_control.o \
+	inifor_util.o \
+	inifor_types.o \
+	inifor_defs.o
+inifor_io.o: \
+	inifor_control.o \
+	inifor_util.o \
+	inifor_types.o \
+	inifor_defs.o
+inifor_grid.o: \
+	inifor_io.o \
+	inifor_transform.o \
+	inifor_control.o \
+	inifor_util.o \
+	inifor_types.o \
+	inifor_defs.o
+inifor.o: \
+	inifor_grid.o \
+	inifor_io.o \
+	inifor_transform.o \
+	inifor_control.o \
+	inifor_types.o \
+	inifor_defs.o
+

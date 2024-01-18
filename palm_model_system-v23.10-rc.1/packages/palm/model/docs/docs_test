@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
+
+import os
+import sys
+import glob
+import inspect
+
+try:
+    from argparse import ArgumentParser
+    from argparse import RawTextHelpFormatter
+except ImportError:
+    sys.exit(
+        'ERROR: You need argparse!\n' +
+        '   install it from http://pypi.python.org/pypi/argparse\n' +
+        '   or run \"pip install argparse\".'
+    )
+
+try:
+    import yaml
+except ImportError:
+    sys.exit(
+        'ERROR: You need PyYAML!\n' +
+        '   install it from http://pypi.python.org/pypi/PyYAML\n' +
+        '   or run \"python3 -m pip install PyYAML\".'
+    )
+
+try:
+    import argcomplete
+except ImportError:
+    print(
+        'INFO: To use Tab-completion you need argcomplete!\n' +
+        '   install it from http://pypi.python.org/pypi/argcomplete\n' +
+        '   or run \"python3 -m pip install argcomplete\".'
+    )
+    has_argcomplete = False
+else:
+    has_argcomplete = True
+
+try:
+    from termcolor import colored as tcolored
+except ImportError:
+    def tcolored(string, color):
+        return string
+
+disable_colored_output = False
+
+
+def colored(string, color):
+    if not disable_colored_output:
+        return tcolored(string, color)
+    else:
+        return string
+
+
+def disable_color():
+    global disable_colored_output
+    disable_colored_output = True
+
+from macros import validate_yaml_namelist_database
+from macros import validate_yaml_logging_id_database
+from macros import validate_yaml_output_quantities_database
+
+
+version = '0.0.1'
+
+
+class Environment:
+
+    docs_dir = os.path.dirname(os.path.realpath(__file__))
+    project_root_dir = os.path.realpath(os.path.join(docs_dir, '..'))
+    content_dir = os.path.realpath(os.path.join(docs_dir, 'content'))
+    namelists_dir = os.path.realpath(os.path.join(content_dir, 'data/namelists'))
+    logging_dir = os.path.realpath(os.path.join(content_dir, 'data/logging'))
+    output_quantities_dir = os.path.realpath(os.path.join(content_dir, 'data/output_quantities'))
+    build_dir = os.path.realpath(os.path.join(project_root_dir, 'build'))
+    share_dir = os.path.realpath(os.path.join(project_root_dir, 'share'))
+    share_config_dir = os.path.realpath(os.path.join(share_dir, 'config'))
+    src_dir = os.path.realpath(os.path.join(project_root_dir, 'src'))
+
+    trunk_tests_dir = os.path.join(project_root_dir, 'tests')
+    trunk_tests_cases_dir = os.path.join(trunk_tests_dir, 'cases')
+    trunk_tests_builds_dir = os.path.join(trunk_tests_dir, 'builds')
+
+    tests_dir = os.path.join(build_dir, 'tests')
+
+
+class DocsTest:
+
+    def __init__(self, args):
+        if args.no_color:
+            disable_color()
+        self.namelist_yaml_databases = list(sorted(glob.glob(os.path.join(Environment.namelists_dir, '*.yml'))))
+        self.logging_id_yaml_databases = list(sorted(glob.glob(os.path.join(Environment.logging_dir, '*.yml'))))
+        self.output_quantities_yaml_databases = list(sorted(glob.glob(os.path.join(Environment.output_quantities_dir, '*.yml'))))
+        self.source_files = list(sorted(glob.glob(os.path.join(Environment.src_dir, '*.f90'))))
+        self.failed = False
+
+    def check_namelist_yaml_databases(self):
+        print(f'#### calling {inspect.stack()[0][3]}')
+        for filename in self.namelist_yaml_databases:
+            with open(filename) as f:
+                content_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
+            try:
+                valid = validate_yaml_namelist_database(
+                    data_path=os.path.basename(filename),
+                    content_dict=content_dict,
+                )
+                if not valid:
+                    self.failed = True
+                    raise KeyError('namelist database validation failed')
+                else:
+                    print(f'Checking {os.path.basename(filename)} {colored("Database ok", "green")}')
+            except KeyError:
+                self.failed = True
+                print(f'Checking {os.path.basename(filename)} {colored("Database error", "red")}')
+
+    def check_logging_id_yaml_databases(self):
+        print(f'#### calling {inspect.stack()[0][3]}')
+        for filename in self.logging_id_yaml_databases:
+            with open(filename) as f:
+                content_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
+            try:
+                valid = validate_yaml_logging_id_database(
+                    data_path=os.path.basename(filename),
+                    content_dict=content_dict,
+                )
+                if not valid:
+                    self.failed = True
+                    raise KeyError('logging_id database validation failed')
+                else:
+                    print(f'Checking {os.path.basename(filename)} {colored("Database ok", "green")}')
+            except KeyError:
+                self.failed = True
+                print(f'Checking {os.path.basename(filename)} {colored("Database error", "red")}')
+
+    def check_output_quantities_yaml_databases(self):
+        print(f'#### calling {inspect.stack()[0][3]}')
+        for filename in self.output_quantities_yaml_databases:
+            with open(filename) as f:
+                content_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
+            try:
+                valid = validate_yaml_output_quantities_database(
+                    data_path=os.path.basename(filename),
+                    content_dict=content_dict,
+                )
+                if not valid:
+                    self.failed = True
+                    raise KeyError('output_quantities database validation failed')
+                else:
+                    print(f'Checking {os.path.basename(filename)} {colored("Database ok", "green")}')
+            except KeyError:
+                self.failed = True
+                print(f'Checking {os.path.basename(filename)} {colored("Database error", "red")}')
+
+    def report(self):
+        return self.failed
+
+
+class PALMTestArgumentParser(ArgumentParser):
+
+    def __init__(self):
+        super().__init__(
+            description='This is the PALM docs tester\n' +
+                        'Developer Support: helge.knoop@pecanode.com',
+            formatter_class=RawTextHelpFormatter,
+            add_help=True,
+        )
+        self.add_argument(
+            '--version',
+            action='version',
+            version=version,
+        )
+        self.add_argument(
+            '--no-color',
+            action='store_true',
+            dest='no_color',
+            help='Disable colored terminal output.',
+            required=False,
+        )
+
+
+if __name__ == '__main__':
+    parser = PALMTestArgumentParser()
+    if has_argcomplete:
+        argcomplete.autocomplete(parser)
+    args = parser.parse_args()
+    docs_test = DocsTest(args)
+    docs_test.check_namelist_yaml_databases()
+    docs_test.check_logging_id_yaml_databases()
+    docs_test.check_output_quantities_yaml_databases()
+    failed = docs_test.report()
+    exit(1 if failed else 0)

@@ -1,0 +1,726 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "salsa_parameters"
+
+
+advect_particle_water:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to switch on the advection of condensed water in aerosol particles.
+    long: |
+      If [advect_particle_water](#salsa_parameters--advect_particle_water) = *.F.*, the aerosol particle water content is calculated at each [dt_salsa](#salsa_parameters--dt_salsa) based on the equilibrium solution using the ZSR method ([Stokes and Robinson, 1966](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref)).
+
+aerosol_flux_dpg:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.3E-8, 5.4E-8, 8.6E-7, 2.0E-7, 2.0E-7, 2.0E-7, 2.0E-7]
+  si-unit: m
+  description:
+    short: The number geometric mean diameter per aerosol mode for the aerosol emission.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*.
+
+      Used to construct the aerosol emissions if horizontally uniform ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'* ) or parameterized ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'* ) aerosol emissions are applied. Then the aerosol number emission is described by parameters [aerosol_flux_dpg](#salsa_parameters--aerosol_flux_dpg), [aerosol_flux_sigmag](#salsa_parameters--aerosol_flux_sigmag), [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a), and [surface_aerosol_flux](#salsa_parameters--surface_aerosol_flux).
+
+aerosol_flux_mass_fracs_a:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  description:
+    short: Mass fractions of soluble chemical components (subrange 2a) for the horizontally homogeneous aerosol emission ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'* ).
+    long: |
+      Given in the same order as the list of activated aerosol chemical components listspec. E.g.
+
+      [listspec](#salsa_parameters--listspec) = *'OC'*, *'NH'*, *'BC'*, *' '*, *' '*, *' '*, *' '*, </br>
+      [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a) = *0.3*, *0.1*, *0.6*, *0.0*, *0.0*, *0.0*, *0.0*,
+
+      implies that the mass composition of the aerosol emission is 30% organic carbon, 10% ammonia and 60% black carbon.
+
+      Used to construct the aerosol emissions if horizontally uniform ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'* ) or parameterized ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'* ) aerosol emissions are applied. Then the aerosol number emission is described by parameters [aerosol_flux_dpg](#salsa_parameters--aerosol_flux_dpg), [aerosol_flux_sigmag](#salsa_parameters--aerosol_flux_sigmag), [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a), and [surface_aerosol_flux](#salsa_parameters--surface_aerosol_flux).
+
+      Note that `aerosol_flux_mass_fracs_b` is not currently implemented. Hence, aerosol emissions are always soluble when using [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'*.
+
+aerosol_flux_sigmag:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.8, 2.16, 2.21, 2.0, 2.0, 2.0, 2.0]
+  description:
+    short: The standard deviation of the log-normal aerosol number size distribution per aerosol mode for the aerosol emission.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*.
+
+      Used to construct the aerosol emissions if horizontally uniform ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'* ) or parameterized ([salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'* ) aerosol emissions are applied. Then the aerosol number emission is described by parameters [aerosol_flux_dpg](#salsa_parameters--aerosol_flux_dpg), [aerosol_flux_sigmag](#salsa_parameters--aerosol_flux_sigmag), [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a), and [surface_aerosol_flux](#salsa_parameters--surface_aerosol_flux).
+
+bc_aer_b:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value: neumann
+  description:
+    short: The bottom boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. If any surface emissions of aerosols and gases are applied (see [salsa_emission_mode](#salsa_parameters--salsa_emission_mode)), [bc_aer_b](#salsa_parameters--bc_aer_b) = *'neumann'* is required. 
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant surface concentration over the entire simulation.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+
+bc_aer_l:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value_of: ([bc_lr](#initialization_parameters--bc_lr))
+  description:
+    short: The left boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. Horizontal boundary conditions for aerosols can be set independently from horizontal boundary conditions that have been chosen for the remaining model quantities via parameters [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns), e.g. you can choose cyclic boundary conditions for aerosols, while the flow field uses non-cyclic conditions, or vice versa.
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+    - value: cyclic
+      description: |
+        Cyclic along `x`. For this value, [bc_aer_r](#salsa_parameters--bc_aer_r) = *'cyclic'* is required, too.
+
+bc_aer_n:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value_of: ([bc_ns](#initialization_parameters--bc_ns))
+  description:
+    short: The north boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. Horizontal boundary conditions for aerosols can be set independently from horizontal boundary conditions that have been chosen for the remaining model quantities via parameters [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns), e.g. you can choose cyclic boundary conditions for aerosols, while the flow field uses non-cyclic conditions, or vice versa.
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+    - value: cyclic
+      description: |
+        Cyclic along `y`. For this value, [bc_aer_s](#salsa_parameters--bc_aer_s) = *'cyclic'* is required, too.
+
+bc_aer_r:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value_of: ([bc_lr](#initialization_parameters--bc_lr))
+  description:
+    short: The right boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. Horizontal boundary conditions for aerosols can be set independently from horizontal boundary conditions that have been chosen for the remaining model quantities via parameters [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns), e.g. you can choose cyclic boundary conditions for aerosols, while the flow field uses non-cyclic conditions, or vice versa.
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+    - value: cyclic
+      description: |
+        Cyclic along `x`. For this value, [bc_aer_l](#salsa_parameters--bc_aer_l) = *'cyclic'* is required, too.
+
+bc_aer_s:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value_of: ([bc_ns](#initialization_parameters--bc_ns))
+  description:
+    short: The south boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. Horizontal boundary conditions for aerosols can be set independently from horizontal boundary conditions that have been chosen for the remaining model quantities via parameters [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns), e.g. you can choose cyclic boundary conditions for aerosols, while the flow field uses non-cyclic conditions, or vice versa.
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+    - value: cyclic
+      description: |
+        Cyclic along `y`. For this value, [bc_aer_n](#salsa_parameters--bc_aer_n) = *'cyclic'* is required, too.
+
+bc_aer_t:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value: neumann
+  description:
+    short: The top boundary condition of the aerosol concentrations.
+    long: |
+      The same condition applies also for gases if the [chemistry module](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/chem) is not applied. 
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Constant concentration over the entire simulation.
+    - value: neumann
+      description: |
+        Zero concentration gradient.
+    - value: initial_gradient
+      description: |
+        Gradient is calculated from the initial concentration profile.
+
+depo_pcm_par:
+  category: General Settings
+  type: C*20
+  default:
+    value: zhang2001
+  description:
+    short: Method to solve the aerosol size specific dry deposition velocity.
+    long: |
+      The surface material is specified via [depo_pcm_type](#salsa_parameters--depo_pcm_type). 
+  allowed_values:
+    - value: zhang2001
+      description: See [Zhang et al. (2001)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref).
+    - value: petroff2010
+      description: See [Petroff and Zhang (2010)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref).
+
+depo_pcm_type:
+  category: General Settings
+  type: C*20
+  default:
+    value: deciduous_broadleaf
+  description:
+    short: Leaf type applied in the dry deposition model. 
+    long: '' 
+  allowed_values:
+    - value: deciduous_broadleaf
+      description: ''
+    - value: deciduous_needleleaf
+      description: ''
+    - value: evergreen_broadleaf
+      description: ''
+    - value: evergreen_needleleaf
+      description: ''
+
+depo_surf_par:
+  category: General Settings
+  type: C*20
+  default:
+    value: zhang2001
+  description:
+    short: Method to solve the dry deposition velocity for aerosols over both horizontal and vertical surfaces.
+    long: |
+      The land use type applied in the parametrisations are imported from the land and urban surface modules. If the surfaces are not specified using the urban surface or land surface module, the land use type *urban* is applied for all surfaces. 
+  allowed_values:
+    - value: zhang2001
+      description: See [Zhang et al. (2001)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref).
+    - value: petroff2010
+      description: See [Petroff and Zhang (2010)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref).
+
+dpg:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.3E-8, 5.4E-8, 8.6E-7, 2.0E-7, 2.0E-7, 2.0E-7, 2.0E-7]
+  si-unit: m
+  description:
+    short: The number geometric mean diameter per aerosol mode.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*. In case of [initializing_actions](#initialization_parameters--initializing_actions) = *'set_constant_profiles'*, the initial aerosol size distribution is described by [dpg](#salsa_parameters--dpg), [sigmag](#salsa_parameters--sigmag), and [n_lognorm](#salsa_parameters--n_lognorm).
+
+dt_salsa:
+  category: General Settings
+  type: R
+  default:
+    value: 0.1
+  si-unit: s
+  description:
+    short: The time step for calling aerosol dynamic processes of SALSA.
+    long: |
+      For switching on individual processes, see [nlcnd](#salsa_parameters--nlcnd), [nlcndgas](#salsa_parameters--nlcndgas), [nlcndh2oae](#salsa_parameters--nlcndh2oae), [nlcoag](#salsa_parameters--nlcoag), [nldepo](#salsa_parameters--nldepo), [nldepo_pcm](#salsa_parameters--nldepo_pcm), [nldepo_surf](#salsa_parameters--nldepo_surf), [nldistupdate](#salsa_parameters--nldistupdate), and [nsnucl](#salsa_parameters--nsnucl).
+
+emiss_factor_main:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  description:
+    short: Constant emission scaling factor for main street types.
+    long: |
+      Used if [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'*.
+
+emiss_factor_side:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  description:
+    short: Constant emission scaling factor for side street types.
+    long: |
+      Used if [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'*.
+
+feedback_to_palm:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the dynamic feedback to the flow due to condensation of water vapor on aerosol particles.
+    long: |
+      In case of [feedback_to_palm](#salsa_parameters--feedback_to_palm) = *.F.*, the salsa module does not interact with the flow.
+
+h2so4_init:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m^-3^
+  description:
+    short: Initial number concentration of gaseous sulphuric acid H2SO4.
+    long: ''
+
+hno3_init:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m^-3^
+  description:
+    short: Initial number concentration of gaseous nitric acid HNO3.
+    long: ''
+
+listspec:
+  category: General Settings
+  type: C*3
+  shape: (7)
+  default:
+    value: ['SO4', ' ', ' ', ' ', ' ', ' ', ' ']
+  description:
+    short: List of activated aerosol chemical components.
+    long: |
+       All chemical components included in the simulation must be activated here, e.g.
+       
+       [listspec](#salsa_parameters--listspec) = *'OC'*, *'NH'*, *'BC'*, *' '*, *' '*, *' '*, *' '*,
+       
+       implies that aerosol particles can contain organic carbon, ammonia and black carbon.
+  allowed_values:
+    - value: 'SO4'
+      description: |
+        sulphates
+    - value: 'OC'
+      description: |
+        organic carbon
+    - value: 'BC'
+      description: |
+        black carbon
+    - value: 'DU'
+      description: |
+        dust
+    - value: 'SS'
+      description: |
+        sea salt
+    - value: 'NH'
+      description: |
+        ammonia
+    - value: 'NO'
+      description: |
+        nitrates
+
+main_street_id:
+  category: General Settings
+  type: I
+  shape: (99)
+  default:
+    value: 0
+  description:
+    short: Index for identifying main streets following street type classes from `OpenStreetMap`.
+    long: |
+      Used if [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'*.
+
+mass_fracs_a:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  description:
+    short: Mass fractions of soluble chemical components (subrange 2a).
+    long: |
+      Given in the same order as the list of activated aerosol chemical components [listspec](#salsa_parameters--listspec), e.g.
+
+      [listspec](#salsa_parameters--listspec) = *'OC'*, *'NH'*, *'BC'*, *' '*, *' '*, *' '*, *' '*, </br>
+      [mass_fracs_a](#salsa_parameters--mass_fracs_a) = *0.3*, *0.1*, *0.6*, *0.0*, *0.0*, *0.0*, *0.0*,
+
+      implies that the initial mass composition of the aerosol particles is 30% organic carbon, 10% ammonia and 60% black carbon. 
+
+mass_fracs_b:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  description:
+    short: Mass fractions of insoluble chemical components (subrange 2b).
+    long: |
+      Given in the same order as the list of activated aerosol chemical components [listspec](#salsa_parameters--listspec).
+
+      Setting [mass_fracs_b](#salsa_parameters--mass_fracs_b) > *0.0* and [nf2a](#salsa_parameters--nf2a) < *1.0* allows for the description of externally mixed aerosol particle populations in the subrange 2. However, this notably increases the computational demand.
+
+      If SUM([mass_fracs_b](#salsa_parameters--mass_fracs_b)) = *0.0*, all aerosol particles are assumed to be soluble and the subrange 2b is not initialised. 
+
+max_street_id:
+  category: General Settings
+  type: I
+  shape: (99)
+  default:
+    value: 0
+  description:
+    short: Maximum index value for identifying all (main and side) streets following street type classes from `OpenStreetMap`.
+    long: |
+      Used if [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'*.
+
+n_lognorm:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.04E+11, 3.23E+10, 5.4E+06, 0.0E+01, 0.0E+01, 0.0E+01, 0.0E+01]
+  si-unit: m^-3^
+  description:
+    short: The total aerosol number concentration per aerosol mode.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*. In case of [initializing_actions](#initialization_parameters--initializing_actions) = *'set_constant_profiles'*, the initial aerosol size distribution is described by [dpg](#salsa_parameters--dpg), [sigmag](#salsa_parameters--sigmag), and [n_lognorm](#salsa_parameters--n_lognorm).
+
+nbin:
+  category: General Settings
+  type: I
+  shape: (2)
+  default:
+    value: [3, 7]
+  description:
+    short: Number of aerosol size bins per subrange.
+    long: ''
+
+nesting_offline_salsa:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to switch on/off offline nesting for salsa variables. 
+    long: |
+      If [nesting_offline_salsa](#salsa_parameters--nesting_offline_salsa) = *.F.* , the boundary conditions for salsa variables are defined via parameters [bc_aer_b](#salsa_parameters--bc_aer_b), [bc_aer_t](#salsa_parameters--bc_aer_t), [bc_aer_l](#salsa_parameters--bc_aer_l), [bc_aer_r](#salsa_parameters--bc_aer_r), [bc_aer_n](#salsa_parameters--bc_aer_n), and [bc_aer_s](#salsa_parameters--bc_aer_s).
+
+nf2a:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: The number fraction allocated to subrange 2a.
+    long: |
+      The number fraction allocated to the subrange 2b will be then *1.0* - [nf2a](#salsa_parameters--nf2a).
+
+nh3_init:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m^-3^
+  description:
+    short: Initial number concentration of gaseous ammonia NH3.
+    long: ''
+
+nj3:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short: Parametrisation for calculating the apparent formation rate of 3 nm sized aerosol particles $J_3$.
+    long: ''
+  allowed_values:
+    - value: 1
+      description: |
+        condensational sink ([Kerminen and Kulmala, 2002](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 2
+      description: |
+        coagulational sink ([Lehtinen et al. 2007](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 3
+      description: |
+        coagS+self-coagulation ([Anttila et al. 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+
+nlcnd:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the condensation of gaseous compounds on aerosol particles.
+    long: ''
+
+nlcndgas:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the condensation of gaseous compounds, excluding water vapour, on aerosol particles. 
+    long: |
+      Requires [nlcnd](#salsa_parameters--nlcnd) = *.T.*.
+
+nlcndgash2oae:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the condensation of water vapour on aerosol particles. 
+    long: |
+      Requires [nlcnd](#salsa_parameters--nlcnd) = *.T.*.
+
+nlcoag:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the coagulation of aerosol particles.
+    long: ''
+
+nldepo:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch of the dry deposition and sedimentation of aerosol particles.
+    long: ''
+
+nldepo_pcm:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on aerosol dry deposition on resolved scale vegetation.
+    long: |
+      The parametrisation to calculate the size-dependent deposition velocity is set by  [depo_pcm_par](#salsa_parameters--depo_pcm_par). Requires [nldepo](#salsa_parameters--nldepo) = *.T.*. 
+
+      Note that currently the deposition velocity is calculated by default for deciduous broadleaf trees.
+
+nldepo_surf:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch aerosol dry deposition on topography elements (ground, wall, roofs).
+    long: |
+      The parametrisation to calculate the size-dependent deposition velocity is set by  [depo_surf_par](#salsa_parameters--depo_surf_par). Requires [nldepo](#salsa_parameters--nldepo) = *.T.*. 
+
+      Note that currently the deposition velocity is calculated by default for deciduous broadleaf trees.
+
+nldistupdate:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to switch on the aerosol number size distribution update switch. 
+    long: |
+      If [nldistupdate](#salsa_parameters--nldistupdate) = *.F.*, aerosol particles that become too small or large in their size bin are not allowed to move to another size bin.
+
+nsnucl:
+  category: General Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: The nucleation scheme applied. 
+    long: |
+      Requires [nlcnd](#salsa_parameters--nlcnd) = *.T.*. Note that the nucleation schemes were not evaluated in [Kurppa et al. (2019)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref). 
+  allowed_values:
+    - value: 0
+      description: |
+        nucleation is switched off
+    - value: 1
+      description: |
+        binary nucleation ([Vehkamäki et al., 2002](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 2
+      description: |
+        activation type nucleation ([Riipinen et al., 2007](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 3
+      description: |
+        kinetic nucleation ([Sihto et al., 2006](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 4
+      description: |
+        ternary nucleation ([Napari et al., 2002a,b](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 5
+      description: |
+        organic nucleation ([Paasonen et al., 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 6
+      description: |
+        sum of binary and organic nucleation ([Paasonen et al., 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 7
+      description: |
+        heteromolecular nucleation ([Paasonen et al., 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 8
+      description: |
+        homomolecular nucleation of H2SO4 and heteromolecular nucleation of H2SO4 and organics ([Paasonen et al., 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+    - value: 9
+      description: |
+         homomolecular nucleation of H2SO4 and organics, and heteromolecular nucleation of H2SO4 and organics ([Paasonen et al., 2010](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref))
+
+ocnv_init:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m^-3^
+  description:
+    short: Initial number concentration of gaseous non-volatile organic compounds.
+    long: ''
+
+ocsv_init:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m^-3^
+  description:
+    short: Initial number concentration of gaseous semi-volatile organic compounds.
+    long: ''
+
+reglim:
+  category: General Settings
+  type: R
+  shape: (3)
+  default:
+    value: [3.0E-9, 5.0E-8, 1.0E-5]
+  si-unit: m
+  description:
+    short: Aerosol diameter limits for the subranges.
+    long: |
+      Given in the following order: lower limit of 1, upper limit of 1 and lower limit of 2, upper limit of 2.
+
+salsa_emission_mode:
+  category: General Settings
+  type: C*20
+  default:
+    value: no_emission
+  description:
+    short: Emission mode for aerosol and gaseous emissions. 
+    long: |
+      Note that all chemical components included in the simulation must be activated via [listspec](#salsa_parameters--listspec). Also [bc_aer_b](#salsa_parameters--bc_aer_b) = *'neumann'* is required. 
+  allowed_values:
+    - value: uniform
+      description: |
+         Sets a horizontally homogeneous surface flux of aerosols based on [surface_aerosol_flux](#salsa_parameters--surface_aerosol_flux), [aerosol_flux_dpg](#salsa_parameters--aerosol_flux_dpg), [aerosol_flux_sigmag](#salsa_parameters--aerosol_flux_sigmag), and [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a).
+    - value: parameterized
+      description: |
+        Sets surface fluxes based on the street type. The aerosol size distribution and mass composition of the emission is given similar to [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'*. The flux is then normalised based on the street type in the [static input file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static) and using [emiss_factor_main](#salsa_parameters--emiss_factor_main), [emiss_factor_side](#salsa_parameters--emiss_factor_side), [main_street_id](#salsa_parameters--main_street_id), [side_street_id](#salsa_parameters--side_street_id), and [max_street_id](#salsa_parameters--max_street_id).
+    - value: read_from_file
+      description: |
+         Reads the emission information from the NetCDF aerosol-information file (see [aerosol input file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/aerosol)).
+
+season_z01:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short:  Modelling season.
+    long: |
+       Modelling season if the dry deposition parametrisation by Zhang et al. 2001 is applied via [depo_pcm_par](#salsa_parameters--depo_pcm_par) = *'zhang2001'* and/or [depo_surf_par](#salsa_parameters--depo_surf_par) = *'zhang2001'*. 
+  allowed_values:
+    - value: 1
+      description: |
+        summer
+    - value: 2
+      description: |
+         autumn (no harvest yet)
+    - value: 3
+      description: |
+         late autumn (already frost)
+    - value: 4
+      description: |
+        winter
+    - value: 5
+      description: |
+        transitional spring
+
+side_street_id:
+  category: General Settings
+  type: I
+  shape: (99)
+  default:
+    value: 0
+  description:
+    short: Index for identifying side streets following street type classes from `OpenStreetMap`.
+    long: |
+      Used if [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'parameterized'*.
+
+sigmag:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.8, 2.16, 2.21, 2.0, 2.0, 2.0, 2.0]
+  description:
+    short: The standard deviation of the log-normal aerosol number size distribution per aerosol mode.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*. In case of [initializing_actions](#initialization_parameters--initializing_actions) = *'set_constant_profiles'*, the initial aerosol size distribution is described by [dpg](#salsa_parameters--dpg), [sigmag](#salsa_parameters--sigmag), and [n_lognorm](#salsa_parameters--n_lognorm).
+
+skip_time_do_salsa:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Time after which SALSA is switched on.
+    long: |
+      Can be used to allow the LES model to develop turbulence before aerosol particles and their processes are switched on.
+
+surface_aerosol_flux:
+  category: General Settings
+  type: R
+  shape: (7)
+  default:
+    value: [1.04E+11, 3.23E+10, 5.4E+06, 0.0E+01, 0.0E+01, 0.0E+01, 0.0E+01]
+  si-unit: m^-2^ s^-1^
+  description:
+    short: The total surface aerosol number flux per aerosol mode.
+    long: |
+      A total of 7 different aerosol modes can be applied. Example aerosol modes are *'nucleation'*, *'Aitken'*, *'accumulation'* and *'coarse'*.
+
+      If [salsa_emission_mode](#salsa_parameters--salsa_emission_mode) = *'uniform'*, the aerosol number emission is described by input parameters [aerosol_flux_dpg](#salsa_parameters--aerosol_flux_dpg), [aerosol_flux_sigmag](#salsa_parameters--aerosol_flux_sigmag), [aerosol_flux_mass_fracs_a](#salsa_parameters--aerosol_flux_mass_fracs_a), and [surface_aerosol_flux](#salsa_parameters--surface_aerosol_flux).
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Enables/disables entire module. 
+    long: |
+      When set to *.T.* will turn the entire module off without removing the namelist.
+
+van_der_waals_coagc:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Üarameter to switch on the van der Waals forces when calculating the collision kernel in the coagulation subroutine.
+    long: |
+      Parametrisation follows [Karl et al. (2016)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/salsaref). 

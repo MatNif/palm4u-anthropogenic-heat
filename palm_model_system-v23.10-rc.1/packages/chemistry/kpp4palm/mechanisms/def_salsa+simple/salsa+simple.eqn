@@ -1,0 +1,25 @@
+{salsa+simple.eqn
+Current revision
+----------------
+ 20181220 Fixed effective rate of equation 2  forkel
+          according to eq. 11.1 of
+          http://acmg.seas.harvard.edu/publications/jacobbook/bookchap11.pdf
+ 20180903 Added SALSA variables to 'simple'   monakurppa
+ 20180316 Added equation no. 7                forkel
+ 201711xx Created simple.eqn with 6 equations forkel
+}
+#EQUATIONS
+
+{ simplified smog (by forkel) and salsa variables }
+
+  { 1.}   NO2 + hv = NO + O3 :            phot(j_no2);
+  { 2.}   O3 + H2O = 2OH :                2.0_dp * 2.2E-10_dp * phot(j_o31d) / (arr2(1.9E+8_dp, -390.0_dp, temp));
+  { 3.}   NO + O3 = NO2 :                 arr2(1.80E-12_dp, 1370.0_dp, temp);
+  { 4.}   RH + OH = RO2 + H2O :           arr2(2.00E-11_dp,  500.0_dp, temp);
+  { 5.}   RO2 + NO = NO2 + RCHO + HO2 :   arr2(4.20E-12_dp, -180.0_dp, temp);
+  { 6.}   HO2 + NO = NO2 + OH :           arr2(3.70E-12_dp, -240.0_dp, temp);
+  { 7.}   NO2 + OH = HNO3 :               arr2(1.15E-11_dp,    0.0_dp, temp);
+  { 8.}   H2SO4 = H2SO4 :                 1.0_dp;
+  { 9.}   NH3 = NH3 :                     1.0_dp;
+  { 10.}  OCNV = OCNV :                   1.0_dp;
+  { 11.}  OCSV = OCSV :                   1.0_dp;

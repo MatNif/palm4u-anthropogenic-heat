@@ -1,0 +1,99 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "spectra_parameters"
+
+averaging_interval_sp:
+  category: Data Output
+  type: R
+  default: 
+    value: ~
+    value_of: '[averaging_interval](#runtime_parameters--averaging_interval)'
+  si-unit: s
+  description:
+     short: Averaging interval for spectra output to local file [DATA_1D_SP_NETCDF](#iofiles--DATA_1D_SP_NETCDF).
+     long: |
+       If this parameter has a non-zero value, temporally averaged spectra data are output. By default, spectra data are not subject to temporal averaging. The output interval length is limited by the parameter [dt_dosp](#runtime_parameters--dt_dosp). In all cases, [averaging_interval_sp](#spectra_parameters--averaging_interval_sp) <= [dt_dosp](#runtime_parameters--dt_dosp) must hold.
+
+       If an interval is defined, then by default the average is calculated from the data values of all time steps lying within this interval. The number of time steps entering into the average can be reduced with parameter [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr).
+       If an averaging interval can not be completed at the end of a run, it will be finished at the beginning of the next restart run. Thus for restart runs, averaging intervals do not necessarily begin at the beginning of the run.
+
+comp_spectra_level:
+  category: Data Output
+  type: I
+  shape: (100)
+  default: ~
+  description:
+    short: Vertical level for which horizontal spectra are to be calculated and output.
+    long: |
+      Levels are given as grid index `k`. Spectra can be calculated for up to 100 vertical levels.
+
+data_output_sp:
+  category: Data Output
+  type: C*10
+  shape: (10)
+  default: ~ 
+  description:
+    short: Quantities for which horizontal spectra are to be calculated and output.
+    long: |
+      This is the general parameter to switch on calculation of spectra. Allowed standard quantities are [data_output_sp](#spectra_parameters--data_output_sp) = *'u', 'v', 'w', 'pt', 'q', 's'*. Further quantities may be defined via the user-interface (see [../userint/output further quantities]).
+
+      Parameters [comp_spectra_level](#spectra_parameters--comp_spectra_level) and [spectra_direction](#spectra_parameters--spectra_direction) must be set too! Otherwise, **no** output will be generated. By default, spectra data are output in NetCDF format to the local file [DATA_1D_SP_NETCDF](#iofiles--DATA_1D_SP_NETCDF). The temporal interval of the output times of spectra is assigned via the parameter [dt_dosp](#spectra_parameters--dt_dosp). Spectra can also be temporally averaged (see [averaging_interval_sp](#spectra_parameters--averaging_interval_sp)).
+      
+      Spectra are calculated using the FFT-method defined by [fft_method](#initialization_parameters--fft_method).
+      **Attention:** Computation of spectra is currently not possible with [fft_method](#initialization_parameters--fft_method) = *'fftw'*.
+
+      Calculation of spectra requires cyclic boundary conditions along the respective directions (see [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns)).
+
+dt_dosp:
+  category: Data Output
+  type: R
+  default:
+    value: ~
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which spectra shall be output.
+    long: |
+      Output can be skipped at the beginning of a simulation using parameter [skip_time_dosp](#spectra_parameters--skip_time_dosp), which has zero value by default. Reference time is the beginning of the simulation, i.e. output takes place at times t = [skip_time_dosp](#spectra_parameters--skip_time_dosp) + [dt_dosp](#spectra_parameters--dt_dosp), [skip_time_dosp](#spectra_parameters--skip_time_dosp) + 2 * [dt_dosp](#spectra_parameters--dt_dosp), [skip_time_dosp](#spectra_parameters--skip_time_dosp) + 3 * [dt_dosp](#spectra_parameters--dt_dosp), etc. The actual output times can slightly deviate from these theoretical values (see [dt_dopr](#runtime_parameters--dt_dopr)). If [dt_dosp](#spectra_parameters--dt_dosp) < [dt](#runtime_parameters--dt), then spectra are output after each time step (it is advised to set [dt_dosp](#spectra_parameters--dt_dosp) = *0* if this kind of output is desired).
+
+skip_time_dosp:
+  category: Data Output
+  type: R
+  default: 
+    value: ~
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short: Prohibits spectra data output until this interval has elapsed.
+    long: |
+      Counting from the beginning of the simulation t = 0 or [dt_dosp](#spectra_parameters--dt_dosp).
+      
+      **Example:** <br>
+      If [dt_dosp](#spectra_parameters--dt_dosp) = *3600.0* and [skip_time_dosp](#spectra_parameters--skip_time_dosp) = *1800.0*, then the first output will occur at t = 5400 s.
+
+spectra_direction:
+  category: Data Output
+  type: C*2
+  shape: (10)
+  default: ~
+  description:
+    short: Direction(s) along which spectra are to be calculated.
+    long: |
+      For each quantity given by [data_output_sp](#spectra_parameters--data_output_sp) a corresponding direction must be assigned. E.g., if [data_output_sp](#spectra_parameters--data_output_sp) = *'u'*, *'w'* is set, then [spectra_direction](#spectra_parameters--spectra_direction) = *'x'*, *'xy'*, meaning that spectra along x will be calculated for `u` and spectra long x and y will be calculated for `w`.
+  allowed_values:
+    - value: 'x'
+      description: |
+        Spectra are calculated along the x-direction.
+    - value: 'y'
+      description: |
+        Spectra are calculated along the y-direction.
+    - value: 'xy'
+      description: |
+        Spectra are calculated along the x- and y-direction and both spectra are output (no 2d-spectra calculation!).
+
+switch_off_module:
+  category: Mode
+  type: L
+  default: .F.
+  description:
+    short: Switches off the module if set *.T.*
+    long: ''

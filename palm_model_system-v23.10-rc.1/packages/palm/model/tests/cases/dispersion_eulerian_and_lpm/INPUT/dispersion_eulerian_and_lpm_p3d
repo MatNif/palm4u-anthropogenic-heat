@@ -1,0 +1,147 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- grid parameters
+!-------------------------------------------------------------------------------
+    nx                         = 39, ! Number of gridboxes in x-direction (nx+1)
+    ny                         = 39, ! Number of gridboxes in y-direction (ny+1)
+    nz                         = 40, ! Number of gridboxes in z-direction (nz)
+
+    dx                         = 2.0, ! Size of single gridbox in x-direction
+    dy                         = 2.0, ! Size of single gridbox in y-direction
+    dz                         = 2.0, ! Size of single gridbox in z-direction
+
+!
+!-- initialization and vertical profiles
+!-------------------------------------------------------------------------------
+    initializing_actions       = 'set_constant_profiles',
+    ug_surface                 = 1.0,
+    vg_surface                 = 0.0,
+!
+!-- numerics
+!-------------------------------------------------------------------------------
+    fft_method                 = 'temperton-algorithm', ! build-in fft method
+    
+!    
+!-- advection schemes
+!-------------------------------------------------------------------------------
+    momentum_advec             = 'ws-scheme',  ! default advection scheme
+    scalar_advec               = 'ws-scheme',  
+!
+!-- temperature setup
+!-------------------------------------------------------------------------------
+    neutral                    = .TRUE., ! strictly neutral flow
+
+!    
+!-- tracer setup, passive scalar as eulerian field
+!-------------------------------------------------------------------------------
+    passive_scalar             = .TRUE.,
+    s_surface                  = 0.0008,    !equivalent to 420ppm CO2 as background concentration
+    surface_scalarflux         = 0.02,      !kg emission per square meter and second
+    bc_s_b                     = 'neumann', !boundary conditions for passice scalar at bottom
+
+!    
+!-- boundary conditions
+!-------------------------------------------------------------------------------
+    bc_uv_t                    = 'neumann', ! free-slip boundary condition
+    roughness_length           = 0.1,       ! applies to all surfaces locally
+
+!    
+!-- special methods
+!-------------------------------------------------------------------------------
+    dp_external                = .TRUE.,       ! use horizontal pressure gradient
+    dpdxy                      = -0.0002, 0.0, ! for forcing
+    omega                      = 0.0,           ! no Coriolis force
+
+!    
+!-- topography
+!-------------------------------------------------------------------------------
+    topography                 = 'read_from_file', 
+    topography_grid_convention = 'cell_center',    ! default
+    
+/ ! end of initialization parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                   = 120.0,
+
+    create_disturbances        = .TRUE.,
+    
+!
+!-- data output
+!-------------------------------------------------------------------------------
+    netcdf_data_format         = 2, ! use NetCDF3
+
+    dt_data_output             = 100.0,
+    dt_run_control             =  0.0,
+    dt_dots                    =  0.0,
+
+    dt_do2d_xy                 = 100.0,
+    dt_do2d_xz                 = 100.0,
+
+    data_output_pr             = '#u', 
+                                 'u*2', 
+                                 'wu', 
+                                 'w*u*', 
+                                 'w"u"',
+                                 '#v', 
+                                 'e', 
+                                 'e*',
+                                 '#l',
+                                 '#s', 
+
+    data_output                = 'u', 
+                                 'v', 
+                                 'w', 
+                                 's', 
+                                 'pc',
+                                 
+/ ! end of runtime parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- PARTICLE PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/parpar
+!-------------------------------------------------------------------------------
+&particle_parameters
+!
+!-- Boundary conditions for particles
+!-------------------------------------------------------------------------------
+    bc_par_lr                  = 'absorb', ! Left/Right boundary conditions
+    bc_par_b                   = 'reflect',! Bottom boundary condition
+    bc_par_t                   = 'reflect',! Top boundary condition 
+    
+!
+!-- Define particle source (Here a point source is defined)
+!-------------------------------------------------------------------------------
+   psb                         = 45.0, ! Bottom edge of particle source 
+   pst                         = 45.0, ! Top edge of particle source
+   pss                         = 40.0, ! South edge of particle source
+   psn                         = 40.0, ! North edge of particle source
+   psl                         = 25.0, ! Left edge of particle source
+   psr                         = 25.0, ! Right edge of particle source
+
+!
+!-- Particle properties (Here a point source is defined)
+!-------------------------------------------------------------------------------
+   dt_prel                     = 1.0, ! Time after new particle set is released
+   step_dealloc                = 100, ! Time steps after array are deallocated
+   particles_per_point         = 100, ! Particles per point (default = 1)
+   particle_maximum_age        = 200.0,! Maximum time for particles (particles will be deleted after 200s)
+
+   random_start_position       = .FALSE., ! Add random fluctuations for initial particle position
+!
+!-- Using SGS-velocities give non-reprodicible results when running on different number of cores.
+!-- Therefore, parameter is switched-off in order to pass the testserver.
+!   use_sgs_for_particles       = .TRUE.,  ! SGS-velocities for particles 
+   dt_dopts                    = 10.0,    ! Particle time series interval
+
+/ ! end of particle parameter namelist

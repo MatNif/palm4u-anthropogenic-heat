@@ -1,0 +1,35 @@
+VFL0001:
+  loglevel: ERROR
+  message: |
+    start ... position is outside the model domain
+  description: |
+    Start position for virtual flight must be within the model domain.
+
+VFL0002:
+  loglevel: ERROR
+  message: |
+    cyclic flight leg does not match lateral boundary condition
+  description: |
+    Virtual flights can only be in cyclic-mode if lateral model boundaries are cyclic.
+
+VFL0003:
+  loglevel: ERROR
+  message: |
+    flight leg or parts of it are outside the model domain
+  description: |
+    End position must be within the model domain in case of return-legs.
+
+VFL0004:
+  loglevel: ERROR
+  message: |
+    unknown flight mode "..."
+  description: |
+    See [leg_mode](../Namelists/#virtual_flight_parameters--leg_mode) for allowed values.
+
+VFL0005:
+  loglevel: ERROR
+  message: |
+    flight level is outside the model domain
+  description: |
+    Flight level is above domain top or below 0.
+

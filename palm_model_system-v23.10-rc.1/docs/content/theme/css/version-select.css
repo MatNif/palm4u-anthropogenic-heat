@@ -1,0 +1,25 @@
+#version-selector {
+  display: none;
+}
+
+#version-selector-custom {
+  float: left;
+  display: flex;
+  align-items: center;
+  margin: 0 0px;
+  padding: 0 0px;
+}
+
+#version-selector-custom > select {
+  width: auto;
+  height: auto;
+  padding: 1px;
+}
+
+#dep-message {
+  color: #8C5C03;
+  border-color: #CCA738;
+  background-color: #FDE394;
+  text-align: center;
+  width:100%;
+}

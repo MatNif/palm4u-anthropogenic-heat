@@ -1,0 +1,48 @@
+VDI0001:
+  loglevel: ERROR
+  message: |
+    2-delta t waves are generated
+  description: |
+    The `u` component at a control grid point or the means of the meteorological variables exhibit 2 delta t waves (vdi_internal_controls).
+
+VDI0002:
+  loglevel: ERROR
+  message: |
+    maxima of the standard deviation remain at the open edges of the model
+  description: |
+    The maxima of the standard deviation of `u`, `v`, `w`, `pt` or `q` remain at the open edges of the model (see `vdi_internal_controls.f90`).
+
+VDI0003:
+  loglevel: ERROR
+  message: |
+    maxima of the standard deviation travel from the open edges into the interior of the domain with increasing simulation time
+  description: |
+    The maxima of the standard deviation of `u`, `v`, `w`, `pt` or `q` travel into the interior of the domain. Run does not fulfill VDI 3783 Part 9.
+
+VDI0004:
+  loglevel: WARNING
+  message: |
+    monotonic decrease or increase with increasing simulation time for ...
+  description: |
+    The mean of ... decreases or increases in the last 90% of time in the simulation. Maybe the simulation time is too short or there is a physical cause for this.
+
+VDI0005:
+  loglevel: ERROR
+  message: |
+    mass is not conserved
+  description: |
+    Conservation of mass is not fulfilled (see `vdi_internal_controls.f90`).
+
+VDI0006:
+  loglevel: ERROR
+  message: |
+    wind component ... has a magnitude greater than ten times the maximum horizontal wind velocity of the approach flow profile
+  description: |
+    The respective wind component exceeds the specified limit (see `vdi_internal_controls.f90`).
+
+VDI0007:
+  loglevel: ERROR
+  message: |
+    potential temperature does not lie between 220 K and 330 K
+  description: |
+    The potential temperature exceeds the specified limit (see `vdi_internal_controls.f90`).

@@ -1,0 +1,149 @@
+&initialization_parameters
+
+!
+!-- grid
+!-------------------------------------------------------------------------------
+    nx                         = 95,
+    ny                         = 95,
+    nz                         = 32,
+
+    dx                         = 40.0,
+    dy                         = 40.0,
+    dz                         = 40.0,
+
+!
+!-- numerics
+    psolver                    = 'multigrid',
+
+!
+!-- physics
+!-------------------------------------------------------------------------------
+    latitude                   = 55.0,
+
+!
+!-- boundary conditions
+!-------------------------------------------------------------------------------
+    bc_lr                      = 'cyclic',
+    bc_ns                      = 'cyclic',
+    bc_pt_b                    = 'neumann',
+    bc_p_t                     = 'neumann', !
+
+    roughness_length           = 0.1,     ! onshore
+
+
+!
+!-- initialization
+!-------------------------------------------------------------------------------
+    initializing_actions       = 'set_constant_profiles',
+
+    ug_surface                 =  12.0,
+    vg_surface                 =  -3.8,
+    
+    pt_surface                 = 283.0,
+    pt_vertical_gradient       = 0.0, 0.35,
+    pt_vertical_gradient_level = 0.0, 500.0,
+
+/ ! end of initialization parameter namelist
+
+
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                   = 7200.0, ! 2 h
+    create_disturbances        = .T.,
+
+!
+!-- data output
+!------------------------------------------------------------------------------
+    netcdf_data_format         = 3,
+    dt_run_control             =    0.0,
+    dt_data_output             = 1800.0,
+    dt_dopr                    = 1800.0,
+
+    data_output                = 'wspeed', 'wspeed_av',
+                                 'u', 'u_av',
+                                 'v', 'v_av',
+                                 'w', 'w_av',
+                                 'e', 'e_av',
+                                 'p', 'p_av',
+
+    data_output_pr             = '#theta',
+                                 '#u', 'u*2', 'wu', 'w*u*', 'w"u"',
+                                 '#v', 'v*2', 'wv', 'w*v*', 'w"v"',
+                                 'w', 'w*2',
+                                 'e', 'e*',
+                                 '#km',
+                                 '#l',
+
+    averaging_interval         = 1800.0,
+    averaging_interval_pr      = 1800.0,
+
+!
+!-- processor grid
+!-------------------------------------------------------------------------------
+
+/ ! end of runtime parameter namelist
+
+&wind_turbine_parameters
+! IEA 15 MW Reference Wind Turbine
+! https://www.nrel.gov/docs/fy20osti/75698.pdf
+! https://github.com/IEAWindTask37/IEA-15-240-RWT
+
+! single parameters, valid for all turbines:
+    air_density = 1.225,
+    dt_data_output_wtm = 0.00,
+    gear_efficiency = 1.0,
+    gear_ratio = 1.0,
+    generator_efficiency = 0.9655,
+    generator_inertia = 3.22e+06,
+    generator_power_rated = 15.54e+06,
+    generator_speed_rated = 0.792,
+    generator_torque_max = 21.59e+06,
+    generator_torque_rate_max = 10.74e+06,
+    n_airfoils = 8,
+    n_turbines = 4,
+    pitch_control = .T.,
+    pitch_rate = 2.0,
+    region_15_min = 0.403,
+    region_2_min = 0.524,
+    region_2_slope = 24.77e+06,
+    rotor_inertia = 310.62e+06,
+    segment_length_tangential = 1.0,
+    segment_width_radial = 0.5,
+    smearing_kernel_size = 1.0,
+    speed_control = .T.,
+    tilt_angle = 6.0,
+    time_turbine_on = 0.0,
+    tip_loss_correction = .T.,
+    yaw_control = .T.,
+    yaw_misalignment_max = 0.08726,           ! 5.0 deg
+    yaw_misalignment_min = 0.008726,          ! 0.5 deg
+    yaw_speed = 0.0349,
+
+! List parameters, individual for each turbine:
+    hub_x = 960.0, 960.0, 2880.0, 2880.0,
+    hub_y = 960.0, 2880.0, 960.0, 2880.0,
+    hub_z = 150.0, 150.0, 150.0, 150.0,
+!    nacelle_cd = 0.85, 0.85, 0.85, 0.85,  ! effect of nacelle will be available in release 22.10
+    nacelle_radius = 6.0, 6.0, 6.0, 6.0,
+    pitch_angle = 0.0, 0.0, 0.0, 0.0,
+    rotor_radius = 120.0, 120.0, 120.0, 120.0,
+    rotor_speed = 0.792, 0.792, 0.792, 0.792,
+    tower_cd = 1.2, 1.2, 1.2, 1.2,
+    tower_diameter = 8.0, 8.0, 8.0, 8.0,
+    yaw_angle = 0.0, 0.0, 0.0, 0.0,   
+    
+/ ! end of wind_turbine_parameters namelist
+
+
+
+
+
+
+
+
+
+
+
+

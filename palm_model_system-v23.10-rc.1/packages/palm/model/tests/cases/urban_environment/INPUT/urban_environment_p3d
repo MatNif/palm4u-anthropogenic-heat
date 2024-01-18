@@ -1,0 +1,247 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+ &initialization_parameters
+
+!
+!-- Grid
+!------------------------------------------------------------------------------
+    nx                   = 19,
+    ny                   = 19,
+    nz                   = 60,
+
+    dx                   = 2.0,
+    dy                   = 2.0,
+    dz                   = 2.0,
+
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+    fft_method           = 'fftw',
+
+!
+!-- Mode
+!------------------------------------------------------------------------------
+    humidity             = .T.,
+    q_surface            = 0.001,
+
+!
+!-- Initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'read_from_file set_constant_profiles',   !'set_constant_profiles', or 'read_from_file',
+                                                                     ! or both (met. from dynamic input file,
+                                                                     ! chem from constant profiles)
+
+    pt_surface           = 277.15,
+    ug_surface           = 1.0,
+    vg_surface           = 0.0,
+
+    origin_date_time     = '2019-03-06 10:00:00 +00'
+
+!
+!-- Wall/soil spinup
+!------------------------------------------------------------------------------
+    spinup_time         = 1200.0,
+    spinup_pt_mean      = 284.15,
+    spinup_pt_amplitude = 10.0,             ! give a dirunal cycle from 6 - 16 °C
+    dt_spinup           = 120.0,
+    data_output_during_spinup = .F.,
+
+!
+!-- Topography
+!------------------------------------------------------------------------------
+    topography           = 'read_from_file',
+
+!
+!-- Physics
+!------------------------------------------------------------------------------
+    longitude            = 13.4,
+    latitude             = 52.5,
+
+ / ! end of inipar namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+
+!
+!-- Run steering
+!------------------------------------------------------------------------------
+    end_time              = 70.0,
+    create_disturbances   = .T.,
+
+!
+!-- Run-control/timeseries output settings
+!------------------------------------------------------------------------------
+    dt_run_control        =  0.0,
+    dt_dots               =  10.0,
+
+!
+!-- Profile output settings
+!------------------------------------------------------------------------------
+    skip_time_dopr        =  0.0,
+    dt_dopr               = 60.0,
+    averaging_interval_pr = 60.0,
+    dt_averaging_input_pr =  0.0,
+
+    data_output_pr        = '#u',  'u*2',  'wu',  'w*u*',  'w"u"',
+                            '#v',  'v*2',  'wv',  'w*v*',  'w"v"',
+!                            'w',   'w*2',
+                            '#theta', 'theta*2', 'wtheta', 'w*theta*', 'w"theta"',
+                            '#q',  'q*2',
+                            'e', 'e*', '#km', '#l',
+                            '#t_soil', '#m_soil', 'rad_lw_in', 'rad_lw_out',
+                            'kc_NO', 'kc_NO2', 'kc_O3', 'kc_PM10',
+!
+!-- 2D/3D output settings
+!------------------------------------------------------------------------------
+    do3d_at_begin      = .T.,
+    do2d_at_begin      = .T.,
+
+    dt_data_output     = 60.0,
+    dt_data_output_av  = 60.0,
+    averaging_interval = 60.0,
+    dt_averaging_input =  0.0,
+
+    section_xy         = 0,
+
+    data_output = 'u',  'u_av',
+                  'v',  'v_av',
+                  'w',  'w_av',
+                  'theta', 'theta_av',
+                  'q',  'q_av',
+                  'e',  'e_av',
+                  'p',  'p_av',
+                  'm_soil', 'm_soil_av',
+                  't_soil', 't_soil_av',
+                  'shf*_xy', 'shf*_xy_av',
+                  'ghf*_xy', 'ghf*_xy_av',
+                  'us*_xy', 'z0*_xy',
+                  't*_xy', 'ol*_xy',
+                  'm_liq*_xy',
+                  'r_s*_xy', 'r_a*_xy',
+                  'rad_net*_xy', 'rad_lw_in*_xy', 'rad_lw_out*_xy', 'rad_sw_in*_xy', 'rad_sw_out*_xy',
+                  'qsws*_xy', 'qsws*_xy_av',
+                  'tsurf*_xy', 'tsurf*_xy_av',
+                  'pcm_lad', 'pcm_heatrate', 'pcm_heatrate_av',
+                  'kc_NO', 'kc_NO2', 'kc_O3', 'kc_PM10',
+                  'kc_NO_av', 'kc_NO2_av', 'kc_O3_av', 'kc_PM10_av',
+
+ / ! end of d3par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RADIATION MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+  &radiation_parameters
+
+     radiation_scheme =  'rrtmg',    !'clear-sky' or 'rrtmg',
+     albedo_type = 5,
+     constant_albedo = .F.,
+
+     dt_radiation = 60.0,
+
+     surface_reflections = .T.,
+     localized_raytracing = .T.,
+     nrefsteps = 3,
+
+  /
+
+
+!-------------------------------------------------------------------------------
+!-- LAND SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!-------------------------------------------------------------------------------
+ &land_surface_parameters
+
+    constant_roughness     = .T.,
+    aero_resist_kray       = .T.,
+
+    vegetation_type        = 2,
+    soil_type              = 3,
+    conserve_water_content = .T.,
+
+    root_fraction          = 0.49, 0.26, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+    soil_temperature       = 277.15, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0,
+    soil_moisture          = 0.30,   0.30,  0.30,  0.30,  0.30, 0.30,  0.30,  0.30,
+    deep_soil_temperature  = 277.0,
+
+ / ! end of lsm_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- URBAN SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/usmpar
+!-------------------------------------------------------------------------------
+ &urban_surface_parameters
+
+    usm_wall_mod = .T.,
+
+ / ! end of urban_surface_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- PLANT CANOPY MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/canpar
+!-------------------------------------------------------------------------------
+ &plant_canopy_parameters
+
+    canopy_mode       = 'read_from_file',
+    canopy_drag_coeff = 0.3,
+
+ / ! end of canopy_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- CHEMISTRY MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/chempar
+!-------------------------------------------------------------------------------
+ &chemistry_parameters
+
+    chem_mechanism             = 'phstatp',
+    chem_gasphase_on           = .T.,
+    call_chem_at_all_substeps  = .FALSE.,
+
+    photolysis_scheme          = 'simple',
+
+    cs_name                    = 'NO', 'NO2', 'O3', 'PM10',
+    cs_surface                 = 0.02,  0.03, 0.02, 25.0e-9,   ! surface concentration of PM10, PM25 in kg m-3,
+                                                               ! units for gases in ppm
+!-- initial profiles (also for lateral boundaries if 'set_constant_profiles' is chosen)
+!-- units for PM: kg m-3, units for gases: ppm
+    cs_profile(1,:)            =  0.020, 0.020, 0.015, 0.015, 0.015, 0.010, 0.010, 0.010, 0.010, 0.010, 0.007,
+    cs_profile(2,:)            =  0.030, 0.030, 0.020, 0.020, 0.020, 0.015, 0.015, 0.015, 0.015, 0.015, 0.010,
+    cs_profile(3,:)            =  0.020, 0.020, 0.050, 0.050, 0.050, 0.050, 0.050, 0.050, 0.050, 0.050, 0.050,
+    cs_profile(1,:)            =  25.e-09, 25.e-09, 23.0e-09, 23.e-09, 23.e-09, 23.e-09, 23.e-09, 23.e-09, 22.e-09, 22.e-09, 22.0e-09,
+
+    cs_heights(1,:)            =  0.0,   5.0,   15.0,   25.0,  35.0,  45.0,  55.0,  65.0,  75.0,  85.0, 95.0,
+    cs_heights(2,:)            =  0.0,   5.0,   15.0,   25.0,  35.0,  45.0,  55.0,  65.0,  75.0,  85.0, 95.0,
+    cs_heights(3,:)            =  0.0,   5.0,   15.0,   25.0,  35.0,  45.0,  55.0,  65.0,  75.0,  85.0, 95.0,
+    cs_heights(4,:)            =  0.0,   5.0,   15.0,   25.0,  35.0,  45.0,  55.0,  65.0,  75.0,  85.0, 95.0,
+
+    bc_cs_b                    = 'neumann',
+    bc_cs_t                    = 'neumann',
+
+    emissions_anthropogenic    = .T.,
+    emiss_lod                  = 0,  ! emission depending on street type from static driver
+    surface_csflux_name        = 'NO',   'NO2',  'PM10',   !"cs" stands for chemical species
+    surface_csflux             = 4745.0, 1326.0, 2700.e-09,! surface emission of PM10, PM25 in kg m-2 d-1,
+                                                           ! for gases in umol m-2 d-1 for PARAMETERIZED
+    emiss_factor_main          = 1.667,  1.667,  1.667,    ! emiss_factor_main*surface_csflux for emission on main streets
+    emiss_factor_side          = 0.334,  0.334,  0.334,    !emiss_factor_side*surface_csflux for emission on side streets
+    main_street_id = 12,       ! id is for identifying main/side streets (see chem_emissions in chemistry_model_mod.f90)
+    side_street_id =  8,
+    max_street_id  = 19,
+
+! -- KPP solver steering. For details  see comments in chem_gasphase_mod.f90, SUBROUTINE rosenbrock
+!                         (or other solver subroutine, if another solver is chosen)
+    icntrl(3)                  = 1,   ! solver ros2
+    icntrl(4)                  = 500, ! max. number of chem-substeps
+    rcntrl(3)                  = 0.1, ! Hstart,starting value for the integration step size
+
+ / ! end of chemistry_par namelist

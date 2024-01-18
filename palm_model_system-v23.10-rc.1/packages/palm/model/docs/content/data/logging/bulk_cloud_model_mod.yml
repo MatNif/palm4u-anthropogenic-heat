@@ -1,0 +1,76 @@
+BCM0001:
+  loglevel: ERROR
+  message: |
+    unknown cloud microphysics scheme cloud_scheme = "..."
+  description: |
+    Unknown cloud microphysics scheme. See [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) for allowed schemes.
+
+BCM0002:
+  loglevel: ERROR
+  message: |
+    snow and graupel must be both switched on or off
+  description: ' '
+
+BCM0003:
+  loglevel: ERROR
+  message: |
+    cloud scheme = "..." does not work for microphysics_ice_phase = .TRUE.
+  description: |
+    Mixed phase microphysics can only be used with [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = *'seifert_beheng'* or *'morrison'*.
+
+BCM0004:
+  loglevel: ERROR
+  message: |
+    precipitation_amount_interval = ... must not be larger than dt_do2d_xy = ...
+  description: |
+    Choose a value for [precipitation_amount_interval](../Namelists/#bulk_cloud_parameters--precipitation_amount_interval) smaller than or equal to [dt_do2d_xy](../Namelists/#runtime_parameters--dt_do2d_xy). Adjust the settings of [precipitation_amount_interval](../Namelists/#bulk_cloud_parameters--precipitation_amount_interval) appropriately in the parameter file.
+
+BCM0005:
+  loglevel: ERROR
+  message: |
+    unknown aerosol species "..." for bulk microphysics
+  description: |
+    aerosol species must be set to a known type. See [aerosol_bulk](../Namelists/#bulk_cloud_parameters--aerosol_bulk) for allowed values.
+
+BCM0006:
+  loglevel: ERROR
+  message: |
+    output of "..." requires ... = ...
+  description: |
+    Output of the given quantity requires the listed parameter setting. Change your parameters respectively.
+
+BCM0007:
+  loglevel: ERROR
+  message: |
+    output of "..." is not available for cloud_scheme = "saturation_adjust"
+  description: |
+    If the output is not necessary, delete the variable from the namelist. If it is necessary, use [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = *'kessler'* or  *'seifert_beheng'*.
+
+BCM0008:
+  loglevel: ERROR
+  message: |
+    data_output_pr = '...' is not implemented for ... = or (/=) ...
+  description: |
+    Output of profiles of the given quantity is not implemented for the listed parameter setting. Change your parameters respectively.
+
+BCM0009:
+  loglevel: ERROR
+  message: |
+    data_output_pr = ... is not available for cloud_scheme = saturation_adjust
+  description: |
+    If the output is not necessary, delete the variable from the namelist. If it is necessary, use [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = *'kessler'*, *'seifert_beheng'*, or *'morrison'*.
+
+BCM0010:
+  loglevel: ERROR
+  message: |
+    bulk_cloud_model = .TRUE. is not allowed with cloud_droplets = .TRUE.
+  description: |
+    Either second-order moment adjustment scheme or Lagrangian cloud physics can be applied, not both at the same time.
+
+BCM0011:
+  loglevel: ERROR
+  message: |
+    bulk_cloud_model = .T. is not allowed with humidity = .FALSE.
+  description: |
+    It is necessary to turn on [humidity](../Namelists/#initialization_parameters--humidity) for the use of cloud physics.
+

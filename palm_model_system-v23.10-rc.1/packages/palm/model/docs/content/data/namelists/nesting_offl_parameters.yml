@@ -1,0 +1,12 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "nesting_offl_parameters"
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn off the module.
+    long: |
+      If set to *.T.*, mesoscale nesting is not activated even if the namelist is present in the parameter file.

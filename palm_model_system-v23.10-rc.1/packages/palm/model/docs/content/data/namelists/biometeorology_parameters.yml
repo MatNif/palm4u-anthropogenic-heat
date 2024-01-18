@@ -1,0 +1,96 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "biometeorology_parameters"
+#
+
+thermal_comfort:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switches on/off the calculation of thermal comfort indices.
+    long: ''
+
+clothing:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short: Choose clothing outfit for human model.
+    long: |
+      Steers the kind of outfit (and hence the exposed skin fraction) that is considered when calculating the UV exposure.
+  allowed_values:
+     - value: 0
+       description: Fully exposed, i.e., no clothing and no hair.
+     - value: 1
+       description: Spring/summer outfit with exposed face, hands, and arms.
+     - value: 2
+       description: Winter outfit with exposed face and hands.
+
+consider_obstructions:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Switches on/off obstructions (e.g., from buildings and trees).
+    long: |
+      The obstructions are read from the input file [PIDS_UVEM](#iofiles--PIDS_UVEM) and must be calculated before starting the simulation.
+
+orientation_angle:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: degree
+  description:
+    short: Orientation of front/face of the human model.
+    long: |
+      Setting of [orientation_angle](#biometeorology_parameters--orientation_angle) is only active if also [turn_to_sun](#biometeorology_parameters--turn_to_sun) = *.F.*.
+
+sun_in_south:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Fixes the position of the sun to South.
+    long: |
+      If *.T.*, the azimuthal position of the sun is fixed to 180° (South).
+
+      If *.F.*, the azimuthal position of the sun is calculated based on the date, time and location used in the simulation.
+      See [origin_date_time](#initialization_parameters--origin_date_time), [latitude](#initialization_parameters--latitude), and [longitude](#initialization_parameters--longitude) to define the date/time and location.
+
+      Please note, the solar azimuth angle (SZA) is never fixed and will always depend on the current simulation time.
+
+switch_off_module:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switches on/off the entire module.
+    long: |
+       If *.T.*, the biometeorology module is not activated even if the namelist is present in the parameter file.
+
+turn_to_sun:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Orientes the front/face of the human model towards the sun.
+    long: |
+      If *.T.*, the front/face of the human model is always oriented in the direction of the sun.
+
+      If *.F.*, the front/face of the human model is oriented towards the direction defined by [orientation_angle](#biometeorology_parameters--orientation_angle).
+
+uv_exposure:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switches on/of the calculation of the UV exposure.
+    long: ''

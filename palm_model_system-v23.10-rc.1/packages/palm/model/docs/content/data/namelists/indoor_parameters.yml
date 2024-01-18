@@ -1,0 +1,32 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "indoor_parameters"
+#
+
+indoor_during_spinup:
+  category: Spinup
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch on the indoor-climate model during wall/soil spinup.
+    long: ''
+
+initial_indoor_temperature:
+  category: Inititial Conditions
+  type: R
+  default:
+    value: 293.15
+  si-unit: K
+  description:
+    short: Initial indoor temperature.
+    long: ''
+
+switch_off_module:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn off the module.
+    long: |
+       If *.T.*, the indoor-climate module is not activated even if the namelist is present in the parameter file.

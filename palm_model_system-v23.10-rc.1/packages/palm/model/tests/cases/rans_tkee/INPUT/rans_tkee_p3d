@@ -1,0 +1,64 @@
+ &initialization_parameters
+         nx = 31,   ny = 31,   nz = 96,
+         dx = 10.0, dy = 10.0, dz = 10.0,
+
+         dz_stretch_level = 2000.0, 
+
+         psolver = 'multigrid',
+         cycle_mg = 'w',
+         mg_cycles = 2,
+         mg_switch_to_pe0_level=-1,
+
+         initializing_actions = 'set_1d-model_profiles',
+         ug_surface = 3.0,
+         vg_surface = 0.0,
+
+         constant_flux_layer = .T.,
+
+         bc_pt_b = 'neumann',
+         bc_lr = 'dirichlet/radiation',
+
+         humidity = .F.,
+
+         topography = 'read_from_file',
+
+         origin_date_time = '2000-01-01 00:00:00 +00',
+
+         turbulence_closure = 'tke-e',
+
+         e_init = 0.1,
+         e_min = 0.001,
+         neutral = .F.,
+         surface_heatflux = 0.001,
+
+         mixing_length_1d  = 'blackadar',
+         dissipation_1d    = 'prognostic',
+         end_time_1d       =  43200.0,
+         dt_run_control_1d =  43200.0,
+         dt_pr_1d          =  86400.0,
+/
+
+&runtime_parameters
+         end_time = 50.0,
+
+         create_disturbances       = .F.,
+
+!        DEFAULT OUTPUT
+         skip_time_data_output     =   0.0,
+         dt_data_output            =  10.0,
+
+!        TIME SERIES OUTPUT
+         dt_run_control            =  0.0,
+         dt_dots                   =  1.0,
+
+!        PROFILE OUTPUT
+         skip_time_dopr            =   0.0,
+         dt_dopr                   =  10.0,
+         averaging_interval_pr     =   0.0,
+         dt_averaging_input_pr     =   0.0,
+
+         data_output_pr = '#u', 'w"u"', 'w*u*', 'wu', 'u*2',
+                          '#v', 'w"v"', 'w*v*', 'wv', 'v*2',
+                          'w',  'w*2',
+                          '#e', 'e*', '#km', '#l',
+/

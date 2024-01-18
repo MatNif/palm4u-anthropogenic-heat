@@ -1,0 +1,45 @@
+#$Id$
+#column 1          column 2
+#name of variable  value of variable (~ must not be used)
+#----------------------------------------------------------------------------
+%base_directory      $HOME/palm/current_version
+%base_data           ~/palm/current_version/JOBS
+%source_path         $HOME/palm/current_version/trunk/SOURCE
+%user_source_path    $base_directory/JOBS/$run_identifier/USER_CODE
+%fast_io_catalog     /localdata/<your user directory>
+%restart_data_path   $fast_io_catalog
+%output_data_path    $base_data
+%local_jobcatalog    $base_data/$run_identifier/LOG_FILES
+
+%local_ip            130.75.105.<your pc's id>
+%local_username      <username>
+
+%compiler_name       mpif90
+%compiler_name_ser   ifort
+%cpp_options         -cpp -D__parallel -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__fftw -D__netcdf -D__netcdf4 -D__netcdf4_parallel
+%make_options        -j 4
+%compiler_options    -fpe0 -O3 -xHost -fp-model source -ftz -fno-alias -no-prec-div -no-prec-sqrt -ip -I /muksoft/packages/fftw/3.3.7/mvapich2-2.3rc1/gnu/include/ -I /muksoft/packages/netcdf4_hdf5parallel/4411c_443f/hdf5-1.10.0-patch1/mvapich2-2.3rc1/intel/2018.1.163/include/
+%linker_options      -L/muksoft/packages/fftw/3.3.7/mvapich2-2.3rc1/gnu/lib64/ -lfftw3 -L/muksoft/packages/netcdf4_hdf5parallel/4411c_443f/hdf5-1.10.0-patch1/mvapich2-2.3rc1/intel/2018.1.163/lib64/ -lnetcdf -lnetcdff
+%hostfile            auto
+%execute_command     mpiexec  -machinefile hostfile  -n {{mpi_tasks}}  palm
+
+#----------------------------------------------------------------------------
+# INPUT-commands, executed before running PALM - lines must start with "IC:"
+#----------------------------------------------------------------------------
+IC:ulimit -s unlimited
+
+#----------------------------------------------------------------------------
+# ERROR-commands - executed when program terminates abnormally
+#----------------------------------------------------------------------------
+EC:[[ \$locat = execution ]]  &&  cat  RUN_CONTROL
+EC:[[ \$locat = execution ]]  &&  cat  PARTICLE_INFOS/*
+
+#----------------------------------------------------------------------------
+# OUTPUT-commands - executed when program terminates normally
+#----------------------------------------------------------------------------
+# Combine 1D- and 3D-profile output (these files are not usable for plotting)
+OC:[[ -f LIST_PROFIL_1D     ]]  &&  cat  LIST_PROFIL_1D  >>  LIST_PROFILE
+OC:[[ -f LIST_PROFIL        ]]  &&  cat  LIST_PROFIL     >>  LIST_PROFILE
+
+# Combine all particle information files
+OC:[[ -f PARTICLE_INFOS/_0000 ]]  &&  cat  PARTICLE_INFOS/* >> PARTICLE_INFO

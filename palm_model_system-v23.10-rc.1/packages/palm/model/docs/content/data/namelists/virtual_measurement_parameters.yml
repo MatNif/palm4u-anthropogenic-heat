@@ -1,0 +1,169 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "virtual_measurement_parameters"
+
+dt_virtual_measurement:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+     short: Temporal interval at which virtual measurements shall be output.
+     long: |
+       It is obligatory to set this parameter. It must not be zero. Therefore, the default value will cause the run to terminate.
+
+
+dt_virtual_measurement_pr:
+  category: Data Output
+  type: R
+  default:
+    value_of: ([dt_virtual_measurement](#virtual_measurement_parameters--dt_virtual_measurement))
+  si-unit: s
+  description:
+     short: Temporal interval at which virtual profile measurements shall be output.
+     long: |
+       Must not be zero.
+
+
+dt_virtual_measurement_tr:
+  category: Data Output
+  type: R
+  default:
+    value_of: ([dt_virtual_measurement](#virtual_measurement_parameters--dt_virtual_measurement))
+  si-unit: s
+  description:
+     short: Temporal interval at which virtual trajectory measurements shall be output.
+     long: |
+       Must not be zero.
+
+
+dt_virtual_measurement_ts:
+  category: Data Output
+  type: R
+  default:
+    value_of: ([dt_virtual_measurement](#virtual_measurement_parameters--dt_virtual_measurement))
+  si-unit: s
+  description:
+     short: Temporal interval at which virtual time series measurements shall be output.
+     long: |
+       Must not be zero.
+
+
+interpolate_to_location:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+     short: Flag to switch on/off interpolation onto the exact sampling coordinates.
+     long: |
+       If [interpolate_to_location](#virtual_measurement_parameters--interpolate_to_location) = *.T.*, the output variables will be bi-linearly interpolated onto the given sampling location, else, a simple nearest neighbor approach is used to sample the variables on the numeric grid. Please note, this feature is only implemented for single-point measurements at the moment, not for trajectory, profile, or multi-point timeseries measurements where [off_ts](#virtual_measurement_parameters--off_ts) > *0* or [off_ts_z](#virtual_measurement_parameters--off_ts_z) > *0*. Furthermore, only atmospheric variables are considered for interpolation, surface or soil variables are not be interpolated and always refer to the grid center.
+
+       If [interpolate_to_location](#virtual_measurement_parameters--interpolate_to_location) = *.F.*, all sampled quantities refer to the grid center, also the wind-velocity components, which are linearly interpolated from the staggered grid onto the grid center in this case. To determine the respective grid point, a simple nearest neighbor method is employed.
+
+off_pr:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Horizontal sampling radius for profile measurements.
+     long: |
+       The sampling radius is given in grid points horizontally placed around the original measurement location (for profile measurements). The sampling set includes the grid-normal and diagonal grid points. As an example, [off_pr](#virtual_measurement_parameters--off_pr) = *1* will output 9 profiles (3x3 matrix with the original sampling location in the middle).
+
+       **Note:** <br>
+       The value of [off_pr](#virtual_measurement_parameters--off_pr) must not be larger than the number of ghost points minus one, so for the Wicker-Skamarock advection scheme (see [momentum_advec](#initialization_parameters--momentun_advec)) *0* <= [off_pr](#virtual_measurement_parameters--off_pr) <= *2* must hold. The Piascek-Willimas advection scheme only allows [off_pr](#virtual_measurement_parameters--off_pr) = *0*.
+
+
+off_pr_z:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Vertical sampling radius for profile measurements.
+     long: |
+       Number of grid points along `z` around the original measurement location (for profile measurements).
+
+
+off_tr:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Horizontal sampling radius for trajectory measurements.
+     long: |
+       The sampling radius is given in grid points horizontally placed around the original measurement location (for trajectory measurements). The sampling set includes the grid-normal and diagonal grid points. As an example, for a grid point on the trajectory, [off_tr](#virtual_measurement_parameters--off_tr) = *1* will output the original grid point + the 8 horizontally surrounding grid points.
+       **Note:** <br>
+       The value of [off_tr](#virtual_measurement_parameters--off_tr) must not be larger than the number of ghost points minus one, so for the Wicker-Skamarock advection scheme (see [momentum_advec](#initialization_parameters--momentun_advec)) *0* <= [off_tr](#virtual_measurement_parameters--off_tr) <= *2* must hold. The Piascek-Willimas advection scheme only allows [off_tr](#virtual_measurement_parameters--off_tr) = *0*.
+
+
+off_tr_z:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Vertical sampling height for trajectory measurements.
+     long: |
+       Number of grid points along `z` around the original measurement location (for trajectory measurements).
+
+
+off_ts:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Horizontal sampling radius for timeseries measurements.
+     long: |
+       The sampling radius is given in grid points horizontally placed around the original measurement location (for timeseries measurements). The sampling set includes the grid-normal and diagonal grid points. As an example, [off_ts](#virtual_measurement_parameters--off_ts) = *1* will output 9 timeseries (3x3 matrix with the original sampling location in the middle).
+
+       **Note:** <br>
+       The value of [off_ts](#virtual_measurement_parameters--off_ts) must not be larger than the number of ghost points minus one, so for the Wicker-Skamarock advection scheme (see [momentum_advec](#initialization_parameters--momentun_advec)) *0* <= [off_ts](#virtual_measurement_parameters--off_ts) <= *2* must hold. The Piascek-Willimas advection scheme only allows [off_ts](#virtual_measurement_parameters--off_ts) = *0*.
+
+
+off_ts_z:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+     short: Vertical sampling height for timeseries measurements.
+     long: |
+       Number of grid points along `z` around the original measurement location (for time series measurements).
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+     short: Flag to switch on/off module.
+     long: |
+       If [switch_off_module](#virtual_measurement_parameters--switch_off_module) = *.T.*, the virtual measurement module is not activated even if the namelist is present in the parameter file.
+
+
+vm_time_start:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+     short: Start time of the virtual measurements.
+     long: |
+       [vm_time_start](#virtual_measurement_parameters--vm_time_start) refers to the simulation start. Sampling will start at [origin_date_time](#initialization_parameters--origin_date_time) + [vm_time_start](#virtual_measurement_parameters--vm_time_start). Time information given in the [virtual-measurement driver file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/vm) is ignored at the moment.
+
+
+warn_out_of_domain_locations:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+     short: Flag to switch on/off warnings for timeseries sampling.
+     long: |
+       If [warn_out_of_domain_locations](#virtual_measurement_parameters--warn_out_of_domain_locations) = *.T.*, warnings will be given when the given sampling location is not within the model domain. Please note, warnings will be only given for point measurements, not for trajectory or profile measurements.

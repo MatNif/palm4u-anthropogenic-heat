@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+# script to create .palm.config files
+#--------------------------------------------------------------------------------#
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+   SOURCE="$(readlink "$SOURCE")"
+   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_LOCATION="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+project_root_dir=$(readlink -f "${SCRIPT_LOCATION}/../")
+project_bin_dir=$(readlink -f "${project_root_dir}/bin/")
+project_build_dir=$(readlink -f "${project_root_dir}/build/")
+project_lib_dir=$(readlink -f "${project_root_dir}/lib/")
+project_share_dir=$(readlink -f "${project_root_dir}/share/")
+project_src_dir=$(readlink -f "${project_root_dir}/src/")
+
+configure_tmp_dir=${project_build_dir}/.palmconfigure.tmp
+
+install_prefix=$(readlink -f "${project_root_dir}/build/")
+configuration_name="default"
+
+rrtmg_prefix="${project_lib_dir}/rrtmg/lib"
+tenstream_prefix="${project_lib_dir}/tenstream/lib"
+
+get_number_of_cpu_cores() {
+   {
+      # OSX
+      n=$(sysctl -n machdep.cpu.core_count 2> /dev/null)
+   } || {
+      # Linux
+      n=$(grep -c ^processor /proc/cpuinfo 2> /dev/null)
+   } || {
+      # fallback
+      if ! [[ $n =~ ^-?[0-9]+$ ]]; then
+         n=2
+      fi
+   }
+   echo $n
+}
+
+create_files() {
+   mkdir -p ${configure_tmp_dir}
+   cat > ${configure_tmp_dir}/rrtmg_build_options.in << EOF
+#!/usr/bin/env bash
+RRTMG_FORTRAN_COMPILER="@CMAKE_Fortran_COMPILER@"
+RRTMG_COMPILER_OPTIONS="@RRTMG_COMPILER_OPTIONS@"
+RRTMG_LINKER_OPTIONS="@RRTMG_LINKER_OPTIONS@"
+EOF
+
+   cat > ${configure_tmp_dir}/tenstream_build_options.in << EOF
+#!/usr/bin/env bash
+TENSTREAM_FORTRAN_COMPILER="@MPI_Fortran_COMPILER@"
+TENSTREAM_COMPILER_OPTIONS="@PALM_COMPILER_OPTIONS@"
+TENSTREAM_LINKER_OPTIONS="@PALM_LINKER_OPTIONS@"
+EOF
+}
+
+configure_function() {
+   printf "### %s\n" "Creating PALM configuration file"
+   create_files
+   mkdir -p ${project_build_dir}
+   mkdir -p ${configure_tmp_dir}
+   cd ${configure_tmp_dir}
+   cp ${project_share_dir}/cmake/CMakeLists.txt ${configure_tmp_dir}/
+   cmake -Wno-dev \
+         ${fortran_compiler:+-DCMAKE_Fortran_COMPILER=}${fortran_compiler} \
+         ${rrtmg_prefix:+-DRRTMG_HINTS=}${rrtmg_prefix} \
+         ${tenstream_prefix:+-DTENSTREAM_HINTS=${tenstream_prefix}} \
+         ${netcdf_c_prefix:+-DNETCDF_C_ROOT=}${netcdf_c_prefix} \
+         ${netcdf_fortran_prefix:+-DNETCDF_FORTRAN_ROOT=}${netcdf_fortran_prefix} \
+         -DPALM_CORES=$(get_number_of_cpu_cores) \
+         -DCMAKE_BUILD_TYPE=Release \
+         -DPALM_CMAKE_PATH=${project_share_dir}/cmake \
+         -DPALM_CONFIG_TEMPLATE=${project_share_dir}/config/.palm.config.default.in \
+         -DPALMTEST_YAML_TEMPLATE=${project_share_dir}/palmtest/palmtest.yml.in \
+         -DPALM_SOURCE_PATH=${project_src_dir} \
+         -DPALM_CONFIGURATION_NAME=${configuration_name} \
+         ${install_prefix:+-DCMAKE_INSTALL_PREFIX=}${install_prefix} \
+         -DCMAKE_USERNAME=${USER} \
+         ${configure_tmp_dir}
+   cd ${install_prefix}
+   rm -r ${configure_tmp_dir}
+   printf "### %s\n" "Creating PALM configuration file finished."
+}
+
+show_usage() {
+   echo "Usage: $0 [-h] [-n <name>] [-p <install_prefix>] [-c <compiler>] [-r <path>] [-s <path>] [-t <path>]"
+}
+
+show_help() {
+   show_usage
+   echo "      -h                     show this help message"
+   echo "      -n <name>              set custom configuration name"
+   echo "      -p <install_prefix>    set installation directory"
+   echo "      -c <compiler>          set desired compiler"
+   echo "      -r <path>              set existing RRTMG library installation prefix"
+   echo "      -T <path>              set existing TenStream library installation prefix"
+   echo "      -s <path>              set existing NetCDF-C library installation prefix (helps to find library)"
+   echo "      -t <path>              set existing NetCDF-Fortran library installation prefix (helps to find library)"
+}
+
+while getopts ":n:p:c:r:T:s:t:h" o; do
+   case "${o}" in
+      n)
+         configuration_name="${OPTARG}"
+         ;;
+      p)
+         install_prefix="$(readlink -m "${OPTARG}")"
+         ;;
+      c)
+         fortran_compiler="${OPTARG}"
+         ;;
+      r)
+         rrtmg_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      T)
+         tenstream_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      s)
+         netcdf_c_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      t)
+         netcdf_fortran_prefix="$(readlink -e "${OPTARG}")"
+         ;;
+      h)
+         show_help
+         exit 0
+         ;;
+      *)
+         show_usage
+         exit 1
+         ;;
+   esac
+done
+# strip all parsed options from the options list
+shift $((OPTIND-1))
+
+configure_function

@@ -1,0 +1,98 @@
+#$Id$
+#
+#------------------------------------------------------------------------------------------------------------
+# List of input-files
+#------------------------------------------------------------------------------------------------------------
+PARIN                    in:tr      d3#        $base_data/$run_identifier/INPUT            _p3d*
+PARIN                    in:tr      d3r        $base_data/$run_identifier/INPUT            _p3dr*
+PARIN                    in:tr      pcr        $base_data/$run_identifier/INPUT            _pcr*
+NAVIGATION_DATA          inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _nav*
+TOPOGRAPHY_DATA          inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _topo*
+PARTICLE_IDS             inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _prtids
+PLANT_CANOPY_DATA_3D     inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _canopy*
+PIDS_STATIC              inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _static*
+PIDS_DYNAMIC             inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _dynamic*
+PIDS_SALSA               inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _salsa*
+PIDS_CHEM                inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _chemistry*
+PIDS_DCEP                inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _dcep
+PIDS_EMIS_GENERIC        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _emis_generic*
+PIDS_EMIS_DOMESTIC       inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _emis_domestic*
+PIDS_EMIS_NONSTAT        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _emis_nonstat*
+PIDS_EMIS_TRAFFIC        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _emis_traffic*
+PIDS_UVEM                inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _uvlookup*
+PIDS_VM                  inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _vmeas*
+PIDS_WTM                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _wtmpar*
+RRTMG_LW                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _rlw
+RRTMG_SW                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _rsw
+tenstream.options        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _ts_options
+TS_BACKGROUND_ATM        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _ts_back_atm
+WTM_DATA                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _wtm
+BININ                    in:lnpe    d3r:cyclic $restart_data_path/$run_identifier/RESTART  _d3d*
+PARTICLE_RESTART_DATA_IN in:lnpe    prtr       $restart_data_path/$run_identifier/RESTART  _rprt
+SPINUPIN                 in:lnpe    spinin     $restart_data_path/$run_identifier/SPINUP   _spinup*
+SVFIN                    in:lnpe    svfin      $restart_data_path/$run_identifier/SVF      _svf*
+DATA_1D_FL_NETCDF        inopt      flr        $output_data_path/$run_identifier/OUTPUT    _fl*       nc
+DATA_1D_PR_NETCDF        inopt      prr        $output_data_path/$run_identifier/OUTPUT    _pr*       nc
+DATA_1D_PTS_NETCDF       inopt      ptsr       $output_data_path/$run_identifier/OUTPUT    _pts*      nc
+DATA_1D_SP_NETCDF        inopt      spr        $output_data_path/$run_identifier/OUTPUT    _sp*       nc
+DATA_1D_SPTS_NETCDF      inopt      sptsr      $output_data_path/$run_identifier/OUTPUT    _spts*     nc
+DATA_1D_TS_NETCDF        inopt      tsr        $output_data_path/$run_identifier/OUTPUT    _ts*       nc
+DATA_2D_XY_AV_NETCDF     inopt      xyr        $output_data_path/$run_identifier/OUTPUT    _av_xy*    nc
+DATA_2D_XY_NETCDF        inopt      xyr        $output_data_path/$run_identifier/OUTPUT    _xy*       nc
+DATA_2D_XZ_AV_NETCDF     inopt      xzr        $output_data_path/$run_identifier/OUTPUT    _av_xz*    nc
+DATA_2D_XZ_NETCDF        inopt      xzr        $output_data_path/$run_identifier/OUTPUT    _xz*       nc
+DATA_2D_YZ_AV_NETCDF     inopt      yzr        $output_data_path/$run_identifier/OUTPUT    _av_yz*    nc
+DATA_2D_YZ_NETCDF        inopt      yzr        $output_data_path/$run_identifier/OUTPUT    _yz*       nc
+DATA_3D_NETCDF           inopt      3dr        $output_data_path/$run_identifier/OUTPUT    _3d*       nc
+DATA_3D_AV_NETCDF        inopt      3dr        $output_data_path/$run_identifier/OUTPUT    _av_3d*    nc
+DATA_MASK_AV_NETCDF      inopt      mar        $output_data_path/$run_identifier/OUTPUT    _av_masked nc
+DATA_MASK_NETCDF         inopt      mar        $output_data_path/$run_identifier/OUTPUT    _masked    nc
+#DATA_PRT_NETCDF          inopt:pe   prtr       $output_data_path/$run_identifier/OUTPUT    _prt*      nc
+#
+#------------------------------------------------------------------------------------------------------------
+# List of output-files
+#------------------------------------------------------------------------------------------------------------
+BINOUT*                    out:lnpe restart:pcr $restart_data_path/$run_identifier/RESTART    _d3d
+PARTICLE_RESTART_DATA_OUT* out:lnpe prt#:prtr   $restart_data_path/$run_identifier/RESTART    _rprt
+SPINUPOUT*                 out:lnpe spinout     $restart_data_path/$run_identifier/SPINUP     _spinup
+SVFOUT*                    out:lnpe svfout      $restart_data_path/$run_identifier/SVF        _svf
+#
+PARIN*                     out:tr   d3#:d3r:pcr $output_data_path/$run_identifier/MONITORING  _parin
+STDOUT*                    out:tr   d3#:d3r:pcr $output_data_path/$run_identifier/MONITORING  _stdout
+RUN_CONTROL*               out:tr   d3#:d3r:pcr $output_data_path/$run_identifier/MONITORING  _rc
+HEADER*                    out:tr   d3#:d3r:pcr $output_data_path/$run_identifier/MONITORING  _header
+CPU_MEASURES*              out:tr   d3#:d3r:pcr $output_data_path/$run_identifier/MONITORING  _cpu
+PARTICLE_INFOS*            out:tr   *           $output_data_path/$run_identifier/MONITORING  _prt_info
+LIST_PROFIL*               out:tr   *           $output_data_path/$run_identifier/MONITORING  _list_pr
+#
+DATA_1D_FL_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _fl          nc
+DATA_1D_PR_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _pr          nc
+DATA_1D_PTS_NETCDF*        out:tr   *           $output_data_path/$run_identifier/OUTPUT      _pts         nc
+DATA_1D_SP_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _sp          nc
+DATA_1D_SPTS_NETCDF*       out:tr   *           $output_data_path/$run_identifier/OUTPUT      _spts        nc
+DATA_1D_TS_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _ts          nc
+DATA_1D_TS_WTM_NETCDF*     out:tr   *           $output_data_path/$run_identifier/OUTPUT      _wtm         nc
+DATA_2D_XY_AV_NETCDF*      out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_xy       nc
+DATA_2D_XY_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _xy          nc
+DATA_2D_XZ_AV_NETCDF*      out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_xz       nc
+DATA_2D_XZ_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _xz          nc
+DATA_2D_YZ_AV_NETCDF*      out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_yz       nc
+DATA_2D_YZ_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _yz          nc
+DATA_3D_AV_NETCDF*         out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_3d       nc
+DATA_3D_NETCDF*            out:tr   *           $output_data_path/$run_identifier/OUTPUT      _3d          nc
+DATA_AGT_NETCDF*           out:tr   *           $output_data_path/$run_identifier/OUTPUT      _agt         nc
+DATA_MASK_AV_NETCDF*       out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_masked   nc
+DATA_MASK_NETCDF*          out:tr   *           $output_data_path/$run_identifier/OUTPUT      _masked      nc
+DATA_TOPO_SURF*            out:tr   *           $output_data_path/$run_identifier/OUTPUT      _topo_surf   nc
+#DATA_PRT_NETCDF*           out:pe   *           $output_data_path/$run_identifier/OUTPUT      _prt         nc
+#DATA_PRT_NETCDF*           out:trpe *           $output_data_path/$run_identifier/OUTPUT      _prt         nc
+PARTICLE_DATA*             out:lnpe *           $output_data_path/$run_identifier/OUTPUT      _prt_bin
+SURFACE_DATA_AV_BIN*       out:lnpe *           $output_data_path/$run_identifier/OUTPUT      _av_surf_bin
+SURFACE_DATA_BIN*          out:lnpe *           $output_data_path/$run_identifier/OUTPUT      _surf_bin
+SURFACE_DATA_AV_NETCDF*    out:tr   *           $output_data_path/$run_identifier/OUTPUT      _av_surf     nc
+SURFACE_DATA_NETCDF*       out:tr   *           $output_data_path/$run_identifier/OUTPUT      _surf        nc
+VM_OUTPUT*                 out:pe   *           $output_data_path/$run_identifier/OUTPUT      _vm
+#------------------------------------------------------------------------------------------------------------
+# Deprecated settings (will be removed in a future revision)
+#------------------------------------------------------------------------------------------------------------
+BININ                      in:lnpe  rec         $restart_data_path/$run_identifier/RESTART  _d3d*

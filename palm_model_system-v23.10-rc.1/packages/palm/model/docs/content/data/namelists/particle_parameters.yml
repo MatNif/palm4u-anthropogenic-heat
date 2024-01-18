@@ -1,0 +1,1019 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "particle_parameters"
+
+aero_species:
+  category: Lagrangian Cloud Model
+  type: C*15
+  default:
+    value: 'nacl'
+  description:
+    short: Define chemical composition of aerosol particles.
+    long:  |
+      Depending on the chosen chemical composition, the van't Hoff factor, weight of solute and the density of the aerosol particles are defined.
+
+      This parameter comes only into play if [curvature_solution_effects](#particle_aparameters--curvature_solution_effects) = *.T.* and the particle model is used as cloud model, i.e. [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+  allowed_values:
+    - value: 'nacl'
+      description: Sodium Chloride
+    - value: 'c3h4o4'
+      description: Malonic Acid
+    - value: 'nh4o3'
+      description: Ammonium Ozonide
+
+aero_type:
+  category: Lagrangian Cloud Model
+  type: C*15
+  default:
+    value: 'maritime'
+  description:
+    short: Type of aerosols to be considered.
+    long:  |
+      Depending on the type, the aerosol spectrum is constructed using three log-normal distributions and the values stated in [Jaenicke (1993)](https://www.doi.org/10.1016/S0074-6142(08)60210-7).
+
+      The aerosol spectrum determines the aerosol mass, initial wet radius, and the weighting factor of all super-droplets. The weighting factors can be manipulated with [aero_weight](#particle_parameters--aero_weight).
+
+      Note that [curvature_solution_effects](#particle_aparameters--curvature_solution_effects) needs to be true to consider aerosol spectra and the particle model must be used as cloud model, i.e. [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+  allowed_values:
+    - value: 'background'
+      description: Typical background profiles
+    - value: 'continental'
+      description: Typical continental profiles
+    - value: 'desert'
+      description: Typical desert profiles
+    - value: 'maritime'
+      description: Typical maritime profiles
+    - value: 'polar'
+      description: Typical polar profiles
+    - value: 'rural'
+      description: Typical rural profiles
+    - value: 'urban'
+      description: Typical urban profiles
+    - value: 'user'
+      description: |
+        If *'user'* is chosen, the aerosol spectrum is steered by [rm](#particle_parameters--rm), [na](#particle_parameters--na), and [log_sigma](#particle_parameters--log_sigma).
+
+aero_weight:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Scaling parameter for the aerosol number concentration.
+    long: Scale the number concentration defined by [aero_type](#particle_parameters--aero_type) to the desired amount of aerosols by keeping the typical shape of the spectrum.
+
+alloc_factor:
+  category: Memory
+  type: R
+  default:
+    value: 20.0
+  si-unit: '%'
+  description:
+    short: Factor describing the memory allocated additionally to the memory needed for initial particles at a given grid cell.
+    long: |
+      If 100 particles are initialized at a grid cell, then an array for 120 particles is allocated (if [alloc_factor](#particle_parameters--alloc_factor) = *20*). This provides sufficient memory for particles being transported to this grid cell during the simulation.
+
+      Note that the particle array is automatically reallocated automatically if more particles are transported to this array than its current size. Thus, it is not necessary to choose [alloc_factor](#particle_parameters--alloc_factor) too high.
+
+bc_par_b:
+  category: Boundary Conditions
+  type: C*15
+  default: 'reflect'
+  description:
+    short: Bottom boundary condition for particle transport.
+    long: ''
+  allowed_values:
+    - value: absorb
+      description: The particles are absorbed at the bottom boundary.
+    - value: reflect
+      description: The particles are reflected at the bottom boundary.
+    - value: reset
+      description: |
+        The particles are randomly reset within the particle layer. This method might be appropriate in case of simulating cloud droplets and mitigate superdroplet (and therefore aerosol) removal by sedimentation and precipitation.
+
+bc_par_lr:
+  category: Boundary Conditions
+  type: C*15
+  default:
+    depends_on: '[bc_lr](#initialization_parameters--bc_lr)'
+  description:
+    short: Lateral boundary condition (x-direction) for particle transport.
+    long: |
+      This lateral boundary condition should correspond to the lateral boundary condition used for the flow (see [bc_lr](#initialization_parameters--bc_lr)).
+
+      In case of a nested run, the default value of [bc_par_lr](#particle_parameters--bc_par_lr) is *'nested'* in the nest domains. For the root domain, the default is *'cyclic'*.
+  allowed_values:
+    - value: absorb
+      description: |
+        The particles are absorbed at the left and right boundary.
+    - value: cyclic
+      description: |
+        In non-nested setups, this is the default value.
+        Cyclic boundary conditions are applied at the left and right boundary.
+    # - value: nested  # not yet implemented
+    #   description: |
+    #     Particles are transferred to the parent domain at the left/right boundary.
+    - value: reflect
+      description: |
+        The particles are reflected at the left and right boundary.
+
+bc_par_ns:
+  category: Boundary Conditions
+  type: C*15
+  default:
+    depends_on: '[bc_ns](#initialization_parameters--bc_ns)'
+  description:
+    short: Lateral boundary condition (y-direction) for particle transport.
+    long: |
+      This lateral boundary condition should correspond to the lateral boundary condition used for the flow (see [bc_ns](#initialization_parameters--bc_ns)).
+
+      In case of a nested run, the default value of [bc_par_ns](#particle_parameters--bc_par_ns) is *'nested'* in the nest domains. For the root domain, the default is *'cyclic'*.
+  allowed_values:
+    - value: absorb
+      description: |
+        The particles are absorbed at the North and South boundary.
+    - value: cyclic
+      description: |
+        In non-nested setups, this is the default value.
+        Cyclic boundary conditions are applied at the North and South boundary.
+    - value: nested
+      description: |
+        Particles are transferred to the parent domain at the North and South boundary.
+    - value: reflect
+      description: |
+        The particles are reflected at the North and South boundary.
+
+bc_par_t:
+  category: Boundary Conditions
+  type: C*15
+  default:
+    value: absorb
+  description:
+    short: Top boundary condition for particle transport.
+    long: |
+      In case of a nested run, the default value is *'nested'* in the nest domains. For the root domain, the default is *'absorb'*.
+  allowed_values:
+    - value: absorb
+      description: |
+        The particles are absorbed at the top boundary.
+    - value: reflect
+      description: |
+        The particles are reflected at the top boundary.
+
+collision_kernel:
+  category: Lagrangian Cloud Model
+  type: C*15
+  default: 'none'
+  description:
+    short: Parameter to steer cloud droplet growth by collision processes.
+    long: |
+      The growth of cloud droplets due to collision is parameterized using the so-called collision kernel.
+      This parameter is only effective if [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+      **Attention**: Simulating the collision process drastically increases the CPU time.
+  allowed_values:
+    - value: hall
+      description: |
+        Collision kernel from [Hall (1980)](https://doi.org/10.1175/1520-0469(1980)037%3C2486:ADMMWA%3E2.0.CO;2), which considers collision due to pure gravitational effects. Larger droplets have a higher terminal fall velocity and are collecting smaller ones. Only terminal droplet velocities are considered in this kernel, not their effective velocities.
+    - value: hall_fast
+      description: |
+        Same as *'hall'*, but a collision efficiency table is calculated at the start of the simulation for fixed radius classes in the range of 10^-6^ m and 10^-3^ m. The number of classes to be used (i.e. the resolution of the kernel) can be set by parameter [radius_classes](#particle_parameters--radius_classes). This method requires significantly less CPU time than the *'hall'* method.
+    - value: none
+      description: |
+        Droplet collision is switched off.
+    - value: wang
+      description: |
+        Beside gravitational effects (treated with the Hall kernel) also the effects of turbulence on the collision are considered using parameterizations of [Ayala et al. (2008)](http://dx.doi.org/10.1088/1367-2630/10/7/075016) and [Wang and Grabowski (2009)](https://doi.org/10.1002/asl.210).
+
+        This kernel includes three possible effects of turbulence:
+
+        - the modification of the relative velocity between the droplets,
+        - the effect of preferential concentration, and
+        - the enhancement of collision efficiencies.
+    - value: wang_fast
+      description: |
+        Same as *'wang'* , but a collision efficiency table is calculated at the start of the simulation for fixed radius- and dissipation classes in the  of 10^-6^ m and 10^-3^ m, and 0 and 600 cm^2^ s^-3^, respectively. The number of classes to be used (i.e. the resolution of the kernel) can be set by parameters [radius_classes](#particle_parameters--radius_classes), and [dissipation_classes](#particle_parameters--dissipation_classes). This method requires significantly less CPU time than the *'wang'* method.
+
+curvature_solution_effects:
+  category: Lagrangian Cloud Model
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to consider solution and curvature effects on the equilibrium vapor pressure of cloud droplets.
+    long: |
+      If switched on, the radius growth equation is integrated in time using a Rosenbrock method.
+      This parameter is only effective if [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+
+data_output_pts:
+  category: Data Output
+  type: C*30
+  shape: (50)
+  default:
+    value: "''"
+  description:
+    short: List of particle-output quantities.
+    long: ''
+
+deallocate_memory:
+  category: Memory
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to enable deallocation of unused memory.
+    long: |
+      If the number of particles in a grid box exceeds the allocated memory, new memory is allocated. However, in case the number of particles per grid box is only temporarily high, most of the memory remains unused.
+
+      If [deallocate_memory](#particle_parameters--deallocate_memory) = *.T.*, the allocated memory used for particles will be dynamically adjusted with respect to the current number of particles after a given number of timesetps (see [step_dealloc](#particle_parameters--step_dealloc)).
+
+density_ratio:
+  category: Physics
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  description:
+    short: Ratio of the density of the fluid and the density of the particles.
+    long: |
+      If [density_ratio](#particle_parameters--density_ratio) = *0.0*, particles are weightless and are transported passively with the resolved scale flow.
+
+      If [density_ratio](#particle_parameters--density_ratio) $\neq$ *0.0*, particles have a mass and hence inertia so that their velocity deviates from the velocity of the surrounding flow. Particle velocity is calculated analytically. In this case, the particle [radius](#particle_parameters--radius) as well as the molecular viscosity (1.461E-5 m^2^ s^-1^) also affect the velocity.
+
+      If [density_ratio](#particle_parameters--density_ratio) = *1.0*, the particle density corresponds to the density of the surrounding fluid and the particles do not feel any buoyancy.
+
+      If [density_ratio](#particle_parameters--density_ratio) > *1.0*, particles will be accelerated upwards.
+
+      If [density_ratio](#particle_parameters--density_ratio) < *1.0*, particles will be accelerated downwards.
+
+      With several groups of particles (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)), each group can be assigned a different value. If the number of values given for [density_ratio](#particle_parameters--density_ratio) is less than the number of groups defined by [number_of_particle_groups](#particle_parameters--number_of_particle_groups)), then the last assigned value is used for all remaining groups.
+
+dissipation_classes:
+  category: Numerics
+  type: I
+  default:
+    value: 10
+  description:
+    short: Number of dissipation classes to be used in the collision-efficiency table.
+    long: |
+      This parameter comes into effect if a fast method is used for the [collision_kernel](#particle_parameters--collision_kernel) (flagged as '_fast'). It defines the number of dissipation classes which spawn the collision-efficiency table. The interval [*1.0*, *1000.0*] cm s<sup>-3</sup> is divided into n = [dissipation_classes](#particle_parameters--dissipation_classes) equidistant parts.
+
+dt_dopts:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: 's'
+  description:
+    short: Temporal interval at which time series data of particle quantities shall be output.
+    long: |
+      If particle advection is switched on (see [dt_prel](#particle_parameters--dt_prel)) this parameter can be used to assign the temporal interval at which time series of particle quantities shall be output. Output is written to [DATA_1D_PTS_NETCDF](#iofiles--DATA_1D_PTS_NETCDF). The file contains time series of statistical quantities and additional optional time series of individual particles, which can be chosen via parameter [data_output_pts](#particle_parameters--data_output_pts).
+
+      If using multiple particle groups (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)), separate time series are output for each group.
+      The particle group is given in the 'long_name' attribute of the netCDF output file which is appended by the string 'PG ##', where '##' is the number of the particle group.
+
+      The following list gives a short description of statistical quantities that are always output. Most quantities are averaged over the total number of particles at the specific output time.
+
+      | netCDF Variable Name | Unit  | Explanation                                                        |
+      | :---                 | :--- | :---                                                               |
+      |tnpt    | - | total number of particles  |
+      |x_      | m | particle x-coordinate with respect to the particle origin |
+      |y_      | m | particle y-coordinate with respect to the particle origin |
+      |z_      | m | particle z-coordinate with respect to the particle origin |
+      |z_abs   | m  | absolute particle z-coordinate |
+      |u       | m s<sup>-1</sup> | u particle velocity component |
+      |v       | m s<sup>-1</sup> | v particle velocity component |
+      |w       | m s<sup>-1</sup> | w particle velocity component |
+      |u''     | m s<sup>-1</sup> | subgrid-scale u particle velocity component |
+      |v''     | m s<sup>-1</sup> | subgrid-scale v particle velocity component |
+      |w''     | m s<sup>-1</sup> | subgrid-scale w particle velocity component |
+      |npt_up  | - | total number of upward moving particles  |
+      |w_up    | m s<sup>-1</sup> | vertical velocity of the upward moving particles |
+      |w_down  | m s<sup>-1</sup>  | vertical velocity of the downward moving particles |
+      |radius_ | m | particle radius |
+      |r_min   | m | minimum particle radius |
+      |r_max   | m | maximum particle radius |
+      |x*2     | m<sup>2</sup> | variance of the particle x-coordinate with respect to x_ |
+      |y*2     | m<sup>2</sup> | variance of the particle y-coordinate with respect to y_ |
+      |z*2     | m<sup>2</sup> | variance of the particle z-coordinate with respect to z_ |
+      |u*2     | m<sup>2</sup> s<sup>-2</sup> | variance of the u particle velocity component with respect to u |
+      |v*2     | m<sup>2</sup> s<sup>-2</sup> | variance of the v particle velocity component with respect to v |
+      |w*2     | m<sup>2</sup> s<sup>-2</sup> | variance of the w particle velocity component with respect to w |
+      |u"2     | m<sup>2</sup> s<sup>-2</sup> | variance of the subgrid-scale u particle velocity component with respect to u" |
+      |v"2     | m<sup>2</sup> s<sup>-2</sup> | variance of the subgrid-scale v particle velocity component with respect to v" |
+      |w"2     | m<sup>2</sup> s<sup>-2</sup> | variance of the subgrid-scale w particle velocity component with respect to w" |
+
+dt_min_part:
+  category: Numerics
+  type: R
+  default:
+    value: 0.0002
+  si-unit: 's'
+  description:
+    short: Minimum value for the particle time step when subgrid-scale velocities are used.
+    long: |
+      For details, see [use_sgs_for_particles](#particle_parameters--use_sgs_for_particles).
+
+dt_prel:
+  category: Particle Source
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: 's'
+  description:
+    short: Temporal interval at which particles are to be released from a particle source.
+    long: |
+      Actual release times may slightly deviate from the given time interval (see e.g. [dt_dopr](#particle_parameters--dt_dopr)).
+
+dt_write_particle_data:
+  category: Data Output
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: 's'
+  description:
+    short: Temporal interval for output of particle data.
+    long: |
+      This parameter can be used to assign the temporal interval at which particle data shall be output. Data are output to the local file [PARTICLE_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARTICLE_DATA). See the file description for more details about its format.
+
+end_time_prel:
+  category: Particle Source
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: 's'
+  description:
+    short: Time of the last release of particles.
+    long: |
+      See also [particle_advection_start](#particle_parameters--particle_advection_start).
+
+extend_prts_filesize:
+  category: Memory
+  type: R
+  default:
+    value: 0.0
+  si-unit: '%'
+  description:
+    short: Percentage to which the size of the file containing the particle time series shall be enlarged.
+    long: |
+      By default, the file size for particle time series is determined by the number of output particles that are identified at the beginning of a run (see parameters [pts_increment](#particle_parameters--pts_increment), [pts_percentage](#particle_parameters--pts_percentage), and description of input file [PARTICLE_IDS](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles)).
+
+      Since it is not allowed to increase the file size during a run, setting of [extend_prts_filesize](#particle_parameters--extend_prts_filesize) is required, if the number of output particles increase during a run due to the release of new particle sets. For example, [extend_prts_filesize](#particle_parameters--extend_prts_filesize) = *50.0* will increase the file size by 50%, so that particles which are newly released at a later time can be output to the file.
+      See also [maximum_number_of_output_particles](#particle_parameters--maximum_number_of_output_particles).
+
+      It is not allowed to set [maximum_number_of_output_particles](#particle_parameters--maximum_number_of_output_particles) and [extend_prts_filesize](#particle_parameters--extend_prts_filesize) at the same time.
+
+initial_weighting_factor:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    value: 1.0
+  si-unit: '1'
+  description:
+    short: Factor to define the real number of initial droplets in a grid box.
+    long: |
+      In case of explicitly simulating cloud droplets (see [cloud_droplets](#initialization_parameters--cloud_droplets)), the real number of initial droplets in a grid box is equal to the [initial_weighting_factor](#particle_parameters--initial_weighting_factor) times the number of particles in this box defined by the particle-source parameters
+      [pdx](#particle_parameters--pdx),
+      [pdy](#particle_parameters--pdy),
+      [pdz](#particle_parameters--pdz),
+      [psb](#particle_parameters--psb),
+      [psl](#particle_parameters--psl),
+      [psr](#particle_parameters--psr),
+      [psn](#particle_parameters--psn),
+      [pss](#particle_parameters--pss), and
+      [pst](#particle_parameters--pst).
+
+log_sigma:
+  category: Lagrangian Cloud Model
+  type: R
+  shape: (3)
+  default:
+    depends_on: '[aero_type](#particle_parameters--aero_type)'
+  si-unit: '1'
+  description:
+    short: Logarithm (log10) of geometric standard deviation of the log-normal distribution steering the initial dry aerosol spectrum.
+    long: |
+      See [aero_type](#particle_parameters--aero_type) for more details. Up to three values of [log_sigma](#particle_parameters--log_sigma) can be prescribed.
+
+maximum_number_of_output_particles:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+    short: Defines the maximum number of particles allowed for output of time series.
+    long: |
+      [maximum_number_of_output_particles](#particle_parameters--maximum_number_of_output_particles) must be set, if the number of output particles increase during a run due to the release of new particle sets. It defines the size of the dimension in the netCDF output file.
+
+      It is not allowed to increase the size during a run.
+
+      It is not allowed to set [maximum_number_of_output_particles](#particle_parameters--maximum_number_of_output_particles) and [extend_prts_filesize](#particle_parameters--extend_prts_filesize) at the same time.
+
+      By default, the file size is determined by the number of output particles that are identified at the beginning of a run. See also parameters
+      [pts_increment](#particle_parameters--pts_increment),
+      [pts_percentage](#particle_parameters--pts_percentage),
+      and description of input file
+      [PARTICLE_IDS](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles).
+
+max_number_particles_per_gridbox:
+  category: Lagrangian Cloud Model
+  type: I
+  default:
+    value: 100
+  description:
+    short: Threshold for splitting of superdroplets.
+    long: |
+      If the number of particles in a grid box reach [max_number_particles_per_gridbox](#particle_parameters--max_number_particles_per_gridbox), no more splitting operations (see [splitting](#particle_parameters--splitting)) are conducted.
+
+      **Note:**
+      This threshold must be given an appropriate value if [splitting](#particle_parameters--splitting) is switched on. Otherwise new particles will be created in single grid boxes without a limit which may significantly increase the CPU time.
+
+merging:
+  category: Lagrangian Cloud Model
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch on/off merging algorithm for cloud droplets.
+    long: |
+      This parameter is only effective if [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+
+      The merging algorithm merges two superdroplets into one. It is executed at every timestep. The behaviour can be steered with the parameters [radius_merge](#particle_parameters--radius_merge) and [weight_factor_merge](#particle_parameters--weight_factor_merge).
+
+      Merging of cloud droplets reduces the amount of computed droplets and hence the demand of computational resources.
+
+      **Note:**
+      Right now, the merging algorithm is only tested for evaporated superdroplets (radius < 0.1 µm) with a low weighting factor (< 0.5 * [initial_weighting_factor](#particle_parameters--initial_weighting_factor)). For this configuration, micro- and macro-physical quantities of the cloud are not affected by the merging.
+
+na:
+  category: Lagrangian Cloud Model
+  type: R
+  shape: (3)
+  default:
+    depends_on: '[aero_type](#particle_parameters--aero_type)'
+  si-unit: 'm<sup>-3</sup>'
+  description:
+    short: Number concentration of the log-normal distribution steering the initial dry aerosol spectrum.
+    long: |
+      Up to three values of [na](#particle_parameters--na) can be prescribed. See [aero_type](#particle_parameters--aero_type) for more details.
+
+number_concentration:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    value: ~
+  si-unit: 'm<sup>-3</sup>'
+  description:
+    short: Initial particle number concentration.
+    long: |
+      If this value is set, the [initial_weighting_factor](#particle_parameters--initial_weighting_factor) is calculated so that the prescribed initial number concentration is ensured in every grid box that contains particles.
+
+number_of_particle_groups:
+  category: Numerics
+  type: I
+  default:
+    value: 1
+  description:
+    short: Number of particle groups to be used.
+    long: |
+      The maximum allowed number of particle groups is limited to 10.
+
+number_particles_per_gridbox:
+  category: Particle Source
+  type: I
+  default:
+    value: ~
+  description:
+    short: Number of particles which are created in every grid box.
+    long: |
+      If [number_particles_per_gridbox](#particle_parameters--number_particles_per_gridbox) >= *1*, the given number of particles are evenly distributed within a grid box if the grid box belongs to the particle-source area (defined by
+      [psb](#particle_parameters--psb),
+      [psl](#particle_parameters--psl),
+      [psr](#particle_parameters--psr),
+      [psn](#particle_parameters--psn),
+      [pss](#particle_parameters--pss), and
+      [pst](#particle_parameters--pst)).
+
+      If not set, the number of particles per grid box depends on
+      [pdx](#particle_parameters--pdx),
+      [pdy](#particle_parameters--pdy) and
+      [pdz](#particle_parameters--pdz).
+
+particles_per_point:
+  category: Particle Source
+  type: I
+  default:
+    value: 1
+  description:
+    short: Number of particles to be released per point of the particle source.
+    long: ''
+
+particle_advection_interpolation:
+  category: Numerics
+  type: C*25
+  default:
+    value: 'trilinear'
+  description:
+    short: Method for interpolating the flow velocities to the particle position.
+    long: ''
+  allowed_values:
+    - value: trilinear
+      description: |
+        In the *trilinear* method, the velocities of the closest surrounding grid points are used for interpolation. Particles within a grid box are sorted into eight subgrid boxes to decide which grid points are the closest. This allows for a faster computation of the particle velocity. For more details, see the [LPM documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/particle).
+
+        Despite sophisiticated tests and validation, in some cases, this method violates the well-mixed condition.
+    - value: simple_corrector
+      description: |
+        The *simple_corrector* considers only the two closest velocity values per direction, i.e. for the u-component the values of `i` and `i+1` are used (for v-component: `j` and `j+1`, for w-component: `k` and `k-1`).
+
+        A predictor-corrector method is used, i.e. the interpolation method is done with the values of timestep `t` and corrected by the values of timestep `t+1`.
+
+        For more details, see [Grabowski et al., 2018](https://doi.org/10.5194/gmd-11-103-2018).
+    - value: simple_predictor
+      description: |
+        The *simple_predictor* method is the same as the *simple_corrector* method but without the corrector step.
+
+particle_advection_start:
+  category: Particle Source
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Time of the first release of particles.
+    long: |
+      By default, particles are released from the beginning of a simulation.
+      If the start of the particle release is set to be after a restart, [read_particles_from_restartfile](#particle_parameters--read_particles_from_restartfile) = .F. must be set in the initial run.
+
+      See also [end_time_prel](#particle_parameters--end_time_prel).
+
+particle_maximum_age:
+  category: General Settings
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Maximum allowed age of particles.
+    long: |
+      If the age of a particle exceeds [particle_maximum_age](#particle_parameters--particle_maximum_age), the particle is deleted.
+
+pdx:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    value_of: '[dx](#initialization_parameters--dx)'
+  si-unit: 'm'
+  description:
+    short: Distance along x between particles within a particle source.
+    long: |
+      [pdx](#particle_parameters--pdx) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+      [pdx](#particle_parameters--pdx) is ignored if [number_particles_per_gridbox](#particle_parameters--number_particles_per_gridbox) is given.
+
+pdy:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    value_of: '[dy](#initialization_parameters--dy)'
+  si-unit: 'm'
+  description:
+    short: Distance along y between particles within a particle source.
+    long: |
+      [pdy](#particle_parameters--pdy) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+      [pdy](#particle_parameters--pdy) is ignored if [number_particles_per_gridbox](#particle_parameters--number_particles_per_gridbox) is given.
+
+pdz:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    depends_on: '[dz](#initialization_parameters--dz)'
+  si-unit: 'm'
+  description:
+    short: Distance along z between particles within a particle source.
+    long: |
+      The default is defined as the vertical distance between the two lowest grid levels: `zu(2) - zu(1)`.
+
+      [pdz](#particle_parameters--pdz) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+      [pdz](#particle_parameters--pdz) is ignored if [number_particles_per_gridbox](#particle_parameters--number_particles_per_gridbox) is given.
+
+psb:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    depends_on: '[dz](#initialization_parameters--dz)'
+  si-unit: 'm'
+  description:
+    short: Bottom edge of a particle source.
+    long: |
+      By default, [psb](#particle_parameters--psb) is set to half the domain size: `zu(nz/2)`. If the local particle source is below the surface, no particle are released at this location.
+
+      If [seed_follows_topography](#particle_parameters--seed_follows_topography) = *.T.*, [psb](#particle_parameters--psb) is interpreted as relative to the given topography.
+
+      [psb](#particle_parameters--psb) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+psl:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  si-unit: 'm'
+  description:
+    short: Left edge of a particle source.
+    long: |
+      [psl](#particle_parameters--psl) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+psn:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    depends_on: '[ny](#initializing_actions--ny)'
+  si-unit: 'm'
+  description:
+    short: Rear ("north") edge of a particle source.
+    long: |
+      By default, the northern edge of a particle source is equal to the northern domain boundary: `(ny+1)*dy`.
+
+      [psn](#particle_parameters--psn) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+psr:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    depends_on: '[nx](#initializing_actions--nx)'
+  si-unit: 'm'
+  description:
+    short: Right edge of a particle source.
+    long: |
+      By default, the right edge of a particle source is equal to the right domain boundary: `(nx+1)*dx`.
+
+      [psr](#particle_parameters--psr) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+pss:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  si-unit: 'm'
+  description:
+    short: Front ("south") edge of a particle source.
+    long: |
+      [pss](#particle_parameters--pss) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+pst:
+  category: Particle Source
+  type: R
+  shape: (10)
+  default:
+    value_of: '[psb](#particle_parameters--psb)'
+  si-unit: 'm'
+  description:
+    short: Top edge of a particle source.
+    long: |
+      If the local particle source is below the surface, no particle are released at this location. If [seed_follows_topography](#particle_parameters--seed_follows_topography) = *.T.*, [pst](#particle_parameters--pst) is interpreted as relative to the given topography.
+
+      [pst](#particle_parameters--pst) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+pts_increment:
+  category: Data Output
+  type: I
+  default:
+    value: 0
+  description:
+    short: Parameter for steering the number of time-series output of individual particles.
+    long: |
+      Time series data of every [pts_increment](#particle_parameters--pts_increment)-th particle is written to the output file.
+
+      By default, no time series is output.
+      If [pts_increment](#particle_parameters--pts_increment) = *1*, time series of all particles are output;
+      if [pts_increment](#particle_parameters--pts_increment) = *2*, time series of every second particle is output; etc.
+
+      **Note:**
+      Low values of [pts_increment](#particle_parameters--pts_increment) may create huge output and slow down the model performance significantly.
+
+      Alternatively, [pts_percentage](#particle_parameters--pts_percentage) can be used to steer the output of particle time series.
+
+      It is not allowed to set both [pts_increment](#particle_parameters--pts_increment) and [pts_percentage](#particle_parameters--pts_percentage) at the same time.
+
+pts_percentage:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: '%'
+  description:
+    short: Parameter for steering the number of time-series output of individual particles.
+    long: |
+      Time series data of the given percentage of the particles is written to the output file.
+
+      By default, no time series is output.
+      If [pts_percentage](#particle_parameters--pts_percentage) = *100*, time series data for each particle is output;
+      if [pts_percentage](#particle_parameters--pts_percentage) = *50*, time series of half of all particles is output, etc.
+
+      **Note:**
+      High values of [pts_percentage](#particle_parameters--pts_percentage) may create huge output and slow down the model performance significantly.
+
+      Alternatively, [pts_increment](#particle_parameters--pts_increment) can be used to steer the output of particle time series.
+
+      It is not allowed to set both [pts_increment](#particle_parameters--pts_increment) and [pts_percentage](#particle_parameters--pts_percentage) at the same time.
+
+radius:
+  category: Physics
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  si-unit: 'm'
+  description:
+    short: Particle radius.
+    long: |
+      The particle [radius](#particle_parameters--radius) steers the viscous friction of particles and must be assigned if [density_ratio](#particle_parameters--density_ratio) /= *0.0*.
+
+      [radius](#particle_parameters--radius) can be assigned a different value for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)). If the number of values given for [radius](#particle_parameters--radius) is less than the number of groups defined by [number_of_particle_groups](#particle_parameters--number_of_particle_groups)), then the last given value is used for all remaining groups.
+
+radius_classes:
+  category: Numerics
+  type: I
+  default:
+    value: 20
+  description:
+    short: Number of radius classes to be used in the collision efficiency table.
+    long: |
+      This parameter comes into effect if a fast method is used for the [collision_kernel](#particle_parameters--collision_kernel) (flagged as '_fast'). It defines the number of radius classes which spawn the collision-efficiency table. The interval [*10^-6^*, *0.0002*] m is divided into n = [radius_classes](#particle_parameters--radius_classes) logarithmic equidistant parts.
+
+radius_merge:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    value: 0.1E-6
+  si-unit: 'm'
+  description:
+    short: Radius threshold for merging of superdroplets.
+    long: |
+      Only superdroplets with a radius smaller than [radius_merge](#particle_parameters--radius_merge) are considered for merging.
+
+      This parameter is only effective if [merging](#particle_parameters--merging) = *.T.*.
+
+radius_split:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    value: 40.0E-6
+  si-unit: 'm'
+  description:
+    short: Radius threshold for splitting of superdroplets.
+    long: |
+      Only superdroplets with a radius larger than [radius_split](#particle_parameters--radius_split) are considered for splitting. The default value of 40 µm is found to give reasonable results of the rain-drop distribution in simulations of shallow cumulus clouds. It may need adjustment for different applications.
+
+      This parameter is only effective if [splitting](#particle_parameters--splitting) = *.T.*.
+
+random_start_position:
+  category: Particle Source
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Randomize the initial particle position within certain limits.
+    long: |
+      By default, the initial positions of particles within a source are exactly defined by
+      [pst](#particle_parameters--pst),
+      [psl](#particle_parameters--psl),
+      [psr](#particle_parameters--psr),
+      [pss](#particle_parameters--pss),
+      [psn](#particle_parameters--psn),
+      [psb](#particle_parameters--psb),
+      [pdx](#particle_parameters--pdx),
+      [pdy](#particle_parameters--pdy), and
+      [pdz](#particle_parameters--pdz).
+      With [random_start_position](#particle_parameters--random_start_position) = *.T.*, the initial positions of the particles are randomly offset from these positions within certain limits.
+
+read_particles_from_restartfile:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Read particle data from the previous run.
+    long: |
+      By default, restart data for particles are read from file [PARTICLE_RESTART_DATA_IN](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARTICLE_RESTART_DATA_IN), which is created by the preceding run. If particle restart data should not be read, or if the preceding run had no particle transport activated (see [particle_advection_start](#particle_parameters--particle_advection_start)), then [read_particles_from_restartfile](#particle_parameters--read_particles_from_restartfile) = *.F.* is required.
+
+rm:
+  category: Lagrangian Cloud Model
+  type: R
+  shape: (3)
+  default:
+    depends_on: '[aero_type](#particle_parameters--aero_type)'
+  si-unit: 'm'
+  description:
+    short: Mode radius of the log-normal distribution steering the initial dry aerosol spectrum.
+    long: |
+      Up to three values of [rm](#particle_parameters--rm) can be prescribed. See [aero_type](#particle_parameters--aero_type) for more details.
+
+seed_follows_topography:
+  category: Particle Source
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Heights of initial particles are interpreted relative to the given topography.
+    long: |
+      If [seed_follows_topography](#particle_parameters--seed_follows_topography) = *.F.*, the vertical borders of the particle sources [psb](#particle_parameters--psb) and [pst](#particle_parameters--pst) are interpreted to be above the domain origin.
+      If [seed_follows_topography](#particle_parameters--seed_follows_topography) = *.T.*, [psb](#particle_parameters--psb) and [pst](#particle_parameters--pst) are interpreted to be relative to the given topography.
+
+splitting:
+  category: Lagrangian Cloud Model
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch on/off the splitting algorithm for cloud droplets.
+    long: |
+      This parameter is only effective if [cloud_droplets](#initialization_parameters--cloud_droplets) = *.T.*.
+
+      The splitting algorithm splits particles which fulfill certain criterions into several superdroplets with a reduced number of represented particles of every superdroplet (i.e. a reduced weighting factor). The mechanism allows an improved representation of the right tail of the drop size distribution with a feasible amount of computational costs. The splitting algorithm is executed at every timestep.
+
+      The splitting algorithm can be steered by the following parameters: [max_number_particles_per_gridbox](#particle_parameters--max_number_particles_per_gridbox),
+      [radius_split](#particle_parameters--radius_split),
+      [splitting_factor](#particle_parameters--splitting_factor),
+      [splitting_factor_max](#particle_parameters--splitting_factor_max),
+      [splitting_function](#particle_parameters--splitting_function),
+      [splitting_mode](#particle_parameters--splitting_mode), and
+      [weight_factor_split](#particle_parameters--weight_factor_split).
+
+      **Note:**
+      Splitting of particles results in an increase of computational resources. More particles must be calculated (increase in CPU time) and stored (increase in memory demand). Therefore, the limits of the splitting algorithm should be choosen very carefully.
+
+splitting_factor:
+  category: Lagrangian Cloud Model
+  type: I
+  default:
+    value: 2
+  description:
+    short: Number of particles created when splitting a single particle.
+    long: |
+      This parameter is used for [splitting_mode](#particle_parameters--splitting_mode) = *'const'*.
+
+      If a superdroplet is splitted, `splitting_factor - 1` new particles are created with all having the same properties as the original superdroplet. The weighting factor of each of the superdroplets is divided by the [splitting_factor](#particle_parameters--splitting_factor).
+
+      For [splitting_mode](#particle_parameters--splitting_mode) = *'cl_av'* and *'gb_av'*, [splitting_factor](#particle_parameters--splitting_factor) is calculated automatically and given by the ratio of the actual weighting factor of a superdroplet and the approximated number concentration (for cloud droplets with a similar radius in a grid volume).
+
+splitting_factor_max:
+  category: Lagrangian Cloud Model
+  type: I
+  default:
+    value: 5
+  description:
+    short: Upper bound of [splitting_factor](#particle_parameters--splitting_factor) if [splitting_factor](#particle_parameters--splitting_factor) is calculated automatically.
+    long: |
+      This parameter is used for [splitting_mode](#particle_parameters--splitting_mode) = *'cl_av'* and *'gb_av'* where the [splitting_factor](#particle_parameters--splitting_factor) is calculated automatically and can get very large values which are not feasible.
+
+splitting_function:
+  category: Lagrangian Cloud Model
+  type: C*5
+  default:
+    value: gamma
+  description:
+    short: Function used to approximate the drop-size distribution.
+    long: |
+      This parameter is used for [splitting_mode](#particle_parameters--splitting_mode) = *'cl_av'* and *'gb_av'*.
+  allowed_values:
+    - value: exp
+      description: An exponential distribution.
+    - value: gamma
+      description: A gamma size distribution.
+    - value: log
+      description: A log-normal distribution.
+
+splitting_mode:
+  category: Lagrangian Cloud Model
+  type: C*5
+  default:
+    value: const
+  description:
+    short: Mode used for the splitting algorithm.
+    long: ''
+  allowed_values:
+    - value: const
+      description: |
+        Use a constant [splitting_factor](#particle_parameters--splitting_factor) when splitting superdroplets.
+
+        Superdroplets having a radius $\geq$ [radius_split](#particle_parameters--radius_split) and a weighting factor $\geq$ [weight_factor_split](#particle_parameters--weight_factor_split) are split into [splitting_factor](#particle_parameters--splitting_factor) superdroplets. The weighting factor of the superdroplet and all created clones is reduced by [splitting_factor](#particle_parameters--splitting_factor).
+    - value: cl_av
+      description: |
+        Use a critical radius [radius_split](#particle_parameters--radius_split) and a splitting function [splitting_function](#particle_parameters--splitting_function) to steer the splitting of superdroplets.
+
+        The critical weighting factor is calculated while using an approximation of the drop size distribution based on the given [splitting_function](#particle_parameters--splitting_function). The drop-size distribution (discretized in 100 bins in a range from 1.0 µm to 1 mm) is calculated as an average over all cloudy grid boxes. Superdroplets which have a larger radius and larger weighting factor are split into several superdroplets. In this case the splitting factor is calculated from the weighting factor of the superdroplet and the approximated number concentration for droplets of such a size. The weighting factor of the superdroplet and all created clones is updated accordingly.
+    - value: gb_av
+      description: |
+        Same as for [splitting_mode](#particle_parameters--splitting_mode) = *'cl_av'* but a drop-size distribution is calculated for every grid box.
+
+step_dealloc:
+  category: Memory
+  type: I
+  default:
+    value: 100
+  description:
+    short: Number of timesteps after which particle memory is deallocated.
+    long: |
+      The parameter is only effective if [deallocate_memory](#particle_parameters--deallocate_memory) = *.T.*.
+
+      If the number of particles in a grid box exceeds the allocated memory, new memory is allocated. However, in case the number of particles per grid box is only temporarily high, most of the memory remains unused.
+
+      If [deallocate_memory](#particle_parameters--deallocate_memory) = *.T.*, the allocated memory used for particles will be dynamically adjusted with respect to the current number of particles after [step_dealloc](#particle_parameters--step_dealloc) timesetps.
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch off the particle module.
+    long: If set to *.T.*, the particle module is not activated even if the namelist is present in the parameter file.
+
+unlimited_dimension:
+  category: Memory
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Set the time dimension of the netCDF output file to be unlimited.
+    long: ''
+
+use_sgs_for_particles:
+  category: Numerics
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Use subgrid-scale (SGS) velocities for particle advection.
+    long: |
+      These velocities are calculated from the resolved and subgrid-scale TKE using the Monte-Carlo random-walk method described by [Weil et al. (2004)](https://journals.ametsoc.org/search?f_0=author&q_0=Peter+P.+Sullivan). When using this method, the time step for the advancement of the particles is limited by the so-called Lagrangian time scale. This may be smaller than the current LES time step so that several particle (sub-)time steps have to be carried out within a single LES time step.
+
+      In order to limit the number of sub-time steps (and to limit the CPU-time), the minimum value for the particle time step is defined by [dt_min_part](#particle_parameters--dt_min_part).
+
+      Please see also the discussion in [ticket 1489](https://palm.muk.uni-hannover.de/trac/ticket/1489) concerning the impact of SGS speeds on particle spreading.
+
+vertical_particle_advection:
+  category: Numerics
+  type: L
+  shape: (10)
+  default:
+    value: .T.
+  description:
+    short: Switch on/off vertical particle transport.
+    long: |
+      By default, particles are transported along all three directions in space. With [vertical_particle_advection](#particle_parameters--vertical_particle_advection) = *.F.*, the particles will only be transported horizontally.
+
+      [vertical_particle_advection](#particle_parameters--vertical_particle_advection) can be set different for each particle group (see [number_of_particle_groups](#particle_parameters--number_of_particle_groups)).
+
+weight_factor_merge:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    depends_on: '[initial_weighting_factor](#particle_parameters--initial_weighting_factor)'
+  description:
+    short: Threshold for merging of superdroplets.
+    long: |
+      By default, [weight_factor_merge](#particle_parameters--weight_factor_merge) = *0.5 [initial_weighting_factor](#particle_parameters--initial_weighting_factor)*.
+
+      Only superdroplets with a weighting factor $\leq$ [weight_factor_merge](#particle_parameters--weight_factor_merge) will be merged.
+
+weight_factor_split:
+  category: Lagrangian Cloud Model
+  type: R
+  default:
+    depends_on: '[initial_weighting_factor](#particle_parameters--initial_weighting_factor)'
+  description:
+    short: Threshold for splitting of superdroplets.
+    long: |
+      The parameter is only effective if [splitting_mode](#particle_parameters--splitting_mode) = *'const'*.
+
+      By default, [weight_factor_split](#particle_parameters--weight_factor_split) = *0.1 [initial_weighting_factor](#particle_parameters--initial_weighting_factor)*.
+
+      Superdroplets with a weighting factor $\geq$ [weight_factor_split](#particle_parameters--weight_factor_split) are considered for cloning.
+
+write_particle_statistics:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch on/off output of particle statistics.
+    long: |
+      If [write_particle_statistics](#particle_parameters--write_particle_statistics) = *.T.*, statistical information are output to file [PARTICLE_INFOS](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARTICLE_INFOS) by each PE. These statistics may be used for debugging. The statistics contain
+      
+      - time step count,
+      - simulated time,
+      - total number of particles used,
+      - number of particles exchanged between neighboring PEs.
+
+      **Note:**
+      For parallel runs files may become very large and performance of PALM may decrease.

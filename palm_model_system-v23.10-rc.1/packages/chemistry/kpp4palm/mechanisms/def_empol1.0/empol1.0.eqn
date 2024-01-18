@@ -1,0 +1,13 @@
+{empol1.0.eqn
+Former revisions
+----------------
+ $Id$
+}
+#EQUATIONS
+
+{ pollen : does nothing }
+  { 1.}  POL_BETU = POL_BETU : 1.0_dp  ;
+  { 2.}  POL_AMBR = POL_AMBR : 1.0_dp  ;
+  { 3.}  POL_POAC = POL_POAC : 1.0_dp  ;
+  { 4.}  POL_ALNU = POL_ALNU : 1.0_dp  ;
+

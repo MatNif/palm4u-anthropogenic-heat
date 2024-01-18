@@ -1,0 +1,66 @@
+#------------------------------------------------------------------------------#
+
+# Project information
+
+site_name: PALM
+site_url: ~
+site_description: Project documentation with Markdown.
+site_author: PALM Community
+
+repo_name: Download PALM
+repo_url: ~
+
+# Settings
+
+theme:
+    name: mkdocs
+    locale: en
+    custom_dir: content/theme/
+
+docs_dir: content/
+
+extra_css:
+  - theme/css/extra.css
+  - theme/css/version-select.css
+
+extra_javascript:
+  - theme/js/version-select.js
+  - theme/js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - theme/js/highlight.min.js
+  - theme/js/highlight.js
+  - theme/js/extra.js
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - abbr
+  - footnotes
+  - toc:
+      permalink: '#'
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.highlight:
+      use_pygments: false
+      anchor_linenums: true
+      linenums: false
+      linenums_style: table
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tasklist
+  - pymdownx.tilde
+  - pymdownx.tabbed
+
+plugins:
+  - search
+  - macros:
+      module_name: macros
+      verbose: false

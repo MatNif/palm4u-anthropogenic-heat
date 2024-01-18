@@ -1,0 +1,12 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "d3par"
+
+end_time:
+  category: Time-Integration Steering Settings
+  type: R4
+  default: 0.0
+  si-unit: s
+  description:
+     short: PALM simulation time.
+     long: |
+       INIFOR will produce hourly forcing data from the start date (see -d command-line option) to end_time seconds thereafter.

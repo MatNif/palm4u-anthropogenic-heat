@@ -1,0 +1,376 @@
+
+ ******************************    --------------------------------------------
+ * PALM (git SHA-1): 72f7201d *    atmosphere - run without 1D - prerun
+ ******************************    --------------------------------------------
+
+ Date:               2022-03-29    Run:       urban_environment_tenstream       
+ Time:                 18:39:11    Run-No.:   00
+ Run on host:           default
+ Number of PEs:               2    Processor grid (x,y): (   1,   2) calculated
+                                   A 1d-decomposition along y is used
+ ------------------------------------------------------------------------------
+
+ Numerical Schemes:
+ -----------------
+
+ --> Use the 1.5-order turbulence closure (LES mode).
+ --> Use the boussinesq approximation for the model equations.
+ --> Solve perturbation pressure via FFT using fftw routines
+     perturbation pressure is calculated at every Runge-Kutta step
+ --> Momentum advection via Wicker-Skamarock-Scheme 5th order
+ --> Scalar advection via Wicker-Skamarock-Scheme 5th order
+ --> Loop optimization method: cache
+ --> Time differencing scheme: runge-kutta-3       
+ --> Additional prognostic equation for the specific humidity
+ ------------------------------------------------------------------------------
+
+
+ Run time and time step information:
+ ----------------------------------
+
+ Timestep:             variable     maximum value: 20.000 s    CFL-factor: 0.90
+ Start time:              0.000 s
+ End time:             1270.000 s
+ Spinup time:          1200.000 s
+
+
+ Computational grid and domain size:
+ ----------------------------------
+
+ Grid length:      dx =       2.000 m    dy =       2.000 m
+                dz(1) =       2.000 m
+
+ Domain size:       x =     40.000 m     y =     40.000 m  z(u) =    121.000 m
+
+
+
+ Number of gridpoints (x,y,z):  (0:  19, 0:  19, 0:  61)
+ Subdomain size (x,y,z):        (    20,     10,     62)
+
+
+    Characteristic levels of the geo. wind component ug:
+
+       Height:         0.0     0.0  m
+       ug:            1.00    1.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+    Characteristic levels of the geo. wind component vg:
+
+       Height:         0.0     0.0  m
+       vg:            0.00    0.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+
+ Topography information:
+ ----------------------
+
+ Topography: read_from_file                          
+ Topography grid definition convention:
+ cell center (scalar grid points)
+
+
+
+ Boundary conditions:
+ -------------------
+
+                     p                    uv                                  pt
+
+ B. bound.: p(0)     = p(1)   | uv(0)     = -uv(1)                | pt(0)     = from soil model  
+ T. bound.: p(nzt+1) = 0      | uv(nzt+1) = ug(nzt+1), vg(nzt+1)  | pt(nzt+1) = pt(nzt) + dpt/dz_
+
+                     e
+
+ B. bound.: e(0)     = e(1)                                                                      
+ T. bound.: e(nzt+1) = e(nzt) = e(nzt-1)                                                         
+
+                     q
+
+ B. bound.: q(0)     = from soil model                                                           
+ T. bound.: q(nzt+1) = q(nzt) + dq/dz                                                            
+
+ Bottom surface fluxes are used in diffusion terms at k=1
+
+
+    Constant flux layer between bottom surface and first computational u,v-level:
+
+       z_mo =   1.00 m   z0 = 0.1000 m   z0h = 0.10000 m   kappa = 0.40
+       zeta value range:     -20.00 <= zeta <= 20.00
+       Predefined surface temperature
+       Predefined surface humidity
+
+
+ Lateral boundaries:
+       left/right:  cyclic              
+       north/south: cyclic              
+
+
+ Initial profiles:
+ ----------------
+
+    Characteristic levels of the initial temperature profile:
+
+       Height:           0.0     0.0  m
+       Temperature:   277.15  277.15  K
+       Gradient:      ------    0.00  K/100m
+       Gridpoint:          0       0
+
+    Characteristic levels of the initial humidity profile:
+
+       Height:           0.0       0.0  m
+       Humidity:     0.1E-02   0.1E-02  kg/kg
+       Gradient:    --------   0.0E+00  (kg/kg)/100m
+       Gridpoint:          0         0
+
+
+ List output:
+ -----------
+
+    1D-Profiles:
+       Output every             9999999.90 s
+       Time averaged over            60.00 s
+       Averaging input every          0.00 s
+
+
+ Data output:
+ -----------
+
+       Time averaged over            60.00 s
+       Averaging input every          0.00 s
+
+    1D-Profiles:
+       Output format: netCDF 64bit offset                     
+
+
+       Profile: u, u*2, wu, w*u*, w"u", v, v*2, wv, w*v*, w"v", theta,       
+
+              : theta*2, wtheta, w*theta*, w"theta", rad_lw_in, rad_lw_out,  
+
+              :                                                              
+       Output every                  60.00 s
+       Time averaged over            60.00 s
+       Averaging input every          0.00 s
+
+    2D-Arrays:
+       Output format: netCDF 64bit offset                     
+
+
+       XY-cross-section  Arrays:  shf*, ghf*, rad_net*, rad_lw_in*, rad_lw_out*, rad_sw_in*, rad_sw_out
+       Output every                  60.00 s  and at the start
+       Cross sections at k = /0/
+       scalar-coordinates:   /0.0/ m
+
+
+       Number of output time levels allowed: unlimited
+
+
+    2D-Arrays(time-averaged):
+       Output format: netCDF 64bit offset                     
+
+
+       XY-cross-section  Arrays:  shf*, ghf*, tsurf*,                                                  
+       Output every                  60.00 s  and at the start
+       Time averaged over            60.00 s
+       Averaging input every          0.00 s
+       Cross sections at k = /0/
+       scalar-coordinates:   /0.0/ m
+
+
+       Number of output time levels allowed: unlimited
+
+
+    3D-Arrays:
+       Output format: netCDF 64bit offset                     
+
+
+       Arrays:  u, v, w, theta,                                                      
+       Output every                  60.00 s  and at the start
+       Upper output limit at        121.00 m  (GP   61)
+
+
+       Number of output time levels allowed: unlimited
+
+
+    3D-Arrays(time-averaged):
+       Output format: netCDF 64bit offset                     
+
+
+       Arrays:  u, v, w, theta,                                                      
+       Output every                  60.00 s  and at the start
+       Time averaged over            60.00 s
+       Averaging input every          0.00 s
+       Upper output limit at      121.00 m  (GP   61)
+
+
+       Number of output time levels allowed: unlimited
+
+
+    Time series:
+       Output format: netCDF 64bit offset                     
+
+       Output every                  10.00 s
+
+ ------------------------------------------------------------------------------
+
+
+ Physical quantities:
+ -------------------
+
+    Geograph. latitude  :   latitude  =  52.5 degr
+    Geograph. longitude :   longitude =  13.3 degr
+    Rotation angle      :   rotation_angle =   0.0 degr
+    Angular velocity    :   omega  = 0.729E-04 rad/s
+    Coriolis parameter  :   f      =  0.000116 1/s
+                            f*     =  0.000089 1/s
+
+    Date and time at model start : 2019-03-06 10:00:00 +00
+
+    Gravity             :   g      =  9.8 m/s**2
+
+    Reference state used in buoyancy terms: initial_profile
+
+
+ Cloud physics quantities / methods:
+ ----------------------------------
+
+    Humidity is considered, bu no condensation
+
+
+ LES / Turbulence quantities:
+ ---------------------------
+
+    Mixing length is limited close to surfaces
+
+
+ Actions during the simulation:
+ -----------------------------
+
+    Disturbance impulse (u,v) every :   9999999.90 s
+    Disturbance amplitude           :     0.25 m/s
+    Lower disturbance level         :     5.00 m (GP    3)
+    Upper disturbance level         :    39.00 m (GP   20)
+    Disturbances cease as soon as the disturbance energy exceeds 0.010 m**2/s**2
+    Random number generator used    : random-parallel
+
+
+
+ Land surface model information:
+ ------------------------------
+
+    --> Soil bottom is closed (water content is conserved, default)
+    --> Land surface type  : read from file
+    --> Soil porosity type : read from file
+
+    Initial soil temperature and moisture profile:
+
+       Height:              -0.01      -0.02      -0.05      -0.10      -0.20      -0.40      -0.80      -2.  m
+       Temperature:        277.15     277.00     277.00     277.00     277.00     277.00     277.00     277.  K
+       Moisture:             0.30       0.30       0.30       0.30       0.30       0.30       0.30       0.  m**3/m**3
+       Root fraction:        0.49       0.26       0.25       0.00       0.00       0.00       0.00       0.  
+       Grid point:              0          1          2          3          4          5          6
+
+
+ Vegetation canopy (drag) model:
+ ------------------------------
+
+ Canopy mode: read_from_file                
+ Canopy height:  10.00m (   5 grid points)
+ Leaf drag coefficient:   0.30
+
+ Predefined constant heatflux at the top of the vegetation:   0.00 K m/s
+
+ Characteristic levels of the leaf area density:
+
+ Height:                 0.0     0.0  m
+ Leaf area density:    0.0000    0.00  m**2/m**3
+ Gradient:            ------    0.00  m**2/m**4
+ Gridpoint:                0       0
+
+
+ Radiation model information:
+ ----------------------------
+
+
+    Albedo is set individually for each xy-location, according to given surface type.
+
+    --> Albedo is fixed during the run
+    Timestep: dt_radiation =  30.00  s
+ ------------------------------------------------------------------------------
+
+
+
+Spinup control output:---------------------------------
+
+ITER.   HH:MM:SS    DT   PT(z_MO)---------------------------------
+    1  -00:18:00  120.00   288.14
+    2  -00:16:00  120.00   288.17
+    3  -00:14:00  120.00   288.21
+    4  -00:12:00  120.00   288.24
+    5  -00:10:00  120.00   288.27
+    6  -00:08:00  120.00   288.30
+    7  -00:06:00  120.00   288.33
+    8  -00:04:00  120.00   288.35
+    9  -00:02:00  120.00   288.38
+   10   00:00:00  120.00   288.41
+
+
+
+Run-control output:
+------------------
+
+RUN  ITER. HH:MM:SS.SS    DT(E)     UMAX     VMAX     WMAX     U*    W*      THETA*     Z_I     ENERG.   DISTENERG    DIVOLD     DIVNEW     UMAX(KJI)    VMAX(KJI)    WMAX(KJI)   ADVECX   ADVECY   MGCYC
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  0      0 00:00:00.00   1.2700A   1.4161D -0.6100D  0.4750  0.089  0.00  -0.120E-02      0.  0.448E+00  0.127E-01  0.245E-01  0.569E-02    9   5  17   10   5   0   15   2  14    0.000    0.000       0
+  0      1 00:00:01.26   1.0600A   1.6975   1.0122   0.9268  0.101  0.00  -0.590E+00      2.  0.442E+00  0.206E-01  0.462E-02  0.139E-02   16   0   0    6   5  14   15   2  14    0.000    0.000       0
+  0      2 00:00:02.32   1.0500A   1.7089   1.0756   1.0322  0.099  0.00  -0.610E+00      2.  0.440E+00  0.222E-01  0.190E-02  0.663E-03    9   5   0    6   5  14   15   2  14    0.000    0.000       0
+  0      3 00:00:03.37   1.0600A   1.6903   1.0652   1.0497  0.097  0.19  -0.622E+00     14.  0.439E+00  0.227E-01  0.170E-02  0.535E-03    9   5   0   12   5  14   15   2  14    0.000    0.000       0
+  0      4 00:00:04.43   1.1000A   1.6356   1.0569   1.0419  0.095  0.00  -0.641E+00      8.  0.438E+00  0.231E-01  0.163E-02  0.500E-03    9   5   1   12   5  14   15   2  14    0.000    0.000       0
+  0      5 00:00:05.53   1.1100A   1.6241   1.0362   1.0251  0.093  0.00  -0.674E+00      4.  0.437E+00  0.234E-01  0.163E-02  0.497E-03    9   5   1   12   5  14   15   2  14    0.000    0.000       0
+  0      6 00:00:06.64   1.1500A   1.5658   1.0183   1.0133  0.092  0.00  -0.729E+00      4.  0.436E+00  0.238E-01  0.161E-02  0.489E-03    9   5   1   10   5  14   15   1  14    0.000    0.000       0
+  0      7 00:00:07.79   1.2200A   1.4752   1.0020   1.0009  0.090  0.00  -0.754E+00      4.  0.434E+00  0.241E-01  0.163E-02  0.492E-03    9   5   2   10   5  14   15   1  14    0.000    0.000       0
+  0      8 00:00:09.01   1.2400A   1.4480   0.9835   0.9854  0.089  0.00  -0.832E+00      4.  0.433E+00  0.245E-01  0.170E-02  0.508E-03   16   1  15   10   5  14   15   1  14    0.000    0.000       0
+  0      9 00:00:10.25   1.2600A   1.4309   0.9700   0.9738  0.088  0.00  -0.721E+00      4.  0.432E+00  0.249E-01  0.170E-02  0.511E-03   16   1  15   10   5  14   15   2  14    0.000    0.000       0
+  0     10 00:00:11.51   1.2700A   1.4160   0.9691   0.9659  0.087  0.00  -0.711E+00      4.  0.431E+00  0.253E-01  0.173E-02  0.514E-03   16   1  15    8   5  14   15   2  14    0.000    0.000       0
+  0     11 00:00:12.78   1.2800A   1.4038   0.9665   0.9575  0.086  0.00  -0.695E+00      4.  0.430E+00  0.258E-01  0.174E-02  0.513E-03   16   1  15    8   5  14   15   2  14    0.000    0.000       0
+  0     12 00:00:14.06   1.2900A   1.3931   0.9676   0.9469  0.085  0.00  -0.696E+00      4.  0.429E+00  0.262E-01  0.175E-02  0.513E-03   16   1  15    7   5  14   15   2  14    0.000    0.000       0
+  0     13 00:00:15.35   1.3000A   1.3831   0.9612   0.9336  0.084  0.00  -0.685E+00      4.  0.428E+00  0.266E-01  0.176E-02  0.511E-03   16   1  15    7   5  14   15   2  14    0.000    0.000       0
+  0     14 00:00:16.65   1.3100A   1.3734   0.9453   0.9194  0.083  0.00  -0.704E+00      4.  0.427E+00  0.270E-01  0.176E-02  0.508E-03   16   1  15    7   5  14   20  17  14    0.000    0.000       0
+  0     15 00:00:17.96   1.3200A   1.3637   0.9253   0.9160  0.082  0.00  -0.680E+00      4.  0.426E+00  0.275E-01  0.176E-02  0.505E-03   16   1  15   10   5  14   20  17  14    0.000    0.000       0
+  0     16 00:00:19.28   1.3300A   1.3535   0.9107   0.9083  0.081  0.00  -0.692E+00      4.  0.425E+00  0.279E-01  0.176E-02  0.499E-03   16   1  15   10   5  14   20  17  14    0.000    0.000       0
+  0     17 00:00:20.61   1.3400A   1.3430   0.8926   0.8988  0.080  0.00  -0.678E+00      4.  0.424E+00  0.283E-01  0.175E-02  0.492E-03   16   1  15   10   5  14   20  17  14    0.000    0.000       0
+  0     18 00:00:21.95   1.3500A   1.3324   0.8718   0.8899  0.080  0.00  -0.686E+00      4.  0.423E+00  0.287E-01  0.174E-02  0.484E-03   16   1  15   10   5  14   20  17  14    0.000    0.000       0
+  0     19 00:00:23.30   1.3600A   1.3224   0.8492   0.8835  0.079  0.00  -0.696E+00      4.  0.423E+00  0.291E-01  0.173E-02  0.475E-03   16   1  15   10   5  14   20  17  14    0.000    0.000       0
+  0     20 00:00:24.66   1.3700A   1.3131   0.8254   0.8799  0.078  0.00  -0.687E+00      4.  0.422E+00  0.295E-01  0.171E-02  0.464E-03    9   7   1   10   5  14   20  17  14    0.000    0.000       0
+  0     21 00:00:26.03   1.3800A   1.3072   0.8010   0.8783  0.078  0.00  -0.749E+00      4.  0.421E+00  0.299E-01  0.170E-02  0.452E-03    9   7   1   10   5  14   20  17  14    0.000    0.000       0
+  0     22 00:00:27.41   1.3800A   1.3055   0.7802   0.8769  0.077  0.00  -0.679E+00      4.  0.420E+00  0.302E-01  0.168E-02  0.440E-03    9   7   2    9   5  14   20  17  14    0.000    0.000       0
+  0     23 00:00:28.79   1.3900A   1.2989   0.7644   0.8742  0.077  0.00  -0.672E+00      4.  0.419E+00  0.306E-01  0.165E-02  0.425E-03    9   7   3    9   5  14   20  17  14    0.000    0.000       0
+  0     24 00:00:30.18   1.3900A   1.2934   0.7484   0.8686  0.076  0.00  -0.673E+00      4.  0.419E+00  0.309E-01  0.163E-02  0.411E-03    9   7   3    9   5  14   20  17  14    0.000    0.000       0
+  0     25 00:00:31.57   1.4000A   1.2843   0.7369   0.8603  0.076  0.00  -0.663E+00      6.  0.418E+00  0.313E-01  0.160E-02  0.396E-03   21  17  15   13   5  14   20  17  14    0.000    0.000       0
+  0     26 00:00:32.97   1.3900A   1.2926   0.7336   0.8490  0.075  0.00  -0.660E+00      6.  0.417E+00  0.316E-01  0.158E-02  0.383E-03   21  17  15   13   5  14   20  17  14    0.000    0.000       0
+  0     27 00:00:34.36   1.3900A   1.2956   0.7295   0.8364  0.075  0.00  -0.659E+00      6.  0.417E+00  0.319E-01  0.154E-02  0.366E-03   21  17  15   13   5  14   20  17  14    0.000    0.000       0
+  0     28 00:00:35.75   1.3900A   1.2925   0.7232   0.8222  0.075  0.00  -0.698E+00      6.  0.416E+00  0.322E-01  0.152E-02  0.352E-03   21  17  15   13   5  14   20  17  14    0.000    0.000       0
+  0     29 00:00:37.14   1.4000A   1.2841   0.7216   0.8074  0.074  0.00  -0.661E+00      6.  0.415E+00  0.324E-01  0.149E-02  0.339E-03   21  17  15   12   5  14   20  17  14    0.000    0.000       0
+  0     30 00:00:38.54   1.4200A   1.2715   0.7227   0.7927  0.074  0.00  -0.660E+00      6.  0.415E+00  0.327E-01  0.148E-02  0.328E-03   21  17  15   12   5  14   20  17  14    0.000    0.000       0
+  0     31 00:00:39.97   1.4300A   1.2560   0.7197   0.7792  0.074  0.00  -0.661E+00      6.  0.414E+00  0.329E-01  0.148E-02  0.320E-03   21  17  15   12   5  14   20  17  14    0.000    0.000       0
+  0     32 00:00:41.40   1.4500A   1.2409   0.7111   0.7686  0.074  0.00  -0.661E+00      6.  0.414E+00  0.331E-01  0.147E-02  0.311E-03   18   2   5   12   5  14   20  17  14    0.000    0.000       0
+  0     33 00:00:42.85   1.4400A   1.2460   0.6947   0.7608  0.073  0.00  -0.663E+00      6.  0.413E+00  0.333E-01  0.147E-02  0.304E-03   18   2   5   12   5  14   20  17  14    0.000    0.000       0
+  0     34 00:00:44.29   1.4400A   1.2523   0.6717   0.7701  0.073  0.00  -0.663E+00      6.  0.412E+00  0.335E-01  0.144E-02  0.292E-03   18   2   5   12   5  14    7   3   5    0.000    0.000       0
+  0     35 00:00:45.73   1.4300A   1.2578   0.6416   0.7590  0.073  0.00  -0.664E+00     10.  0.412E+00  0.337E-01  0.142E-02  0.281E-03   18   2   5   12   5  14    7   3   5    0.000    0.000       0
+  0     36 00:00:47.16   1.4300A   1.2600   0.6319   0.7561  0.073  0.00  -0.664E+00     10.  0.411E+00  0.339E-01  0.138E-02  0.268E-03   18   2   5   15   3   3    8   3   5    0.000    0.000       0
+  0     37 00:00:48.59   1.4200A   1.2646   0.6237   0.7749  0.072  0.00  -0.665E+00     10.  0.411E+00  0.340E-01  0.136E-02  0.257E-03   18   2   6   15   3   3    8   3   5    0.000    0.000       0
+  0     38 00:00:50.01   1.4200A   1.2660   0.6100   0.7694  0.072  0.00  -0.669E+00     10.  0.411E+00  0.341E-01  0.133E-02  0.245E-03   18   2   6   15   3   3    8   3   5    0.000    0.000       0
+  0     39 00:00:51.43   1.4300A   1.2608   0.5916   0.7475  0.072  0.00  -0.674E+00     10.  0.410E+00  0.343E-01  0.132E-02  0.234E-03   18   2   6   15   3   3    8   3   5    0.000    0.000       0
+  0     40 00:00:52.86   1.4400A   1.2495  -0.5960   0.7324  0.071  0.00  -0.682E+00     10.  0.410E+00  0.344E-01  0.131E-02  0.225E-03   18   2   6    6   4  11   12  14   5    0.000    0.000       0
+  0     41 00:00:54.30   1.4600A   1.2335  -0.6408   0.7366  0.071  0.00  -0.694E+00     10.  0.409E+00  0.344E-01  0.131E-02  0.217E-03   18   2   6    6   4  11   12  14   5    0.000    0.000       0
+  0     42 00:00:55.76   1.4800A   1.2154  -0.6772   0.7419  0.071  0.00  -0.699E+00     10.  0.409E+00  0.345E-01  0.132E-02  0.210E-03   18   2   7    6   4  11   11  14   4    0.000    0.000       0
+  0     43 00:00:57.24   1.5000A   1.1999  -0.7007   0.7622  0.070  0.00  -0.711E+00     10.  0.408E+00  0.345E-01  0.132E-02  0.204E-03   18   2   7    6   4  11   11  14   4    0.000    0.000       0
+  0     44 00:00:58.74   1.5200A   1.1814  -0.7074   0.7757  0.070  0.00  -0.773E+00     10.  0.408E+00  0.346E-01  0.133E-02  0.199E-03   18   2   7    6   4  11   11  14   4    0.000    0.000       0
+  0     45 00:01:00.26   1.5300A   1.1766  -0.6950   0.7942  0.070  0.00  -0.709E+00     10.  0.408E+00  0.346E-01  0.133E-02  0.194E-03   18   1   7    6   4  11   12  14   4    0.000    0.000       0
+  0     46 00:01:01.79   1.5400A   1.1705  -0.7135   0.8107  0.069  0.00  -0.701E+00     10.  0.407E+00  0.346E-01  0.133E-02  0.188E-03   18   1   7    6   4  12   12  14   4    0.000    0.000       0
+  0     47 00:01:03.33   1.5500A   1.1639  -0.7432   0.8200  0.069  0.06  -0.700E+00     10.  0.407E+00  0.346E-01  0.133E-02  0.182E-03   18   1   8    6   3  12   12  14   4    0.000    0.000       0
+  0     48 00:01:04.88   1.5600A   1.1568  -0.7634   0.8349  0.068  0.08  -0.704E+00     10.  0.407E+00  0.345E-01  0.134E-02  0.178E-03   18   1   8    6   3  12   13  14   5    0.000    0.000       0
+  0     49 00:01:06.44   1.5600A   1.1526  -0.7629   0.8517  0.068  0.10  -0.708E+00     10.  0.406E+00  0.345E-01  0.134E-02  0.175E-03    9  11  10    6   3  13   13  14   5    0.000    0.000       0
+  0     50 00:01:08.00   1.5600A   1.1510  -0.8177   0.8652  0.067  0.11  -0.714E+00     10.  0.406E+00  0.344E-01  0.133E-02  0.172E-03   10  11  10    6   3  13   13  14   5    0.000    0.000       0
+  0     51 00:01:09.56   1.5600A   1.1569  -0.8496   0.8772  0.067  0.12  -0.719E+00     10.  0.405E+00  0.343E-01  0.133E-02  0.169E-03   10  11  11    6   3  13   13  14   5    0.000    0.000       0
+  0     52 00:01:11.12   1.5500A   1.1577  -0.8602   0.8887  0.066  0.27  -0.723E+00     40.  0.405E+00  0.342E-01  0.133E-02  0.168E-03   10  11  11    6   3  13   13  14   5    0.000    0.000       0

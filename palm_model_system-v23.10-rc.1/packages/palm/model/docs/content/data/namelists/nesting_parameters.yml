@@ -1,0 +1,181 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "nesting_parameters"
+
+anterpolation_buffer_width:
+  category: General Settings
+  type: I
+  default:
+    value: 2
+  description:
+    short: Width of the anterpolation boundary buffer in number of parent-grid points.
+    long: |
+      If [anterpolation_buffer_width](#nesting_parameters--anterpolation_buffer_width) = *0*, anterpolation is carried out for all parent-grid points covered by a child domain except the grid points next to the boundaries. Setting [anterpolation_buffer_width](#nesting_parameters--anterpolation_buffer_width) > *0* widens these buffers to the specified value. The same value is applied to all nested boundaries. Enlarging the buffer may help to prevent unwanted feedbacks between parent and child in case of [nesting_mode](#nesting_parameters--nesting_mode) = *'two-way'*.
+      
+      **Note:** <br>
+      In ocean mode, [anterpolation_buffer_width](#nesting_parameters--anterpolation_buffer_width) = *0* may cause aborts due to exponentially increasing velocities.
+
+
+anterpolation_starting_height:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: m
+  description:
+    short: Lower level at which anterpolation is employed.
+    long: |
+      This parameter controls the canopy-restricted anterpolation. It describes the height at which the anterpolation is performed in case of two-way coupling mode. Below this height, no anterpolation is employed. It is recommended to set [anterpolation_starting_height](#nesting_parameters--anterpolation_starting_height) to a height lower than the majority of the building roofs and terrain features. Note that in vertically shifted childs [anterpolation_starting_height](#nesting_parameters--anterpolation_starting_height) still refers to the coordinate system of the root domain.
+
+
+domain_layouts:
+  category: Grid Settings
+  type: D
+  shape: (64)
+  default: ~
+  description:
+    short: General information to describe the nesting setup.
+    long: |
+      The derived data type has the following structure:
+
+          TYPE pmc_layout
+
+             CHARACTER(LEN=32) ::  name
+
+             INTEGER  ::  id
+             INTEGER  ::  parent_id
+             INTEGER  ::  npe_total
+
+             REAL(wp) ::  lower_left_x
+             REAL(wp) ::  lower_left_y
+             REAL(wp) ::  nest_shift_z
+
+          END TYPE pmc_layout
+
+      `name` is the domain name given by the user.
+      `id` describes the number of the domain (this can be arbitrarily chosen, but it is good practice to number the domains in ascending order starting with 1), while `parent_id` is the number of the domain in which the nested domain is embedded. The so-called root domain, which includes all other nested-domains, should have the `id = 1`. The root domain has no parent domain. The `parent_id` of the root domain must be set to *-1*. `npe_total` is the number of PEs to be assigned for this domain.
+
+      `lower_left_x` and `lower_left_y` are the coordinates (in meters) of the south-left corner of the domain in the root-model coordinate system. Note that the corner coordinates are always given in the root-coordinate system even for domains nested in another nested domain. More precisely, `lower_left_x` is measured from the u-node at `i = 0` and `lower_left_y` from the v-node at `j = 0`. The root-domain has `lower_left_x = 0.0` and `lower_left_y = 0.0`. Note that `lower_left_x` must be integer divisible by the parent grid [dx](#initialization_parameters--dx) and, similarly, `lower_left_y` by the parent grid [dy](#initialization_parameters--dy).
+      
+      `nest_shift_z` describes the vertical shift (in meters) of a child with respect to the root domain. `nest_shift_z = 0.0` means that the bottom boundary of the child matches the bottom boundary of the root domain. The root domain always requires to set `nest_shift_z = 0.0`. In ocean mode, `nest_shift_z /= 0.0` is not allowed, and the top boundary of the child always matches the top boundary of the root model (the atmosphere/ocean surface). The bottom coordinate of a child (as given by `nest_shift_z`) must match a vertical grid level of the root domain. If e.g. the vertical grid spacing of the root domain is [dz](#initialization_parameters--dz) = *20.0*, only values of *20.0*, *40.0*, *60.0*, etc. are allowed for `nest_shift_z`.
+
+      A nested domain must be completely embedded within its parent domain and there must be a clearance between the lateral nest boundaries and its parent boundaries. This clearance must be at least four parent-grid cells if using the Wicker-Skamarock advection scheme and at least two parent-grid cells if using the Piaseck-Williams advection scheme. Possible parallel nests, and the associated ghost-cell layers, are not allowed to overlap.
+
+      Up to 64 domains can be used.
+
+      The following gives an example for defining two nested-domains embedded in a root-domain, where the second child (`'fine'`) is embedded in the first child (`'medium'`):
+
+          domain_layouts = 'coarse',  1,  -1,  16,    0.0,    0.0,    0.0,
+                           'medium',  2,   1,  16,  320.0,  128.0,    0.0,
+                           'fine',    3,   2,  16,  480.0,  160.0,  100.0,
+
+      The total number of MPI-processes required by this configuration is 16 + 16 + 16 = 48. The domain decomposition along x- and y-directions of each domain can be additionally specified by setting [npex](#runtime_parameters--npex) and [npey](#runtime_parameters--npey) in the respective runtime-parameters namelists.
+
+
+homogeneous_initialization_child:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Child-domain initialization method.
+    long: |
+      In case of [homogeneous_initialization_child](#nesting_parameters--homogeneous_initialization_child) = *.F.*, the child domain is initialized by the 3D data received from its parent domain.
+
+      If large differences between parent and child domains appear in the topography, grid points might belong to the atmosphere in the child domain but the corresponding parent grid points belong to topography. With a 3D initialization, topography-covered parent grid points will then be visible in the child domain as regions with zero values of the velocity components. In case the discrepancy between parent and child topography becomes excessively large, i.e. for larger grid-aspect ratios, this causes issues with the mass balance, which in turn may result in numerical instabilities.
+
+      To overcome this, the nesting offers the possibility to initialize the child domain with area-averaged parent data ([homogeneous_initialization_child](#nesting_parameters--homogeneous_initialization_child) = *.T.*), with area averaging performed over the respective child area.
+      
+      [homogeneous_initialization_child](#nesting_parameters--homogeneous_initialization_child) = *.T.* is not allowed in ocean mode.
+
+
+nesting_datatransfer_mode:
+  category: Mode
+  type: C*7
+  default:
+    value: 'mixed'
+  description:
+    short: Type of nesting data-transfer mode.
+    long:  |
+      This parameter is only relevant for recursively nested domains where at least one child domain is also the parent domain for another child domain and [nesting_mode](#nesting_parameters--nesting_mode) = *'two-way'*.
+  allowed_values:
+    - value: 'cascade'
+      description: |
+        From coarse to fine: The child waits until it has received data from the coarse model, performs the interpolation, and then sends data to the finer model.
+
+        From fine to coarse: The parent waits until it has received anterpolated data from the finer model, performs further anterpolation, and then sends the data to the coarser grid.
+    - value: 'mixed'
+      description: |
+        From coarse to fine: The child receives data from the coarse model and performs the interpolation, while it sends data to its recursively nested child domain without waiting until interpolation has been finished.
+
+        From fine to coarse: The parent receives anterpolated data from its child, while it sends data data to the coarser domain simultaneously.
+    - value: 'overlap'
+      description: |
+        From coarse to fine: All parent domains immediately send data after timestep synchronization. The respective child domain receives the data via 'MPI_GET' and perform the interpolation.
+
+        From fine to coarse: The anterpolation step is also performed simultaneously for all models. Subsequently, the data is transferred to the coarse model in parallel.
+
+
+nesting_bounds:
+  category: Boundary Conditions
+  type: C*14
+  default:
+    value: '3d_nested'
+  description:
+    short: Type of nesting boundary conditions.
+    long: ''
+  allowed_values:
+    - value: '3d_nested'
+      description: |
+        A full 3d-nested simulation. Dirichlet boundary conditions are employed at the east, west, north, south and top domain child boundaries.
+    - value: 'cyclic_along_x'
+      description: |
+        The boundary condition at the east and west domain boundaries is cyclic, while Dirichlet boundary conditions are employed at the north, south and top domain boundaries. The child domain extension must exactly match the root domain extension along the `x` direction.
+    - value: 'cyclic_along_y'
+      description: |
+        The boundary condition at the north and south domain boundaries is cyclic, while Dirichlet boundary conditions are employed at the east, west and top domain boundaries. The child domain extension must exactly match the root domain extension along the `y` direction.
+    - value: 'vertical_only'
+      description: |
+        A one-dimensional nesting in the vertical direction only, i.e. all domains (must) have the same horizontal extent.
+
+
+nesting_mode:
+  category: Mode
+  type: C*7
+  default:
+    value: 'two-way'
+  description:
+    short: Type of nesting mode.
+    long: ''
+  allowed_values:
+    - value: 'one-way'
+      description: |
+        A one-way nesting is applied. The child domain obtains its boundary conditions from the parent domain via interpolation but there is no feedback of the child-domain solution on the parent.
+    - value: 'two-way'
+      description: |
+        A two-way nesting is applied. The child domain obtains its boundary conditions from the parent domain via interpolation and feeds back its solution onto the parent domain via anterpolation.
+
+
+particle_coupling:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Switch for particle coupling in nested setups.
+    long:  |
+      This parameter takes effect only when the [Lagrangian particle model](#particle_parameters) is activated. For [particle_coupling](#nesting_parameters--particle_coupling) = *.T.*, Lagrangian particles are transferred between domains. Particles only exist once, either in the parent or in the child domain, i.e. if a particle enters a child domain, it is removed from the parent, and if it leaves the child, it is removed from the child and added to the parent domain again. The [&particle_parameters namelist](#particle_parameters) is only allowed to be given for the root domain.
+      
+      For [particle_coupling](#nesting_parameters--particle_coupling) = *.F.*, [&particle_parameters namelists](#particle_parameters) can be given independently for each domain. Particles will not be transferred between parent and child domains. Boundary conditions for particles are assumed as set in the respective [&particle_parameters namelist](#particle_parameters).
+      
+      [particle_coupling](#nesting_parameters--particle_coupling) = *.T.* is not allowed in case that vertically shifted child domains are used.
+
+
+switch_off_module:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn off the module.
+    long: |
+      If [switch_off_module](#nesting_parameters--switch_off_module) = *.T.*, the nesting is not activated even if the namelist is present in the parameter file.

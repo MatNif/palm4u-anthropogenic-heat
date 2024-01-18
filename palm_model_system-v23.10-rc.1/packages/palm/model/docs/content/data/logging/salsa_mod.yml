@@ -1,0 +1,470 @@
+SAL0001:
+  loglevel: ERROR
+  message: |
+    salsa = .TRUE. is not allowed with humidity = .F.
+  description: |
+    Applying the salsa module requires running PALM in humid mode. See [humidity](../Namelists/#initialization_parameters--humidity).
+
+SAL0002:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_b = "..."
+  description: |
+    See [bc_aer_b](../Namelists/#salsa_parameters--bc_aer_b) for allowed values.
+
+SAL0003:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_t = "..."
+  description: |
+    See [bc_aer_t](../Namelists/#salsa_parameters--bc_aer_t) for allowed values.
+
+SAL0004:
+  loglevel: ERROR
+  message: |
+    unknown nj3 (must be 1-3)
+  description: |
+    See [nj3](../Namelists/#salsa_parameters--nj3) for allowed values.
+
+SAL0005:
+  loglevel: ERROR
+  message: |
+    salsa_emission_mode /= "no_emission" requires bc_aer_b "Neumann"
+  description: |
+    If aerosol surface emissions are given, a Neumann boundary condition should be set at the bottom. See [bc_aer_b](../Namelists/#salsa_parameters--bc_aer_b ].
+
+SAL0006:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_l = "..."
+  description: |
+    See [bc_aer_l](../Namelists/#salsa_parameters--bc_aer_l) for allowed values.
+
+SAL0007:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_r = "..."
+  description: |
+    See [bc_aer_r](../Namelists/#salsa_parameters--bc_aer_r) for allowed values.
+
+SAL0008:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_n = "..."
+  description: |
+    See [bc_aer_n](../Namelists/#salsa_parameters--bc_aer_n) for allowed values.
+
+SAL0009:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_aer_s = "..."
+  description: |
+    See [bc_aer_s](../Namelists/#salsa_parameters--bc_aer_s) for allowed values.
+
+SAL0010:
+  loglevel: ERROR
+  message: |
+    boundary conditions bc_aer_l and bc_aer_r must both be cyclic or non-cyclic
+  description: |
+    See descriptions for [bc_aer_l](../Namelists/#salsa_parameters--bc_aer_l) and [bc_aer_r](../Namelists/#salsa_parameters--bc_aer_r).
+
+SAL0011:
+  loglevel: ERROR
+  message: |
+    boundary conditions bc_aer_n and bc_aer_s must both be cyclic or non-cyclic
+  description: |
+    See descriptions for [bc_aer_n](../Namelists/#salsa_parameters--bc_aer_n) and [bc_aer_s](../Namelists/#salsa_parameters--bc_aer_s).
+
+SAL0012:
+  loglevel: ERROR
+  message: |
+    unknown aerosol species/component(s) given in the initialization
+  description: |
+    Unknown chemical components included in the parameter file. See [listspec](../Namelists/#salsa_parameters--listspec) for allowed components.
+
+SAL0013:
+  loglevel: ERROR
+  message: |
+    SALSA is run together with chemistry but not all gaseous components are provided by kpp (H2SO4, HNO3, NH3, OCNV, OCSC)
+  description: |
+    Some gaseous compound(s) needed in the aerosol module SALSA are missing from the chemical mechanism applied. Check the `chem_gashase_mod.f90`.
+
+SAL0014:
+  loglevel: ERROR
+  message: |
+    vertical dimension of the number of aerosol chemical components = ... in the dynamic driver does not match the number of model grid points = ...
+  description: |
+    dimensions in dynamic input file must match the dimension of model grid points for the respective variable.
+
+SAL0015:
+  loglevel: ERROR
+  message: |
+    missing "..." in dynamic driver
+  description: ''
+
+SAL0016:
+  loglevel: ERROR
+  message: |
+    none of the aerosol chemical components in the dynamic driver correspond to ones applied in SALSA
+  description: |
+    If the initial aerosol concentrations are read from the dynamic input file ([isdtyp](../Namelists/#salsa_parameters--isdtyp) = *1*), the chemical composition must include at least one chemical component applied in the model.
+
+SAL0017:
+  loglevel: ERROR
+  message: |
+    currently only lod=1 accepted for init_atmosphere_aerosol
+  description: |
+    Initialization of the aerosol module via dynamic input file is only allowed with profiles (LOD=1).
+
+SAL0018:
+  loglevel: ERROR
+  message: |
+    number of size bins in init_atmosphere_aerosol does not match with that applied in the model set-up
+  description: |
+    The number of aerosol size bins in the dynamic driver does not correspond to the size distribution information given in the parameter file. See [nbin](../Namelists/#salsa_parameters--nbin) and [reglim](../Namelists/#salsa_parameters--reglim), and appropriately correct the discrepancy.
+
+SAL0019:
+  loglevel: ERROR
+  message: |
+    mean diameters of the aerosol size bins in the dynamic driver do not match with the sectional representation of the model.
+  description: |
+    The mean diameters of the aerosol size bins in the dynamic driver does not correspond to the size distribution information given in the parameter file. See [nbin](../Namelists/#salsa_parameters--nbin) and [reglim](../Namelists/#salsa_parameters--reglim), and appropriately correct the discrepancy.
+
+SAL0020:
+  loglevel: ERROR
+  message: |
+    error in initialising mass fractions of chemical components
+  description: |
+    The chemical composition in the dynamic input file does not overlap with the one applied in the model. See [listspec](../Namelists/#salsa_parameters--listspec) for allowed components. Check that all chemical components are included in parameter file!
+
+SAL0021:
+  loglevel: ERROR
+  message: |
+    input file ... for SALSA is missing
+  description: |
+    SALSA requires the dynamic driver file PIDS_DYNAMIC.
+
+SAL0022:
+  loglevel: ERROR
+  message: |
+    initial_aerosol_type = 1 but preprocessor directive __netcdf is not used in compiling
+  description: |
+    [isdtyp](../Namelists/#salsa_parameters--isdtyp) = *1* is set, but netCDF-code has not been activated by the corresponding cpp-preprocessor switch. Add `-D__netcdf` to the `%cpp_options` line in the configuration file and re-compile via `palmbuild`.
+
+SAL0023:
+  loglevel: ERROR
+  message: |
+    init_gaes_type = 1 but preprocessor directive __netcdf is not used in compiling
+  description: |
+    [igctyp](../Namelists/#salsa_parameters--igctyp) = *1* is set, but netCDF-code has not been activated by the corresponding cpp-preprocessor switch. Add `-D__netcdf'` to the `%cpp_options` line in the configuration file and re-compile via `palmbuild`.
+
+SAL0024:
+  loglevel: ERROR
+  message: |
+    either OC or SO4 must be active for aerosol region 1a
+  description: |
+    Either organic carbon (OC) or sulphates (SO4) have to be included as aerosol chemical components via [listspec](../Namelists/#salsa_parameters--listspec).
+
+SAL0025:
+  loglevel: ERROR
+  message: |
+    depo_pcm_type not set correctly
+  description: |
+    See [depo_pcm_type](../Namelists/#salsa_parameters--depo_pcm_type) for allowed values.
+
+SAL0026:
+  loglevel: ERROR
+  message: |
+    no vegetation type defined
+  description: |
+    The land surface model is applied, but vegetation type needed for the dry deposition is not defined. Check the static input file.
+
+SAL0027:
+  loglevel: ERROR
+  message: |
+    no pavement type defined
+  description: |
+    The land surface model is applied, but pavement type needed for the dry deposition is not defined. Check the static input file.
+
+SAL0028:
+  loglevel: ERROR
+  message: |
+    no water type defined
+  description: |
+    The land surface model is applied, but water type needed for the dry deposition is not defined. Check the static input file.
+
+SAL0029:
+  loglevel: ERROR
+  message: |
+    subrange 1: no convergence
+  description: |
+    The solution of the equilibrium subroutine does not converge for the subrange 1. This might be due to some error in initialising the aerosol mass concentrations.
+
+SAL0030:
+  loglevel: ERROR
+  message: |
+    subrange 2: no convergence
+  description: |
+    The solution of the equilibrium subroutine does not converge for the subrange 2. This might be due to some error in initialising the aerosol mass concentrations.
+
+SAL0031:
+  loglevel: ERROR
+  message: |
+    invalid input value: ptemp
+  description: |
+    Air temperature given to the subroutine for ternary nucleation `ternucl` is not within the allowed temperature range of 240-300 K.
+
+SAL0032:
+  loglevel: ERROR
+  message: |
+    invalid input value: prh
+  description: |
+    Relative humidity given to the subroutine for ternary nucleation (`ternucl`) is not within the allowed humidity range of 5-95%.
+
+SAL0033:
+  loglevel: ERROR
+  message: |
+    invalid input value: pc_sa
+  description: |
+    Number concentration of gaseous sulphuric acid  given to the subroutine for ternary nucleation (`ternucl`) is not within the allowed range of 1e4-1e9 cm^-3^.
+
+SAL0034:
+  loglevel: ERROR
+  message: |
+    invalid input value: pc_nh3
+  description: |
+    Mixing ratio of gaseous ammonia given to the subroutine for ternary nucleation `ternucl` is not within the allowed range of 0.1-100 ppt.
+
+SAL0035:
+  loglevel: ERROR
+  message: |
+    invalid output value: nucleation rate > 10^6^ 1/cm3s
+  description: |
+    Calculated nucleation rate in the subroutine for ternary nucleation `ternucl` exceeds 1e6 cm^-3^s^-1^.
+
+SAL0036:
+  loglevel: ERROR
+  message: |
+    error: zvfrac < 0
+  description: |
+    When updating the aerosol size distribution after aerosol processes, the volume fraction of aerosols to be moved to the larger bin has gone negative.
+
+SAL0037:
+  loglevel: ERROR
+  message: |
+    erosol bin update not converged
+  description: |
+    When updating the aerosol size distribution after aerosol processes, the solution does not converge.
+
+SAL0038:
+  loglevel: ERROR
+  message: |
+    error in itype
+  description: |
+    The input parameter in bin_mixrat is falsely set. Review the code.
+
+SAL0039:
+  loglevel: ERROR
+  message: |
+    salsa_emission_mode = "parameterized", but the street_type data is missing
+  description: |
+    When [salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'parameterized'*, the variable `street_type` must be provided in the static driver file.
+
+SAL0040:
+  loglevel: ERROR
+  message: |
+    input file ... for SALSA missing
+  description: |
+    Emission information for the aerosol particles has been set to be read from a netCDF input file via [salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'read_from_file'*), but the file PIDS_SALSA is missing.
+
+SAL0041:
+  loglevel: ERROR
+  message: |
+    missing "composition_name" in ...
+  description: ''
+
+SAL0042:
+  loglevel: ERROR
+  message: |
+    None of the aerosol chemical components in ... correspond to the ones applied in SALSA.
+  description: |
+    If the  aerosol emissions are read from `<run-id>_salsa` ([salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'read_from_file'*), the chemical composition must include at least one chemical component applied in the model.
+
+SAL0043:
+  loglevel: ERROR
+  message: |
+    missing "emission_mass_fracs" in ...
+  description: |
+    Variable `emission_mass_fracs` is missing from file `<run_identifier>_salsa`.
+
+SAL0044:
+  loglevel: ERROR
+  message: |
+    unknown unit for aerosol emissions: ... (lod1)
+  description: |
+    Aerosol emission values given in the NetCDF input file `<run_identifier>_salsa` are incorrect when lod=1 is applied.
+
+    Aerosol emissions are given as total particulate mass concentrations per emission category and should be given in units: kg/m^2^/yr or g/m^2^/yr.
+
+SAL0045:
+  loglevel: ERROR
+  message: |
+    missing "emission_category_name" in ...
+  description: ''
+
+SAL0046:
+  loglevel: ERROR
+  message: |
+    none of the emission categories in ... match with the ones in the model
+  description: |
+    Emission categories in `<run_identifier>_salsa` do not match with ones applied in the model ('traffic exhaust', 'road dust', 'wood combustion', 'other').
+
+SAL0047:
+  loglevel: ERROR
+  message: |
+    emission_time_factors should be given for each nhoursyear OR nmonthdayhour
+  description: |
+    Emission time factors for aerosol emissions (LOD=1) are not given or they are not correctly named in `<run_identifier>_salsa`.
+
+SAL0048:
+  loglevel: ERROR
+  message: |
+    unknown unit for aerosol emissions: ...
+  description: |
+    Aerosol emission values given in the netCDF input file `<run_identifier>_salsa` are incorrect when lod=2 is applied.
+
+    Aerosol emissions are given as number emission per aersol size bin and should be given in units: #/m^2^/s.
+
+SAL0049:
+  loglevel: ERROR
+  message: |
+    the number of size bins in aerosol input data does not match with that applied in the model set-up
+  description: |
+    The number of aerosol size bins in `<run_identifier>_salsa` does not correspond to the size distribution information given in the namelist file. See [nbin](../Namelists/#salsa_parameters--nbin) and [reglim](../Namelists/#salsa_parameters--reglim), and appropriately correct the discrepancy.
+
+SAL0050:
+  loglevel: ERROR
+  message: |
+    mean diameters of the aerosol size bins in ... do not mmatch with the ones in the model
+  description: |
+    The mean diameters of the aerosol size bins in `<run_identifier>_salsa` does not correspond to the size distribution information given in the parameter file. See [nbin](../Namelists/#salsa_parameters--nbin) and [reglim](../Namelists/#salsa_parameters--reglim), and appropriately correct the discrepancy.
+
+SAL0051:
+  loglevel: ERROR
+  message: |
+    missing "time" in ...
+  description: ''
+
+SAL0052:
+  loglevel: ERROR
+  message: |
+    end_time of the simulation exceeds the time dimension in the salsa input file
+  description: |
+    Time dimension in `<run_identifier>_salsa` must cover the entire simulation time.
+
+SAL0053:
+  loglevel: ERROR
+  message: |
+    missing "emission_numnber_fracs" in ...
+  description: ''
+
+SAL0054:
+  loglevel: ERROR
+  message: |
+    unknown lod for aerosol_emission_values
+  description: |
+    The level of detail (LOD) for aerosol_emission_values in `<run_identifier>_salsa` should be either 1 or 2.
+
+SAL0055:
+  loglevel: ERROR
+  message: |
+    salsa_emission_mode = "read_from_file", but preprocessor directive __netcdf is not used in compiling
+  description: |
+    [salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'read_from_file'* has been set, but netCDF has not been activated by the corresponding cpp-preprocessor switch. Add `-D__netcdf` to the `%cpp_options` line in the configuration file and re-compile via `palmbuild`.
+
+SAL0056:
+  loglevel: ERROR
+  message: |
+    unknown salsa_emission_mode: ...
+  description: |
+    The parameter (../Namelists/#salsa_parameters--salsa_emission_mode salsa_emission_mode] is not correctly set.
+
+SAL0057:
+  loglevel: ERROR
+  message: |
+    input file ... missing
+  description: |
+    Emission information for SALSA is set to be read from a netCDF input file ([salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'read_from_file'*), but the file `<run_identifier>_chemistry` is missing. The chemistry module is not applied and therefore gaseous emissions are read in within `salsa_mod.f90`.
+
+SAL0058:
+  loglevel: ERROR
+  message: |
+    emission_time_factors should be given for each nhoursyear OR nmonthdayhour
+  description: |
+    Emission time factors for gaseous emissions (LOD=1) are not given or they are not correctly named in `<run_identifier>_chemistry`.
+
+SAL0059:
+  loglevel: ERROR
+  message: |
+    unknown lod for emission_values
+  description: |
+    The level of detail (LOD) for emission_values (gaseous emissions) in `<run_identifier>_chemistry` should be either 1 or 2.
+
+SAL0060:
+  loglevel: ERROR
+  message: |
+    salsa_emission_mode = "read_from_file", but preprocessor directive __netcdf is not used in compiling
+  description: |
+    [salsa_emission_mode](../Namelists/#salsa_parameters--salsa_emission_mode) = *'read_from_file'* has been set, but netCDF-code has not been activated by the corresponding cpp-preprocessor switch. Add `-D__netcdf` to the `%cpp_options` line in the configuration file and re-compile via `palmbuild`.
+
+SAL0061:
+  loglevel: ERROR
+  message: |
+    unknown unit for gas emissions: ...
+  description: |
+    Unknown units applied for the gaseous emissions in the netCDF input file `<run_identifier>_chemistry`.
+
+    Units should be: #/m2/s or g/m2/s or ppm/m2/s or mumol/m2/s or kg/m2/yr or g/m2/yr.
+
+    Note that gases are not imported to SALSA from the chemistry module since the chemistry module is not applied!
+
+SAL0062:
+  loglevel: ERROR
+  message: |
+    to output s_H2O/s_H2O_av requires that advect_particle_water = .T.
+  description: ''
+
+SAL0063:
+  loglevel: ERROR
+  message: |
+    gases are imported from the chemistry module and thus output of "..." is not allowed
+  description: ''
+
+SAL0064:
+  loglevel: ERROR
+  message: |
+    incorrect component name "..." given
+  description: |
+    See [listspec](../Namelists/#salsa_parameters--listspec) for allowed components.
+
+SAL0065:
+  loglevel: ERROR
+  message: |
+    end_time of the simulation exceeds the time dimension in the dynamic input file
+  description: |
+    Time dimension in `<run_identifier>_dynamic` must cover the entire simulation time.
+
+SAL0066:
+  loglevel: ERROR
+  message: |
+    offline nesting: time dimension must start at time_utc_init
+  description: |
+    Time dimension in `<run_identifier>_dynamic` must start at the start of the simulation in time utc. For example, for a simulation starting at 7 am in UTC+3 time, this is 14400.
+
+SAL0067:
+  loglevel: ERROR
+  message: |
+    none of the aerosol chemical components in ... correspond to ones applied in SALSA
+  description: |
+    None of the chemical components given in `composition_name` in `<run_identifier>_dynamic` correspond to the ones applied in SALSA. Please check the file and spelling.
+

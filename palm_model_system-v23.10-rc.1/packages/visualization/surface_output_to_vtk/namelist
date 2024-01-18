@@ -1,0 +1,15 @@
+&surface_output
+
+!
+!-- Number of processors of the run - equal the number of binary files with surface data.
+    num_pe = 4, 
+!
+!-- Path to the input binary files.
+    path_in = <replace by your path to surface data>,
+!
+!-- Path where the output shall be put.
+    path_out = <replace by your desired location path>,
+!
+!-- Convert instantaneous or average data.
+    convert_average_data = .F., 
+/  

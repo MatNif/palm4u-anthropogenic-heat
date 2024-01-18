@@ -1,0 +1,241 @@
+LPM0001:
+  loglevel: ERROR
+  message: |
+    particle_parameters namelist will be ignored for childs
+  description: |
+    In a nested run, the particle parameters can only be set via the particle_parameters namelist of the root model.
+
+LPM0002:
+  loglevel: ERROR
+  message: |
+    unknown collision_kernel = "..."
+  description: |
+    See parameter [collision_kernel](../Namelists/#particle_parameters--collision_kernel) for allowed values.
+
+LPM0003:
+  loglevel: ERROR
+  message: |
+    nested runs in combination with cloud droplets are not implemented
+  description: ''
+
+LPM0004:
+  loglevel: ERROR
+  message: |
+    pts_increment and pts_percentage cannot be set both
+  description: ''
+
+LPM0005:
+  loglevel: ERROR
+  message: |
+    pts_increment must be >= 1
+  description: ''
+
+LPM0006:
+  loglevel: ERROR
+  message: |
+    pts_percentage must be  0.0 <= pts_percentage <= 100.0
+  description: ''
+
+LPM0007:
+  loglevel: WARNING
+  message: |
+    max_number_of_particle_groups = ... number_of_particle_groups reset to reset to ...
+  description: |
+    If [number_of_particle_groups](../Namelists/#particle_parameters--number_of_particle_groups) > *10* then it is reset to the maximum allowed number of particle groups (which is *10*).
+
+LPM0008:
+  loglevel: WARNING
+  message: |
+    overhanging topography do not work with particles
+  description: |
+    When you have defined an overhanging structure in your topography data the simultaneous use of the Lagrangian particle model may give wrong results because reflection boundary conditions (as well as subgrid-scale velocities) are not realized for downward-facing walls so far.
+
+LPM0009:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition bc_par_b = "..."
+  description: |
+    See [bc_par_b](../Namelists/#particle_parameters--bc_par_b) for allowed values, and appropriately correct your parameter file.
+
+LPM0010:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition bc_par_t = "..."
+  description: |
+    See [bc_par_t](../Namelists/#particle_parameters--bc_par_t) for allowed values, and appropriately correct your parameter file.
+
+LPM0011:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition bc_par_lr = "..."
+  description: |
+    See [bc_par_lr](../Namelists/#particle_parameters--bc_par_lr) for allowed values, and appropriately correct your parameter file.
+
+LPM0012:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition bc_par_ns = "..."
+  description: |
+    See [bc_par_ns](../Namelists/#particle_parameters--bc_par_ns) for allowed values, and appropriately correct your parameter file.
+
+LPM0013:
+  loglevel: ERROR
+  message: |
+    unknown splitting mode = "..."
+  description: |
+    See parameter [../particle_parameters#splitting_mode splitting_mode] for allowed values, and appropriately correct your parameter file.
+
+LPM0014:
+  loglevel: ERROR
+  message: |
+    unknown splitting function = "..."
+  description: |
+    See [splitting_function](../Namelists#particle_parameters--splitting_function) for allowed values, and appropriately correct your parameter file.
+
+LPM0015:
+  loglevel: ERROR
+  message: |
+    particle group # ... has a density ratio /= 0 but radius = 0
+  description: |
+    Particles with mass but without radius are not allowed. Please  appropriately correct [radius](../Namelists/#particle_parameters--radius) or [density_ratio](../Namelists/#particle_parameters--density_ratio).
+
+LPM0016:
+  loglevel: ERROR
+  message: |
+    output of individual particle time series data requires preprocessor switches `-D__netcdf` , `-D__netcdf4`, and `-D__netcdf4_parallel`
+  description: |
+    Set the required switches in the configuration file `.palm.config` and re-compile. Be aware that you need a NetCDF-library with parallel I/O support.
+
+LPM0017:
+  loglevel: ERROR
+  message: |
+    unknown aerosol species for lagrangian cloud microphysics
+  description: |
+    See [aero_species](../Namelists/#particle_parameters--aero_species) for allowed aerosol species.
+
+LPM0018:
+  loglevel: ERROR
+  message: |
+    unknown aerosol type  'aero_type = ...'
+  description: |
+    See [aero_type](../Namelists/#particle_parameters--aero_type) for allowed aerosol types.
+
+LPM0019:
+  loglevel: ERROR
+  message: |
+    version mismatch concerning data from prior run version on file = ... version in program = ...
+  description: |
+    This error occurs when particle data from the [restart file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARTICLE_RESTART_DATA_OUT) is read and the precursor run was carried out with a different particle binary version than the main run. Repeat the precurser with the current version or carry out the main run with the same version as the precursor. You can check the particle binary version number which is required for the main run in `lpm_read_restart_file.f90`.
+
+LPM0020:
+  loglevel: ERROR
+  message: |
+    size of structure particle_groups_type has changed
+  description: |
+    Internal error. Please inform the PALM developers, e.g. by submitting a trouble-ticket.
+
+LPM0021:
+  loglevel: ERROR
+  message: |
+    particle too fast. n = ...
+  description: |
+    Particle has moved further than the length of one PE subdomain within on timestep. This is not allowed, since particles can only be transferred from one subdomain to the neighboring subdomain. Please check if subdomains are too small or velocities are unrealistically high.
+
+LPM0022:
+  loglevel: WARNING
+  message: |
+    no convergence of Newton-Raphson scheme within 500 iterations
+  description: |
+    The calculation of change in droplet radius due to condensational growth does not sufficiently converge. There are reports that this may happen if a lot of almost dry aerosols are released in an area with high relative humidity (90 % < RH < 100 %).
+
+LPM0023:
+  loglevel: ERROR
+  message: |
+    k=... j=... i=... ql_c=... part(...)%wf=... delta_r=...
+  description: |
+    This error occurs due to a spurious interaction of the production and depletion of supersaturations if the applied time step is too large. Please re-run the simulation with a shorter time step.
+
+LPM0024:
+  loglevel: ERROR
+  message: |
+    k=... j=... i=... e_s=... e_a=... t_int=... delta_r=... particle_radius=...
+  description: |
+    This error occurs if the droplet radius becomes negative. This might be related to a too long time step or an (artificial?) accumulation of super-droplets in one grid cell.
+
+LPM0025:
+  loglevel: ERROR
+  message: |
+    LWC out of range: ql(...,...,...) = ...
+  description: |
+    The liquid water content must be >= *0.0*. Values smaller than zero may occur if the time-step is not appropiate.
+
+LPM0026:
+  loglevel: ERROR
+  message: |
+    negative weighting factor
+  description: |
+    A negative weighting factor might occur if the timestep is too long. Try to adjust [dt](../Namelists/#initialization_parameters--dt).
+
+LPM0027:
+  loglevel: ERROR
+  message: |
+    LWC is not conserved during collision. LWC after condensation: ... LWC after collision: ... at grid point (..,..,..) (k,j,i)'
+  description: |
+    LWC means liquid water content. This error should not happen. Please inform the PALM developers, e.g. by submitting a trouble-ticket.
+
+LPM0028:
+  loglevel: WARNING
+  message: |
+    particle violated CFL-criterion: particle with id ... will be deleted
+  description: |
+    This is a warning that some of your particles move too fast. Therefore they will be deleted.
+
+LPM0029:
+  loglevel: ERROR
+  message: |
+    number of particles for output too large: ...
+  description: |
+    You try to output a number of particles larger than the upper limit of a 32bit INTEGER (i.e. > $2^{32} - 1$). Try to reduce your particle output.
+
+LPM0030:
+  loglevel: ERROR
+  message: |
+    error while reading file PARTICLE_IDS in line ...
+  description: |
+    At least one line in the file containing the particle Ids to be scheduled for time series output has a wrong format. Only one INTEGER value per line is allowed.
+
+LPM0031:
+  loglevel: ERROR
+  message: |
+    newly released particles exceed maximum number of particles allocated for time series, allocated particles: ..., current output: ..., newly added output: ...
+  description: |
+    Try to reduce the number of particles scheduled for time series output, e.g. by decreasing [pts_increment](../Namelists/#particle_parameters--pts_increment) or [pts_percentage](../Namelists/#particle_parameters--pts_percentage), or increase the maximum allowed number of output particles (see [maximum_number_of_output_particles](../Namelists/#particle_parameters--maximum_number_of_output_particles) or [extend_prts_filesize](../Namelists/#particle_parameters--extend_prts_filesize)).
+
+LPM0032:
+  loglevel: ERROR
+  message: |
+    particle I/O-id not in defined range ..., ..., ...
+  description: |
+    Internal error. Please inform the PALM developers, e.g. by submitting a trouble-ticket.
+
+LPM0033:
+  loglevel: ERROR
+  message: |
+    size of structure particle_groups_type has changed
+  description: |
+    Internal error. Please inform the PALM developers, e.g. by submitting a trouble-ticket.
+
+LPM0034:
+  loglevel: ERROR
+  message: |
+    [particle_coupling](../Namelists/#nesting_parameters--particle_coupling) = *.T.* not allowed for vertically shifted child domains
+  description: |
+    Set the vertical shift in [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) to *0.0* or explicitly set [particle_coupling](../Namelists/#nesting_parameters--particle_coupling) = *.F.* in the [&nesting-parameters namelist](../Namelists/#nesting_parameters) (note that its default value is *.T.*).
+
+LPM0035:
+  loglevel: ERROR
+  message: |
+    particle_advection_start >= end_time not allowed
+  description: |
+    Change parameter [particle_advection_start](../Namelists/#particle_parameters--particle_advection_start) and/or [end_time](../Namelists/#runtime_parameters--end_time) appropriately.
+

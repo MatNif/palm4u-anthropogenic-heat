@@ -1,0 +1,6 @@
+IDM0001:
+  loglevel: ERROR
+  message: |
+    indoor model requires information about building_id
+  description: ''
+

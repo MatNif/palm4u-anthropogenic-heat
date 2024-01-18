@@ -1,0 +1,172 @@
+
+CONTAINS
+! Public subroutines
+
+  SUBROUTINE kco_initialize (npoints_initial, f, IERR, Kacc, Krej)
+    implicit    none
+    integer,intent(IN)                                  :: npoints_initial
+    real(kind=ep),intent(IN),dimension(:,:)             :: f     !Only to get dimension for f_done
+    integer,intent(IN),dimension(:)                     :: IERR
+    integer,intent(IN),dimension(:)                     :: Kacc, Krej
+
+!-- local variables
+    integer                          :: jl
+
+    kpoints      = npoints_initial
+    kpoints_save = kpoints
+
+    allocate(index_org(kpoints))
+    allocate(done_check(kpoints))
+    allocate(index_step(kpoints))
+    allocate(cell_done(kpoints))
+    
+    allocate(f_done(size(f,1),size(f,2)))
+    allocate(Kacc_done(size(Kacc)))
+    allocate(Krej_done(size(Krej)))
+    allocate(ierr_done(size(ierr)))
+
+    cell_done     = .false.
+    done_check    = .false.
+
+    do jl=1,kpoints
+      index_org(jl) = jl
+    end do
+
+    compress_done = .FALSE.
+
+!    write(9,*) 'kco_initialize ',npoints_initial
+
+    return
+  end SUBROUTINE kco_initialize
+
+  SUBROUTINE kco_compress (n_points, T, H, Hnew, IERR, f, RCONST, FIX,     &
+                                   RejectLastH, RejectMoreH, Kacc, Krej)
+    implicit    none
+    integer,intent(INOUT)                       :: n_points
+    real(kind=ep),intent(INOUT),dimension(:)    :: T, H, Hnew
+    INTEGER,intent(INOUT),dimension(:)          :: IERR
+    real(kind=ep),intent(INOUT),dimension(:,:)  :: f
+    real(kind=ep),intent(INOUT),dimension(:,:)  :: RCONST, FIX
+    LOGICAL,intent(INOUT),dimension(:)          :: RejectLastH, RejectMoreH
+    integer,intent(INOUT),dimension(:)          :: Kacc, Krej
+
+!-- local variables
+    integer                          :: i,jl
+    integer                          :: ic
+
+!   Check, if converged variables exist
+
+!    write(9,*) 'kco_compress_1 ',cell_done(1:kpoints)
+
+    if(.not. any(cell_done(1:kpoints)))   return
+
+    compress_done = .TRUE.
+
+!   Move converged cells to original position
+
+    do i=1,size(f,2)
+!CDIR NODEP
+      do jl=1,kpoints
+        if(cell_done(jl))   then
+          f_done(index_org(jl),i) = f(jl,i) 
+        end if
+      end do
+    end do
+    
+    do jl=1,kpoints
+      if(cell_done(jl))   then
+        ierr_done(index_org(jl)) = ierr(jl) 
+        Kacc_done(index_org(jl)) = Kacc(jl) 
+        Krej_done(index_org(jl)) = Krej(jl) 
+      end if
+    end do
+
+!CDIR NODEP
+    do jl=1,kpoints
+      if(cell_done(jl))   then
+        done_check(index_org(jl)) = .true.
+      end if
+    end do
+
+!    write(9,*) 'done check ',kpoints,count(done_check)
+        
+!   Compute new index vector
+
+    ic = 0
+    do jl=1,kpoints
+      if(.not.cell_done(jl))   then
+        ic = ic+1
+        index_step(ic) = jl
+      end if
+    end do
+
+!    write(9,*) 'new number of points: ',ic,kpoints,count(done_check)
+
+!   Set new number of Points
+
+    kpoints  = ic
+    n_points = ic
+
+!   Compress arrays
+
+    index_org(1:ic) = index_org(index_step(1:ic))
+
+    do i=1,size(f,2)
+      f(1:ic,i) = f(index_step(1:ic),i)
+    end do
+
+!   compress argument list arrays
+
+    T(1:ic)           = T(index_step(1:ic))
+    IERR(1:ic)        = IERR(index_step(1:ic))
+    H(1:ic)           = H(index_step(1:ic))
+    Hnew(1:ic)        = Hnew(index_step(1:ic))
+
+    do i=1,size(RCONST,2)
+       RCONST(1:ic,i) = RCONST(index_step(1:ic),i)
+    end do
+
+    do i=1,size(FIX,2)
+       FIX(1:ic,i)    = FIX(index_step(1:ic),i)
+    end do
+
+    RejectLastH(1:ic) = RejectLastH(index_step(1:ic))
+    RejectMoreH(1:ic) = RejectMoreH(index_step(1:ic))
+    Kacc(1:ic)        = Kacc(index_step(1:ic))
+    Krej(1:ic)        = Krej(index_step(1:ic))
+    cell_done(1:ic)   = cell_done(index_step(1:ic))
+!    write(9,*) 'kco_compress_3 ',n_points
+
+    return
+  end SUBROUTINE kco_compress
+
+  SUBROUTINE kco_finalize ( f, IERR, Kacc, Krej)
+    implicit    none
+    real(kind=ep),intent(INOUT),dimension(:,:)   :: f 
+    integer,      intent(INOUT),dimension(:)     :: IERR, Kacc, Krej
+
+!    write(9,*) 'kco_finalize ',kpoints,kpoints_save
+
+    if(compress_done)  then
+       kpoints = kpoints_save
+
+       f(1:kpoints,:)  = f_done(1:kpoints,:)   ! mz_pj_20070903 (1:kpoints) added
+       ierr(1:kpoints) = ierr_done(1:kpoints)  ! mz_pj_20070903 ...
+       Kacc(1:kpoints) = Kacc_done(1:kpoints)  ! mz_pj_20070903 ...
+       Krej(1:kpoints) = Krej_done(1:kpoints)  ! mz_pj_20070903 ...
+    end if
+
+    deallocate(index_org)
+    deallocate(index_step)
+    deallocate(cell_done)
+    deallocate(done_check)
+
+    deallocate(f_done)
+    deallocate(ierr_done)
+    deallocate(Kacc_done)
+    deallocate(Krej_done)
+
+    return
+  end SUBROUTINE kco_finalize
+
+end module kp4_compress

@@ -1,0 +1,21 @@
+TCM0001:
+  loglevel: ERROR
+  message: |
+    unknown turbulence closure: "..."
+  description: |
+    See [turbulence_closure](../Namelists/#initialization_parameters--turbulence_closure) for allowd values.
+
+TCM0002:
+  loglevel: ERROR
+  message: |
+    turbulent inflow/outflow is not yet implemented for RANS mode
+  description: |
+    A [turbulent inflow](../Namelists/#turbulent-inflow-parameters) or [turbulent_outflow](../Namelists/#initialization_parameters--turbulent_outflow) = *.T.* is not allowed in RANS mode (see  [turbulence_closure](../Namelists/#initialization_parameters--turbulence_closure) how to switch between LES/RANS mode).
+
+TCM0003:
+  loglevel: ERROR
+  message: |
+    grid anisotropy exceeds threshold starting from height level k = ...
+  description: |
+    The grid-dependent mixing length `l_grid` ( $= \delta = (\delta x \delta y \delta z)^{1/3}$ )  becomes larger than 2.7 * [dx](../Namelists/#initialization_parameters--dx) or 2.7 * [dy](../Namelists/#initialization_parameters--dy) starting from the reported height level `k`. Although the model will not abort due to this warning, the chosen grid setup might lead to poor results. The reason for this is an unfavourable choise of grid anisotropy. To avoid this, make sure that the values of [dx](../Namelists/#initialization_parameters--dx), [dy](../Namelists/#initialization_parameters--dy), and [dz](../Namelists/#initialization_parameters--dz) do not differ too much from each other. In case of grid stretching, settings of [dz_stretch_level](../Namelists/#initialization_parameters--dz_stretch_level) and/or [dz_stretch_factor](../Namelists/#initialization_parameters--dz_stretch_factor) should be changed to ensure a smaller difference between `dz(k)` and `dx` and `dy` at the reported height level.
+

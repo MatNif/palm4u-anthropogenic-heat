@@ -1,0 +1,59 @@
+SDO0001:
+  loglevel: ERROR
+  message: |
+    Output of surface data is not given at t= .... s because the maximum number of output time levels is exceeded.
+  description: |
+    See e.g. [PAC0185](#palm_core--PAC0185) for further explanations.
+
+SDO0002:
+  loglevel: ERROR
+  message: |
+    No output file type selected for surface-data output. Set at least either "to_vtk" or "to_netcdf" to .TRUE.
+  description: |
+    Surface-data output was requested without specifying a file type to store the data in. When requesting surface-data output, either [to_vtk](../Namelists/#surface_data_output_parameters--to_vtk) or [to_netcdf](../Namelists/#surface_data_output_parameters--to_netcdf) or both must be set *.T.*.
+
+SDO0003:
+  loglevel: ERROR
+  message: |
+    averaging_interval_surf = ... must be <= dt_dosurf_av = ...
+  description: ''
+
+SDO0004:
+  loglevel: ERROR
+  message: |
+    to_netcdf = .True. requires parallel netCDF
+  description: |
+    Surface output with netCDF requires parallel netCDF. Set preprocssor option `-D__netcdf4_parallel` in the `%cpp_options` line in the configuration file.
+
+SDO0005:
+  loglevel: ERROR
+  message: |
+    "..." = 0.0 while using a variable timestep and parallel netCDF4 is not allowed.
+  description: |
+    When using parallel netCDF output ([netcdf_data_format](../Namelists/#runtime_parameters--netcdf_data_format) > *4*) the number of output time levels must be calculated at the beginning of the simulation (see e.g. [PAC0185](#palm_core--PAC0185)). [dt_dosurf](../Namelists/#surface_data_output_parameters--dt_dosurf) or [dt_dosurf_av](../Namelists/#surface_data_output_parameters--dt_dosurf_av) = *0.0* together with a variable model time step [dt][../Namelists/#initialization_parameters--dt) do not allow to determine at how many output time levels output is done. Either choose a fixed [dt][../Namelists/#initialization_parameters--dt), or give [dt_dosurf](../Namelists/#surface_data_output_parameters--dt_dosurf)) a nonzero value larger than the largest time step [dt](../Namelists/#initialization_parameters--dt) that appears during the run.
+
+SDO0006:
+  loglevel: ERROR
+  message: |
+    The variable .... is defined more than once. Duplications are removed.
+  description: |
+    Duplicate entries in the list given via [data_output_surf](../Namelists/#surface_data_output_parameters--data_output_surf) are removed. Please avoid assigning variables multiple times in your output lists.
+
+SDO0007:
+  loglevel: ERROR
+  message: |
+    "..." is not yet implemented in the surface output
+  description: ''
+
+SDO0009:
+  loglevel: ERROR
+  message: |
+    "..." requires the indoor model
+  description: |
+    Switch on the indoor model or remove the respective variable from namelist parameter data_output_surf.
+
+SDO0010:
+  loglevel: ERROR
+  message: |
+    "..." is not part of the surface output
+  description: ''

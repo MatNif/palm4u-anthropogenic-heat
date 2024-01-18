@@ -1,0 +1,188 @@
+div.col-md-9 h1:first-of-type {
+    text-align: center;
+    font-size: 60px;
+    font-weight: 300;
+}
+
+div.col-md-9 h1+p {
+    text-align: center;
+}
+
+div.col-md-9 p.admonition-title:first-of-type {
+    text-align: left;
+}
+
+div.col-md-9 h1:first-of-type .headerlink {
+    display: none;
+}
+
+code.no-highlight {
+    color: black;
+}
+
+/* Definition List styles */
+
+dd {
+    padding-left: 20px;
+}
+
+/* Homepage */
+
+body.homepage div.jumbotron {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 0;
+}
+
+body.homepage div.jumbotron div.card {
+    margin-bottom: 2rem;
+}
+
+body.homepage>div.container>div.row>div.col-md-3 {
+    display: none;
+}
+
+body.homepage>div.container>div.row>div.col-md-9 {
+    margin-left: 0;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+body::before {
+    content: ' ';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #f8f8f8;
+    background: none;
+    will-change: transform;
+    z-index: -1;
+}
+
+.navbar-brand {
+    float: left;
+}
+
+.bg-primary {
+ background-image:-webkit-gradient(linear, left top, left bottom, from(#034C8C), color-stop(60%, #04519b), to(#04519b));
+ background-image:linear-gradient(#04519b, #04519b 60%, #04519b);
+ background-repeat:no-repeat
+}
+
+.text-primary {
+ color: #04519b
+}
+
+a {
+ color: #04519b
+}
+a:hover{
+ color: #A67D03
+}
+
+
+a code {
+    color: #04519b;
+}
+
+a:hover code, a:focus code {
+    color: #A67D03;
+}
+
+.task-list {
+    list-style: none;
+    padding-left: 20px
+}
+
+.admonition {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.admonition.note { /* csslint allow: adjoining-classes */
+    color: #034C8C;
+    background-color: #B8E3FF;
+    border-color: #0487D9;
+}
+
+.admonition.note a { /* csslint allow: adjoining-classes */
+    color: #0487D9;
+}
+
+.admonition.note a:hover { /* csslint allow: adjoining-classes */
+    color: #034C8C;
+}
+
+.admonition.warning { /* csslint allow: adjoining-classes */
+    color: #8C5C03;
+    background-color: #FDE394;
+    border-color: #CCA738;
+}
+
+.admonition.danger { /* csslint allow: adjoining-classes */
+    color: #b33535;
+    background-color: #FFBEC7;
+    border-color: #fd5f77;
+}
+
+.admonition-title {
+    font-weight: bold;
+    text-align: left;
+}
+
+.col-md-9 img[align="left"] {
+    margin: 1em 1em 1em auto;
+}
+
+.col-md-9 img[align="right"] {
+    margin: 1em auto 1em 1em;
+}
+
+del.critic {
+  background-color: #fee5e2;
+}
+
+ins.critic {
+  background-color: #daf9ea;
+}
+
+mark.critic {
+  background-color: #ffff7f;
+}
+
+.critic.comment {
+  color: #7e7e7e;
+}
+
+.critic.comment::before {
+  content: "/* ";
+}
+
+.critic.comment::after {
+  content: " */";
+}
+
+pre code.hljs {
+  display: block;
+}
+
+code.hljs {
+  display: inline;
+}
+
+footer p {
+  display: none;
+}
+
+.oq-name {
+  min-width: 30%;
+}
+
+.oq-unit {
+  min-width: 15%;
+}

@@ -1,0 +1,82 @@
+DCP0001:
+  loglevel: ERROR
+  message: |
+    DCEP is not implemented when urban-surface model is applied
+  description: ''
+
+DCP0002:
+  loglevel: ERROR
+  message: |
+    DCEP is not implemented when vertical land surfaces exist
+  description: ''
+
+DCP0003:
+  loglevel: ERROR
+  message: |
+    wrong value of type of urban length scale parametrization
+  description: ''
+
+DCP0004:
+  loglevel: ERROR
+  message: |
+    wrong value of type of drag coefficient for walls (iurb_cdrag)
+  description: ''
+
+DCP0005:
+  loglevel: ERROR
+  message: |
+    inverse of Longwave radiation matrix not correct
+  description: ''
+
+DCP0006:
+  loglevel: ERROR
+  message: |
+    inverse of shortwave radiation matrix not correct
+  description: ''
+
+DCP0007:
+  loglevel: ERROR
+  message: |
+    sum of SVFs at ... element at i= ... and j= ... should be 1 and not ...
+  description: ''
+
+DCP0008:
+  loglevel: ERROR
+  message: |
+    wrong component or not implemented yet for component: ...
+  description: ''
+
+DCP0009:
+  loglevel: ERROR
+  message: |
+    one or more dimension of in DCEP input file does not match the inputs in parin file
+  description: ''
+
+DCP0010:
+  loglevel: ERROR
+  message: |
+    missing ... (...) in ...
+  description: |
+    Add the respective data to the named DCEP input file.
+
+DCP0011:
+  loglevel: ERROR
+  message: |
+    input file "..." for DCEP PIDS is missing
+  description: |
+    Add the input file PIDS_DCEP.
+
+DCP0012:
+  loglevel: ERROR
+  message: |
+    output of "..." requires dcep = .TRUE.
+  description: |
+    Add the settings to the namelist input file _p3d.
+
+DCP0013:
+  loglevel: ERROR
+  message: |
+    average of "..." is not implemented
+  description: |
+    Remove the variable from the output list.
+

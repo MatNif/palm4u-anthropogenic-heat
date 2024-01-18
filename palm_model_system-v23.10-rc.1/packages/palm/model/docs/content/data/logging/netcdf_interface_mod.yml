@@ -1,0 +1,247 @@
+NCI0001:
+  loglevel: ERROR
+  message: |
+    netcdf_precision(...) = "..." must contain an "_"
+  description: |
+    Output types can be assigned a netCDF precision. For that, the output type has to start with an '_' character. See [netcdf_precision](../Namelists/#initialization_parameters--netcdf_precision) for details.
+
+NCI0002:
+  loglevel: ERROR
+  message: |
+    illegal precision in netcdf_precision(...) = "..."
+  description: |
+    See [NCI0001](#netcdf_interface_mod--NCI0001). Allowed netCDF precisions are 'NF90_REAL4' (single precision) or 'NF90_REAL8' (double precision).
+
+NCI0003:
+  loglevel: ERROR
+  message: |
+    unknown output type in netcdf_precision(...) = "..."
+  description: |
+    See [NCI0001](#netcdf_interface_mod--NCI0001. Allowed output types are 'xy', 'xz', 'yz', '2d', '3d', 'pr', 'ts', 'sp', 'prt' or 'all'.
+
+NCI0004:
+  loglevel: ERROR
+  message: |
+    netcdf_deflate out of range, given value: ..., allowed range: 0-9'
+  description: |
+    Set [netcdf_deflate](../Namelists/#runtime_parameters--netcdf_deflate) to a value within the allowed range.
+
+NCI0005:
+  loglevel: WARNING
+  message: |
+    netcdf_deflate reset to 0
+  description: |
+    [netcdf_data_format](../Namelists/#runtime_parameters--netcdf_data_format) /= *3* and [netcdf_deflate](../Namelists/#runtime_parameters--netcdf_deflate) > *0* have been set. However, data compression only works for the netCDF4/HDF5 non-parallel format ([netcdf_data_format](../Namelists/#runtime_parameters--netcdf_data_format) = *3*).
+
+NCI0006:
+  loglevel: ERROR
+  message: |
+    no grid defined for variable "..."
+  description: |
+    All output quantities need a ccordinate grid on which they are defined and output. See the [user-defined output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output) for a detailed description on how to output your own quantities. If you did not define your own output quantities and if you did not change the code, then please inform the PALM develpers, e.g. by submitting a trouble ticket.
+
+NCI0007:
+  loglevel: WARNING
+  message: |
+    netCDF file for "..." data for mask ... from previous run found but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, its masked variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0008:
+  loglevel: WARNING
+  message: |
+    netCDF file for "..." data for mask ... from previous run found but this file cannot be extended due to mismatch in number of vertical grid points. New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, the number of vertical grid points of the masked variables do not match the one of the current run. Therefore a new file is created instead.
+
+NCI0009:
+  loglevel: WARNING
+  message: |
+    netCDF file for "..." data for mask ... from previous run found but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0010:
+  loglevel: INFO
+  message: |
+    netCDF file for "..." data for mask ... from previous run found. This file will be extended.
+  description: |
+    This is just an informative message and self-explanatory.
+
+NCI0011:
+  loglevel: WARNING
+  message: |
+    netCDF file for volume data "..." from previous run found, but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, its 3d variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0012:
+  loglevel: WARNING
+  message: |
+    netCDF file for volume data "..." from previous run found, but this file cannot be extended due to mismatch in number of vertical grid points (nz_do3d). New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, the number of vertical grid points of the 3d variables do not match the one of the current run. Therefore a new file is created instead.
+
+NCI0013:
+  loglevel: WARNING
+  message: |
+    netCDF file for volume data "..." from previous run found, but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    This is a warning. A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0014:
+  loglevel: WARNING
+  message: |
+    netCDF file for volume data "..." from previous run found, but this file cannot be extended because the number of output time levels has been increased compared to the previous simulation. New file is created instead.
+  description: |
+    In case of parallel netCDF output, the time dimension is limited for increasing the performance. The number of time levels is calculated at the beginning of the simulation by $\frac{end\_time - skip\_time\_do3d}{dt\_do3d}$. The parameters [end_time](../Namelists/#runtime_parameters--end_time), [skip_time_do3d](../Namelists/#runtime_parameters--skip_time_do3d), and [dt_do3d](../Namelists/#runtime_parameters--dt_do3d) can be set by the user. If the calculated number of maximum time levels between the initial run and a restart run changed by modifing one of the parameters above, a new output file is created.
+
+NCI0015:
+  loglevel: INFO
+  message: |
+    netCDF file for volume data "..." from previous run found. This file will be extended.
+  description: ''
+
+NCI0016:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross-sections "..." from previous run found, but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its 2D variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0017:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross-sections "..." from previous run found, but this file cannot be extended due to mismatch in number of cross sections. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, the number of cross sections do not match the one of the current run. Therefore a new file is created instead.
+
+NCI0018:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross-sections "..." from previous run found but this file cannot be extended due to mismatch in cross section levels. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, the specified cross section levels which shall be outputted do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0019:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross sections "..." from previous run found, but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0020:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross sections "..." from previous run found, but this file cannot be extended because the number of output time levels has been increased compared to the previous simulation. New file is created instead.
+  description: |
+    In case of parallel NetCDF output, the time dimension is limited for increasing the performance. The number of time levels is calculated at the beginning of the simulation by $\frac{end\_time - skip\_time\_do2d\_xy}{dt\_do2d\_xy}$. Parameters [end_time](../Namelists/#runtime_parameters--end_time), [skip_time_do2d_xy](../Namelists/#runtime_parameters--skip_time_do2d_xy), and [dt_do2d_xy](../Namelists/#runtime_parameters--dt_do2d_xy) can be set by the user. If the calculated number of maximum time levels between the initial run and a restart run changed by modifying one of the parameters above, a new output file is created.
+
+NCI0021:
+  loglevel: INFO
+  message: |
+    netCDF file for cross-sections "..." from previous run found. This file will be extended.
+  description: ''
+
+NCI0022:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross sections "..." from previous run found, but this file cannot be extended because the number of output time levels has been increased compared to the previous simulation. New file is created instead.
+  description: |
+    In case of parallel NetCDF output, the time dimension is limited for increasing the performance. The number of time levels is calculated at the beginning of the simulation by $\frac{end\_time - skip\_time\_do2d\_xz}{dt\_do2d\_xz}$. Parameters [end_time](../Namelists/#runtime_parameters--end_time), [skip_time_do2d_xz](../Namelists/#runtime_parameters--skip_time_do2d_xz), and [dt_do2d_xz](../Namelists/#runtime_parameters--dt_do2d_xz) can be set by the user. If the calculated number of maximum time levels between the initial run and a restart run changed by modifying one of the parameters above, a new output file is created.
+
+NCI0023:
+  loglevel: WARNING
+  message: |
+    netCDF file for cross sections "..." from previous run found, but this file cannot be extended because the number of output time levels has been increased compared to the previous simulation. New file is created instead.
+  description: |
+    In case of parallel NetCDF output, the time dimension is limited for increasing the performance. The number of time levels is calculated at the beginning of the simulation by $\frac{end\_time - skip\_time\_do2d\_yz}{dt\_do2d\_yz}$. Parameters [end_time](../Namelists/#runtime_parameters--end_time), [skip_time_do2d_yz](../Namelists/#runtime_parameters--skip_time_do2d_yz), and [dt_do2d_yz](../Namelists/#runtime_parameters--dt_do2d_xz) can be set by the user. If the calculated number of maximum time levels between the initial run and a restart run changed by modifying one of the parameters above, a new output file is created.
+
+NCI0024:
+  loglevel: INFO
+  message: |
+    It is not allowed to arrange more than 100 profiles with cross_profiles. Apart from that, all profiles are saved to the netCDF file.
+  description: |
+    This is a deprecated feature. All profiles are written to the netCDF file. Only the first 100 profiles will be plotted by `palmplot pr` with `var=cross_profiles` (default). To see all profiles, add the parameter `var=all` to `palmplot pr`.
+
+NCI0025:
+  loglevel: WARNING
+  message: |
+    netCDF file for vertical profiles from previous run found, but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its 1D variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0026:
+  loglevel: WARNING
+  message: |
+    netCDF file for vertical profiles from previous run found, but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0027:
+  loglevel: INFO
+  message: |
+    netCDF file for vertical profiles from previous run found. This file will be extended.
+  description: ''
+
+NCI0028:
+  loglevel: WARNING
+  message: |
+    netCDF file for ... time series from previous run found but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its time dependent variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0029:
+  loglevel: WARNING
+  message: |
+    netCDF file for ... time series from previous run found, but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0030:
+  loglevel: INFO
+  message: |
+    netCDF file for ... time series from previous run found. This file will be extended.
+  description: ''
+
+NCI0031:
+  loglevel: WARNING
+  message: |
+    netCDF file for spectra from previous run found, but this file cannot be extended due to variable mismatch. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its variables do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0032:
+  loglevel: WARNING
+  message: |
+    netCDF file for spectra from previous run found, but this file cannot be extended due to mismatch in number of vertical levels. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, the number of vertical levels which shall be outputted do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0033:
+  loglevel: WARNING
+  message: |
+    netCDF file for spectra from previous run found, but this file cannot be extended due to mismatch in heights of vertical levels. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, the specified vertical levels (heights) which shall be outputted do not match the ones of the current run. Therefore a new file is created instead.
+
+NCI0034:
+  loglevel: WARNING
+  message: |
+    netCDF file for spectra from previous run found, but this file cannot be extended because the current output time is less or equal than the last output time on this file. New file is created instead.
+  description: |
+    A netCDF file from a previous run exist which is tried to be opened for extension. However, its last output time is greater than the first output time of the current run. Therefore a new file is created instead.
+
+NCI0035:
+  loglevel: INFO
+  message: |
+    netCDF file for spectra from previous run found. This file will be extended.
+  description: ''
+
+NCI0036:
+  loglevel: ERROR
+  message: |
+    mode "..." not supported
+  description: |
+    Possible modes are `3d`, `ma` (mask), `xy`, `xz`, `yz`, `pr` (profiles), `ps` (particle timeseries), `fl` (flight data), `ts` (timeseries), `spv (spectra). In addition, the extension (`_ext`) and the creation of netCDF files is possible.  Please inform the PALM developers, e.g. by submitting a trouble-ticket, if this error occurs.
+

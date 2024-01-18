@@ -1,0 +1,220 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "bulk_cloud_parameters"
+ 
+aerosol_bulk:
+  category: General Settings
+  type: C*20
+  default: 'nacl'
+  description:
+    short: Defines the type of aerosol to use.
+    long: |
+      The molecular weight, denisty and the solubility (vant Hoff factor) of each species is considered.
+  allowed_values:
+    - value: 'nacl'
+      description: |
+        Sea salt is assumed as the bulk aerosol.
+    - value: 'c3h4o4'
+      description: |
+        Malonic acid is assumed as the bulk aerosol.
+    - value: 'nh4no3'
+      description: |
+        Ammonium sulfate is assumed as the bulk aerosol. 
+
+c_sedimentation:
+  category: Numerics 
+  type: R
+  default: 2.0
+  description:
+    short: Courant number for sedimentation process.
+    long: |
+      A Courant number that is too large inhibits microphysical interactions of the sedimented quantity. There is no need to set [limiter_sedimentation](#bulk_cloud_parameters--limiter_sedimentation) if [c_sedimentation](#bulk_cloud_parameters--c_sedimentation) $\leq$ *1.0*. This parameter only comes into effect if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'*.
+
+call_microphysics_at_all_substeps:
+  category: Mode 
+  type: L
+  default: .F.
+  description:
+    short: Controls how frequently two-moment cloud microphysics are computed.
+    long:  |
+      Using the default, cloud microphysics are computed once before the time step. When set to *.T.*, cloud microphysics are computed before every substep of the applied time step scheme. This is, however, unnecessary to obtain acceptable results. Note that advection and diffusion of rainwater mixing ratio (qr) and rain drop concentration (nr) are not affected by this parameter (these processes are computed as any other scalar).
+
+cloud_scheme:
+  category: General Settings
+  type: C*20
+  default: saturation_adjust
+  description:
+    short: Defines cloud microphysics for bulk cloud physics.
+    long: |
+  allowed_values:
+    - value: 'kessler'
+      description: |
+        One-moment cloud microphysics according to Kessler (1969). It is also uses the saturation adjustment scheme to diagnose cloud water. However, it allows precipitation if the liquid cloud water exceeds a threshold value. This water is instantaneously removed from the model domain. Additionally, liquid cloud water is allowed to sediment if [cloud_water_sedimentation](#bulk_cloud_parameters) = *.T.*.
+    - value: 'morrison'
+      description: |
+        Two-moment cloud microphysics according to Seifert and Beheng (2006), Khairoutdinov and Kogan (2000), Khvorostyanov and Curry (2006) and Morrison and Grabowski (2007). This scheme is an extension of the *'seifert_beheng'* scheme. However, there are three main differences. First, instead of saturation adjustment, the diffusional growth is parametrized while calculating condensation/evaporation rates, explicitly. For  appropriate usage of this scheme, the time step must be smaller than the diffusional growth relaxation time. Usually, this is on the order of 1-2 seconds. Second, the activation is considered with a simple Twomey activation-scheme. Koehler-theory accounts for this with the parameter [curvature_solution_effects_bulk](#bulk_cloud_parameters--curvature_solution_effects_bulk) = *.T.*. The background aerosol concentration, which determines the maximum number of activated cloud droplets, can be prescribed with [na_init](#bulk_cloud_parameters--na_init). Thirdly, the number concentration of cloud droplets (`nc`) and the cloud water mixing ratio (`qc`) are prognostic quantities.
+    - value: 'morrison_no_rain'
+      description: |
+        Two-moment cloud microphysics according to Seifert and Beheng (2006), Khairoutdinov and Kogan (2000), Khvorostyanov and Curry (2006) and Morrison and Grabowski (2007). The *'morrison'* scheme is applied as a stand-alone module, i.e. the rain processes of Seifert and Beheng are neglected and `qr` and `nr` remain unallocated.
+    - value: 'saturation_adjust'
+      description: |
+        Simple saturation adjustment scheme (also known as 0%-or-100% scheme) in which a grid volume is either saturated or subsaturated. Detailed information about the condensation scheme is given in the description of the cloud physics module. Supersaturations are instantaneously condensed to liquid water. No precipitation is produced. If precipitation is important, use *'kessler'*, *'morrison'* or *'seifert_beheng'*.
+    - value: 'seifert_beheng'
+      description: |
+        Two-moment cloud microphysics according to Seifert and Beheng (2006). It uses the *'saturation_adjustment'* scheme to diagnose cloud water. The cloud drop number concentration is set via [nc_const](#bulk_cloud_parameters--nc_const). Rain water, and hence precipitation, is treated with two additional prognostic equations for rain water mixing ratio and rain drop concentration that include autoconversion, accretion, selfcollection, breakup, evaporation, and sedimentation. The effect of ventilation on evaporation is steered by [ventilation_effect](#bulk_cloud_parameters--ventilation_effect). Sedimentation is controlled via [c_sedimentation](#bulk_cloud_parameters--c_sedimentation) or [limiter_sedimentation](#bulk_cloud_parameters--limiter_sedimentation). The effects of turbulence on accretion and autoconversion are steered via [collision_turbulence](#bulk_cloud_parameters--collision_turbulence). Additionally, liquid cloud water is allowed to sediment if [cloud_water_sedimentation](#bulk_cloud_parameters--cloud_water_sedimentation) = *.T.*.
+ 
+cloud_water_sedimentation:
+  category: Mode 
+  type: L
+  default: .F.
+  description:
+    short: Enables/disables sedimentation of cloud water according to Ackerman et al. (2009).
+    long: |
+      This parameter is only used when [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'kessler'*, *'morrison'* or *'seifert_beheng'*.
+
+collision_turbulence:
+  category: Mode
+  type: L
+  default: .F.
+  description:
+    short: Enables/disables effects of turbulence on the collision process according to Seifert, Nuijens and Stevens (2010).
+    long: |
+      This parameter is only used when [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'*.
+
+curvature_solution_effects_bulk:
+  category: Mode 
+  type: L
+  default: .F.
+  description:
+    short: Enables/disables effects of curvature and solution on cloud droplet activation.
+    long: |
+      The parameterization of Khvorostyanov and Curry (2006) is used. The physio-chemical aerosol properties are prescribed with [aerosol_bulk](#bulk_cloud_parameters--aerosol_bulk), [dry_aerosol_radius](#bulk_cloud_parameters--dry_aerosol_radius) and [sigma_bulk](#bulk_cloud_parameters--sigma_bulk).
+
+dry_aerosol_radius:
+  category: General Settings
+  type: R
+  default: 5.0E-8 
+  si-unit: m
+  description:
+    short: The mean geometric radius of the dry aerosol spectrum.
+    long: '' 
+
+graupel:
+  category: Mode
+  type: L
+  default: .F. 
+  description:
+    short: Enables/disables calculation of prognostic equations for graupel.
+    long: |
+      If set to *.T.*,  will compute the graupel mixing ratio and number concentration. This is only allowed if [snow](#bulk_cloud_parameters--snow) = .T., if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'* and [microphysics_ice_phase](#bulk_cloud_parameters--microphysics_ice_phase) = *.T.*.
+
+ice_crystal_sedimentation:
+  category: Mode 
+  type: L
+  default: .F. 
+  description:
+    short: Enables/disables sedimentation of ice crystals according to Seifert and Beheng (2006). 
+    long: |
+      This parameter can only be set *.T.* if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'* and [microphysics_ice_phase](#bulk_cloud_parameters--microphysics_ice_phase) = *.T.*.
+
+in_init:
+  category: Initial Conditions 
+  type: R
+  default: 1000.0 
+  si-unit: m^-3^
+  description:
+    short: Background ice nuclei concentration.
+    long: '' 
+
+limiter_sedimentation:
+  category: Numerics 
+  type: L
+  default: .T. 
+  description:
+    short: Enables/disables slope limiter in sedimentation process according to Stevens and Seifert (2008).
+    long: |
+      This parameter is only used if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'*. If [c_sedimentation](#bulk_cloud_parameters--c_sedimentation) $\leq$ *1.0* there is no need to use the limiter.
+
+microphysics_ice_phase:
+  category: Mode 
+  type: L
+  default: .F. 
+  description:
+    short: Enables/disables calculation of prognostic equations for ice crystals.
+    long: |
+      If set to *.T.*,  will compute the ice crystal mixing ratio and number concentration. If temperatures allow, ice crystals can form via nucleation and grow due to water vapor deposition. Liquid phase is considered by default. Currently, mixed-phase microphysics is only supported for [snow_scheme](#bulk_cloud_parameters--snow_scheme) = *'morrison'* and *'seifert_beheng'*. Furthermore, graupel and snow require [microphysics_ice_phase](#bulk_cloud_parameters--microphysics_ice_phase) = *.T.* as a condition.
+
+na_init:
+  category: Initial Conditions 
+  type: R
+  default: 1.0E+8 
+  si-unit: m^-3^
+  description:
+    short: Background dry aerosol concentration. 
+    long: |
+      If [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* is used, this parameter replaces [nc_const](#bulk_cloud_parameters--nc_const). Activation is parameterized assuming that the number of activated cloud condensation nuculei (CCN) cannot be larger than [na_init](#bulk_cloud_parameter--na_init). This parameter is only used if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'*. 
+
+nc_const:
+  category: General Settings
+  type: R
+  default: 7.0E+7 
+  si-unit: m^-3^
+  description:
+    short: Constant cloud droplet number density. 
+    long: |
+      The default value is applicable for marine conditions. This parameter is only used if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'seifert_beheng'*. 
+
+precipitation_amount_interval:
+  category: Data Output
+  type: R
+  si-unit: s
+  default:
+    value_of: '[dt_do2d_xy](#runtime_parameters--dt_do2d_xy)'
+  description:
+    short: Temporal interval for which the precipitation amount (in mm) shall be calculated and output.
+    long: |
+      This parameter requires [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = 'kessler' or 'seifert_beheng'. The interval must be smaller or equal than the output interval for 2d horizontal cross sections given by [dt_do2d_xy](#runtime_parameters--dt_do2d_xy). The output of the precipitation amount also requires setting of [data_output](#runtime_parameters--data_output) = 'pra*'.
+
+sigma_bulk:
+  category: General Settings
+  type: R
+  default: 2.0 
+  description:
+    short: The dispersion of the dry aerosol spectrum.
+    long: '' 
+
+snow:
+  category: Mode 
+  type: L
+  default: .F. 
+  description:
+    short: Enables/disables calculation of prognostic equations for snow.
+    long: |
+      If set to *.T.*,  will compute the snow mixing ratio and number concentration. This is only allowed if [graupel](#bulk_cloud_parameters--graupel) = .T., [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'* and [microphysics_ice_phase](#bulk_cloud_parameters--microphysics_ice_phase) = *.T.*.
+
+start_ice_microphysics:
+  category: General Settings
+  type: R
+  default: 0.0 
+  si-unit: s
+  description:
+    short: Time after which ice microphysicsal processes are calculated.
+    long: |
+      This requires [microphysics_ice_phase](#bulk_cloud_parameters--microphysics_ice_phase) = *.T.*.
+
+switch_off_module:
+  category: Mode 
+  type: L
+  default: .F. 
+  description:
+    short: Enables/disables entire module. 
+    long: |
+      When set to *.T.* will turn the entire module off without removing the namelist.
+
+ventilation_effect:
+  category: General Settings
+  type: L
+  default: .T. 
+  description:
+    short: Enables/disables the effect of ventilation on the evaporation of raindrops. 
+    long: |
+      This parameter is only used if [cloud_scheme](#bulk_cloud_parameters--cloud_scheme) = *'morrison'* or *'seifert_beheng'*.

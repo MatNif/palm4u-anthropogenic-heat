@@ -1,0 +1,20 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds:
+  - gfortran_openmp_mpi
+
+allowed_number_of_cores:
+  - 8
+
+activation_strings:
+  - "d3#"
+
+omp_num_threads: 2
+
+tasks_per_node: 4
+
+significant_digits_for_netcdf_checks:
+  timeseries: 4
+  profiles: 4
+  other: 2

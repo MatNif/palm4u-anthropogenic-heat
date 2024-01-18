@@ -1,0 +1,20 @@
+NCF****:
+  loglevel: ERROR
+  message: |
+    **** contains numbers in the range from 1-521
+  description: |
+    Internally, PALM calls the netCDF function `NF90_STRERROR` which returns an error message string provided by netCDF. Hence, no exact assignment between PALM error number and netCDF error string can be given. Most of the netCDF errors should never appear if the default code is used. The following list gives errors which may be caused by wrong steering or errors due to problems in the user interface.
+
+NCF0079:
+  loglevel: ERROR
+  message: |
+    string match to name in use
+  description: |
+    A netCDF variable name has been used twice. Possible reasons: a variable in the parameter file has been listed twice (e.g. in [data_output](../Namelists/#runtime_parameters--data_output)) or a variable name that has been defined in the user interface is already used by PALM.
+
+NCF0253:
+  loglevel: ERROR
+  message: |
+    name contains illegal characters
+  description: |
+    netCDF variable names consist of arbitrary sequences of alphanumeric characters. These names are e.g. assigned by the user in the user-interface to variables `dots_label` or `dopr_label`. Due to the netCDF convention, they must not start with a digit. Also, usage of `/` as special character is not allowed. Older netCDF versions (before 3.6.3) have further restrictions on special characters. Please check if your string settings in the user-interface follow the above rules.

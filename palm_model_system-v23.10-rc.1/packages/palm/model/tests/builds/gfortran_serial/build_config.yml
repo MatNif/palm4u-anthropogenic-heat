@@ -1,0 +1,70 @@
+---
+# this is a palmtest build configuration file
+
+compiler:
+  id: GNU
+  c_executable: "{{GNU.c_executable}}"
+  executable: "{{GNU.executable}}"
+  mpi_wrapper: "{{GNU.executable}}"
+  definitions:
+    - "__netcdf"
+    - "__netcdf4"
+    - "__fftw"
+    - "__rrtmg"
+    - "__fastv8"
+    - "__gfortran"
+  c_options:
+    default:
+      - "-Ofast"
+      - "-Wno-format"
+      - "-Wno-unused-result"
+    debug:
+      - "-O0"
+      - "-g"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-Wno-format"
+      - "-Wno-unused-result"
+  options:
+    default:
+      - "-cpp"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-Wno-maybe-uninitialized"
+      - "-Wno-conversion"
+      - "-Wno-compare-reals"
+      - "-Wno-do-subscript"
+      - "-fopenmp"
+      - "-Ofast"
+      - "-ffree-line-length-none"
+    debug:
+      - "-cpp"
+      - "-O0"
+      - "-fopenmp"
+      - "-g"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-fcheck=all"
+      - "-fbacktrace"
+      - "-Wno-conversion"
+      - "-Wno-compare-reals"
+      - "-Wno-do-subscript"
+      - "-finit-real=nan"
+      - "-ffree-line-length-none"
+  includes:
+    - "{{GNU.include.netcdf}}"
+    - "{{GNU.include.fftw}}"
+    - "{{GNU.include.rrtmg}}"
+
+linker:
+  options:
+    - "-fopenmp"
+    - "{{GNU.lib.netcdf}}"
+    - "{{GNU.lib.fftw}}"
+    - "{{GNU.lib.rrtmg}}"

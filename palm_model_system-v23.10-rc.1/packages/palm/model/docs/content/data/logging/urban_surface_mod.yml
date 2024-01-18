@@ -1,0 +1,99 @@
+USM0001:
+  loglevel: ERROR
+  message: |
+    urban surface model requires setting of bc_pt_b = "dirichlet" and bc_q_b  = "dirichlet"
+  description: ''
+
+USM0002:
+  loglevel: ERROR
+  message: |
+    urban surface model requires constant_flux_layer = .TRUE.
+  description: |
+    The USM requires to use a constant flux layer via [constant_flux_layer](../Namelists/#initialization_parameters--constant_flux_layer) = *.T.*.
+
+USM0003:
+  loglevel: ERROR
+  message: |
+    urban surface model requires the radiation model to be switched on
+  description: |
+    The USM requires to use a radiation model activated via the [&radiation_parameters namelist](../Namelists/#radiation-parameters) in the namelist file.
+
+USM0004:
+  loglevel: ERROR
+  message: |
+    topography /= "flat" is required when using the urban surface model
+  description: ''
+
+USM0005:
+  loglevel: ERROR
+  message: |
+    building_type = ... is out of the valid range
+  description: |
+    between 1 and 7
+
+USM0006:
+  loglevel: ERROR
+  message: |
+    building_type = ... is out of the valid range at (i,j) = (...,...)
+  description: |
+    between 1 and 7
+
+USM0007:
+  loglevel: ERROR
+  message: |
+    dimension size of static input variable building_pars is ...  dimension size of ... is required
+  description: |
+    For requirements, please check the [input data standard tables](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static/tables).
+
+USM0008:
+  loglevel: ERROR
+  message: |
+    invalid wall layer configuration found: dz_wall_center(k=...) <= 0.0
+  description: ''
+
+USM0009:
+  loglevel: ERROR
+  message: |
+    invalid window layer configuration found: dz_window_center(k=...) <= 0.0
+  description: ''
+
+USM0010:
+  loglevel: ERROR
+  message: |
+    invalid green layer configuration found: dz_green_center(k=...) <= 0.0
+  description: ''
+
+USM0011:
+  loglevel: ERROR
+  message: |
+    relative material fractions do not sum-up to one at some surfaces
+  description: |
+    If building_pars is specified within a static input file, all parameters indicating the relative fraction of wall / window / green surfaces must be given and sum up to 1. This requirement is violated. Check and correct the static driver respectively.
+
+USM0012:
+  loglevel: ERROR
+  message: |
+    ... exceeds 0.5 * surface-layer height at ... surface grid point (i,j) = (...,...)
+  description: |
+    Monin-Obukhov similarity is assumed between the surface and the first computational grid point normal to the surface. Because of the staggered grid, the distance between these two points is half of the grid spacing in the respective direction, i.e. $dz/2$ in vertical direction. The height $z = dz/2$ defines the top of the (analytical) logarithmic layer $z_{mo}$ (the surface layer height). Functions like $ln(z_{mo}/z_0)$, where $z_0$ is the roughness length, are used to calculate characteristic surface layer variables like $u_*$ or $\theta_*$. This mathematically requires that $z_{mo} > z_0$, or in other words, that $z_0 < dz/2$. In case you have run into this error, you either need to reduce the roughness length $z_0$ (via namelist parameter roughness_length or in the static driver) or enlarge the grid spacing $dz$. Same holds for roughness length $z_{0h}$ for temperature and $z_{0q}$ for moisture.
+
+    **Attention:** This message is given only once (for the first grid point where the exceedance has been detected). Be aware that there might be more grid points where $z_0$ exceeds the surface-layer height.
+
+    In case of water surfaces $z_0$ is automatically calculated each time step via the Charnock relation and respectively checked. No information about grid point location(s) is given for that case. More than one location may have been detected.
+
+    Set [allow_roughness_limitation](../Namelists/#initialization_parameters--allow_roughness_limitation) = *.T.*  in order to allow for an automatic limitation of $z_0$ to a maximum value of $0.5 * z_{mo}$, which is equivalent to $0.25 * dz$.
+
+USM0013:
+  loglevel: INFO
+  message: |
+    ... exceeds 0.5 * surface-layer height at ... surface(s) and is limited to that height
+  description: |
+    See [USM0012](#urban_surface_mod--USM0012) for detailed explanation.
+
+USM0014:
+  loglevel: ERROR
+  message: |
+    green fractions exceed wall fractions at some surfaces
+  description: |
+    If building_pars is specified within a static input file, the green fraction of surfaces must not exceed the corresponding wall fraction of surfaces, except if the wall fraction is zero. This requirement is violated. Check and correct the static driver respectively.
+

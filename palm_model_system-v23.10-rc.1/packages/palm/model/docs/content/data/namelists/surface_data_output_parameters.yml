@@ -1,0 +1,168 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "surface_data_output_parameters"
+
+averaging_interval_surf:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[averaging_interval](#runtime_parameters--averaging_interval)'
+  si-unit: s
+  description:
+    short: Averaging interval for surface output data.
+    long: |
+      [averaging_interval_surf](#runtime_parameters--averaging_interval_surf) <= [dt_dosurf_av](#surface_output_parameters--dt_dosurf_av) is required. If an interval is given, the average is calculated from all data of all time steps lying within this interval.
+
+
+data_output_surf:
+  category: Data Output
+  type: C*100
+  shape: (300)
+  default:
+    value: ~
+  description:
+    short: List of surface quantities to be output.
+    long: |
+      Output of instantaneous data and temporally averaged data is possible. To output temporally averaged data, the name of the output quantity must be appended by the string '_av' (see [data_output](#runtime_parameters--data_output) for more explanation). For example,
+
+          data_output_surf = 'shf', 'shf_av',
+
+      will output instantaneous as well as time-averaged data of surface sensible heat flux *'shf'* for all surface elements (surface grid points).
+
+      Depending on the specified output format (see [to_netcdf](#surface_output_parameters--to_netcdf) and [to_vtk](#surface_output_parameters--to_vtk)), surface data for all surface elements is output to a netCDF file or/and into Fortran binary files.
+
+      Following quantities are available for output:
+
+      | Quantity name | Meaning                                                                  | SI-Unit                             |
+      | :---          | :---                                                                     | :---                                |
+      | albedo        | aggregated albedo value of the surface based on the tile albedo values   | -                                   |
+      | emissivity    | aggregated emissivity value for the surface based on the tile emissivity values | -                            |
+      | us            | friction velocity  $u_*$                                                 | m s^-1^                    |
+      | ts            | scaling parameter for temperature $\vartheta_*$                          | K                                   |
+      | qs            | scaling parameter for mixing ratio $q_*$                                 | kg kg^-1^                  |
+      | ss            | scaling parameter for passive scalar                                     | -                                   |
+      | qcs           | scaling parameter for cloud water mixing ratio                           | kg kg^-1^                  |
+      | ncs           | scaling parameter for number concentration of cloud water                | m^-3^                      |
+      | qrs           | scaling parameter for rain water mixing ratio                            | kg kg^-1^                  |
+      | nrs           | scaling parameter for rain water droplet concentration                   | m^-3^                      |
+      | ol            | Obukhov length                                                           | m                                   |
+      | theta1        | potential temperature at first grid point apart from (normal to) the surface         | K                                   |
+      | qv1           | mixing ratio at first grid point apart (normal to) from the surface                  | kg kg^-1^                  |
+      | thetav1       | virtual potential temperature at first grid point apart from (normal to) the surface | K                                   |
+      | usws          | surface momentum flux for the u-component (unit depending on [flux_output_mode](#initialization_parameters--flux_output_mode))                                | m^2^ s^-2^ or N m^-2^       |
+      | vsws          | surface momentum flux for the v-component (unit depending on [flux_output_mode](#initialization_parameters--flux_output_mode))                                | m^2^ s^-2^  or N m^-2^       |
+      | shf           | surface sensible heat flux (unit depending on [flux_output_mode](#initialization_parameters--flux_output_mode))                                              | K m s^-1^ or W m^-2^                  |
+      | qsws          | surface latent heat flux (unit depending on [flux_output_mode](#initialization_parameters--flux_output_mode))                                                 | kg kg^-1^ m s^-1^ or W m^-2^|
+      | ssws          | surface passive scalar flux                                              | m s^-1^                    |
+      | qcsws         | surface flux of cloud water mixing ratio                                 | kg kg^-1^ m s^-1^ |
+      | ncsws         | surface flux of number concentration of cloud water                      | s^-1^ m^-2^       |
+      | qrsws         | surface flux of rain water mixing ratio                                  | kg kg^-1^ m s^-1^ |
+      | nrsws         | surface flux of rain water droplet concentration                         | s^-1^ m^-2^       |
+      | sasws         | surface salinity flux                                                    | psu m s^-1^                |
+      | q_surface     | surface moisture                                                         | kg kg^-1^                  |
+      | theta_surface | surface potential temperature                                            | K                                   |
+      | thetav_surface| surface virtual potential temperature                                    | K                                   |
+      | theta_10cm    | 10-cm potential temperature                                              | K                                   |
+      | rad_net       | surface net radiation flux                                               | W m^-2^                    |
+      | rad_lw_in     | total incoming longwave radiation                                        | W m^-2^                    |
+      | rad_lw_dif    | incoming longwave radiation flux from sky only                           | W m^-2^                    |
+      | rad_lw_out    | outgoing longwave radiation flux                                         | W m^-2^                    |
+      | rad_lw_ref    | incoming longwave radiation flux from reflections                        | W m^-2^                    |
+      | rad_lw_res    | residual longwave radiation flux in surfaces after last reflection step  | W m^-2^                    |
+      | rad_sw_in     | total incoming shortwave radiation flux                                  | W m^-2^                    |
+      | rad_sw_dif    | incoming diffuse shortwave radiation flux                                | W m^-2^                    |
+      | rad_sw_dir    | direct incoming shortwave radiation flux                                 | W m^-2^                    |
+      | rad_sw_out    | outgoing shortwave radiation flux                                        | W m^-2^                    |
+      | rad_sw_ref    | incoming shortwave radiation flux from reflections                       | W m^-2^                    |
+      | rad_sw_res    | residual shortwave radiation flux in surfaces after last reflection step | W m^-2^                    |
+      | rtm_skyvf     | sky view factor                                                          | -                          |
+      | rtm_skyvft    | sky view factor including transparancy of plant canopy                   | -                          |
+      | ghf           | ground heat flux                                                         | W m^-2^                    |
+      | r_a           | aerodynamic resistance                                                   | m^-1^                      |
+      | r_soil        | soil resistance                                                          | m^-1^                      |
+      | r_canopy      | canopy resistance                                                        | m^-1^                      |
+      | r_s           | total resistance                                                         | m^-1^                      |
+      | uvw1          | surface-parallel flow speed at first grid point apart from the surface   | m s^-1^                    |
+      | waste_heat    | waste_heat, only if [indoor model](#indoor_parameters) is applied        | W m^-2^                    |
+      | im_hf         | heatflux at innermost building wall, only if [indoor model](#indoor_parameters) is applied  | W m^-2^   |
+      | z0            | roughness length for momentum                                            | m                                   |
+      | z0h           | roughness length for heat                                                | m                                   |
+      | z0q           | roughness length for moisture                                            | m                                   |
+
+
+dt_dosurf:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which instantaneous surface data shall be output.
+    long: ''
+
+
+dt_dosurf_av:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[dt_data_output_av](#runtime_parameters--dt_data_output_av)'
+  si-unit: s
+  description:
+    short: Temporal interval at which time averaged surface data shall be output.
+    long: ''
+
+
+skip_time_dosurf:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: No surface data output before this interval has passed.
+    long: |
+      This parameter causes that surface data output starts only after this interval has passed (counting from the beginning of the simulation, *t = 0*).
+
+
+skip_time_dosurf_av:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: No averaged surface data output before this interval has passed.
+    long: |
+      This parameter causes that averaged surface data output starts only after this interval has passed (counting from the beginning of the simulation, *t = 0*).
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn on/off the module.
+    long: |
+      If [switch_off_module](#surface_data_output_parameters--switch_off_module) = *.T.*, output of surface data is not activated even if the namelist is present in the parameter file.
+
+
+to_netcdf:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Control parameter to output surface data in netCDF format.
+    long: |
+      Surface data output in netCDF format requires parallel netCDF data format enabled with [netcdf_data_format](#runtime_parameters--netcdf_data_format) *>= 5*.
+
+
+to_vtk:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Control parameter enabling surface data output to VTK format.
+    long: |
+      Surface data for each processor subdomain is output into a separate Fortran binary file. In a postprocessing step, these files are merged and converted into a single VTK file via [surface_output_to_vtk](https://palm.muk.uni-hannover.de/trac/browser/palm/trunk/UTIL/surface_output_processing/surface_output_to_vtk.f90), which can be used for visualization of surface quantities, e.g. by open source tool [paraview](https://www.paraview.org/).

@@ -1,0 +1,42 @@
+MAS0001:
+  loglevel: ERROR
+  message: |
+    netCDF is needed for agent output
+  description: |
+    Set `-D__netcdf` (and `-D__netcdf4` `-D__netcdf4_parallel`, if required) as preprocessor options in the configuration file.
+
+MAS0002:
+  loglevel: WARNING
+  message: |
+    Number of agents exceeds agent dimension. Starting at time_since_reference_point = ... s, data may be missing. Number of agents: ...  Agent dimension size: ...
+  description: |
+    This is a result of setting either [dim_size_agtnum_manual](../Namelists/#agent_parameters--dim_size_agtnum_manual) or [dim_size_factor_agtnum](../Namelists/#agent_parameters--dim_size_factor_agtnum) or both, resulting in the agent-number dimension of [DATA_AGT_NETCDF](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#DATA_AGT_NETCDF) becoming smaller than the number of agents the MAS tries to ouput. Please adjust the parameters accordingly.
+
+MAS0003:
+  loglevel: WARNING
+  message: |
+    number_of_agent_groups = ... number_of_agent_groups reset to ...
+  description: |
+    The number of agent groups is reset to the available maximum number of agent groups.
+
+MAS0004:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_mas_.. = "..."
+  description: |
+    See the description of the respective namelist parameter in the [agent parameters documentation](../Namelists/#agent-parameters) for allowed values.
+
+MAS0005:
+  loglevel: ERROR
+  message: |
+    Input file NAVIGATION_DATA... for MAS missing.
+  description: |
+    Run `agent_preprocessing` before the job to create it.
+
+MAS0006:
+  loglevel: INFO
+  message: |
+    The maximumn number of agents during this run was ... . Consider adjusting the INPUT parameter [../agent_parameters#dim_size_agtnum_manual dim_size_agtnum_manual] accordingly for the next run.
+  description: |
+    This informative message is given at the end of every job that uses the [Multi Agent System](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/mas). In order to avoid unnecessarily large files, try to set [dim_size_agtnum_manual](../Namelists/#agent_parameters--dim_size_agtnum_manual) as close to the maximum number of agents during the simulation.
+

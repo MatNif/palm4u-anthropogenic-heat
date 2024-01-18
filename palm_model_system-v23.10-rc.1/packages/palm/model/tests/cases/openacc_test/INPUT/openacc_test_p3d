@@ -1,0 +1,71 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- grid parameters
+!-------------------------------------------------------------------------------
+    nx                         = 39, ! Number of gridboxes in x-direction (nx+1)
+    ny                         = 39, ! Number of gridboxes in y-direction (ny+1)
+    nz                         = 40, ! Number of gridboxes in z-direction (nz)
+
+    dx                         = 50.0, ! Size of single gridbox in x-direction
+    dy                         = 50.0, ! Size of single gridbox in y-direction
+    dz                         = 50.0, ! Size of single gridbox in z-direction
+
+    dz_stretch_level           = 1225.0, ! Height (in m) where stretching starts
+    dz_stretch_factor          = 1.08,   ! dz(k+1) = dz(k) * dz_stretch_factor
+!
+!-- initialization
+!-------------------------------------------------------------------------------
+    initializing_actions       = 'set_constant_profiles', ! initial conditions
+    loop_optimization          = 'vector', ! use 'cache' or 'vector'
+
+    ug_surface                 = 0.0, ! u-comp of geostrophic wind at surface
+    vg_surface                 = 0.0, ! v-comp of geostrophic wind at surface
+
+    pt_surface                 = 300.0, ! initial surface potential temp
+
+    pt_vertical_gradient       =    0.0,
+                                    1.0, ! piecewise temp gradients
+    pt_vertical_gradient_level =    0.0,
+                                  800.0, ! height level of temp gradients
+
+
+!
+!-- boundary conditions
+!-------------------------------------------------------------------------------
+    surface_heatflux           = 0.1, ! sensible heat flux at the bottom surface
+    bc_pt_b                    = 'neumann', ! required with surface_heatflux
+    bc_p_t                     = 'dirichlet',  ! workaround to pass the tests
+!
+!-- numerics
+!-------------------------------------------------------------------------------
+    fft_method                 = 'temperton-algorithm', ! build-in fft method
+
+/ ! end of initialization parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                   = 60.0, ! simulation time of the 3D model
+
+    create_disturbances        = .TRUE., ! randomly perturbate horiz. velocity
+    dt_disturb                 = 150.0,  ! interval for random perturbations
+    disturbance_energy_limit   = 0.01,   ! upper limit for perturbation energy
+
+    data_output_2d_on_each_pe  = .FALSE., ! don't do 2D output on each MPI rank
+
+!
+!-- data output
+!-------------------------------------------------------------------------------
+    dt_run_control             = 0.0,    ! output interval for run control
+
+/ ! end of runtime parameter namelist
+ 

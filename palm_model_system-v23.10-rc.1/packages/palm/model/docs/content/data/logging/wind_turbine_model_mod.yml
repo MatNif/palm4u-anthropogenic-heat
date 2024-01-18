@@ -1,0 +1,56 @@
+WTM0001:
+  loglevel: ERROR
+  message: |
+    pitch_control = .TRUE. requires speed_control = .TRUE.
+  description: |
+    Appropriately adjust [pitch_control](../Namelists/#wind_turbine_parameters--pitch_control) and [speed_control](../Namelists/#wind_turbine_parameters--speed_control).
+
+WTM0002:
+  loglevel: ERROR
+  message: |
+    rotor_speed < 0.0
+  description: |
+    Set [rotor_speed](../Namelists/#wind_turbine_parameters--rotor_speed) to a value larger than or equal to zero.
+
+WTM0003:
+  loglevel: ERROR
+  message: |
+    hub_x, hub_y, hub_z have to be given for each turbine
+  description: |
+    Appropriately adjust [hub_x](../Namelists/#wind_turbine_parameters--hub_x), [hub_y](../Namelists/#wind_turbine_parameters--hub_y), and [hub_z](../Namelists/#wind_turbine_parameters--hub_z).
+
+WTM0004:
+  loglevel: ERROR
+  message: |
+    vertical grid stretching only allowed above ... m. The lowest level where vertical stretching is applied have to be greater than ...
+  description: |
+    The implemented wind turbine model does not consider a stretched grid. Therefore grid stretching should only be applied well above the region where the wind turbine model is active. Please adjust [dz_stretch_level_start](../Namelists/#initialization_parameters--dz_stretch_level_start) accordingly.
+
+WTM0005:
+  loglevel: WARNING
+  message: |
+    Wind turbine model output requires netCDF version 4. No output file will be created.
+  description: |
+    Data output for the wind turbine model is realized only for netCDF version 4. As a consequence the model output is deactivated if version 3 is used. Keep in mind that just providing a netCDF4 library is not sufficient. You also need to re-compile the PALM code with preprocessor option `-D__netcdf4` (to be set in the `%cpp_options` line of the configuration file) and to set [netcdf_data_format](../Namelists/#runtime_parameters--netcdf_data_format) = *4*.
+
+WTM0006:
+  loglevel: ERROR
+  message: |
+    error while defining output: "..."
+  description: |
+    Internal error, while trying to define the respective variable in the output file. In case a user-interface is not used, contact the PALM developers, e.g. via the trouble-ticket system.
+
+WTM0007:
+  loglevel: ERROR
+  message: |
+    file WTM_DATA does not exist
+  description: |
+    Make sure that the file `<run-id>_wtmpar` containing the physical characteristics of the blades, as described in [[source:/palm/trunk/EXAMPLES/wind_turbine/example_wtm.txt| example_wtm.txt]], is provided in the INPUT folder. See also description of local file [WTM_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#WTM_DATA).
+
+WTM0008:
+  loglevel: ERROR
+  message: |
+    error while writing output: "..."
+  description: |
+    Internal error, occuring while trying to write the respective variable to the output file. In case a user-interface is not used, contact the PALM developers, e.g. via the trouble-ticket system.
+

@@ -1,0 +1,180 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "virtual_flight_parameters"
+
+flight_angle:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: 45.0
+  si-unit: degree
+  description:
+    short: Horizontal flight angle describing the flight direction.
+    long: |
+      The parameter only has an effect if [leg_mode](#virtual_flight_parameters--leg-mode) = *'cyclic'*. Else, the flight direction is determined by [x_start](#virtual_flight_parameters--x_start), [x_end](#virtual_flight_parameters--x_end), [y_start](#virtual_flight_parameters--y_start) and [y_end](#virtual_flight_parameters--y_end).
+
+      The [flight_angle](#virtual_flight_parameters--flight_angle) must be within 0 and 360 degrees. The convention is as following:
+
+      - [flight_angle](#virtual_flight_parameters--flight_angle) = *0.0* - aircraft moves to the east
+      - [flight_angle](#virtual_flight_parameters--flight_angle) = *90.0* - aircraft moves to the north
+      - [flight_angle](#virtual_flight_parameters--flight_angle) = *180.0* - aircraft moves to the west
+      - [flight_angle](#virtual_flight_parameters--flight_angle) = *270.0* - aircraft moves to the south
+
+      ![virtual-flight-angle](/Guide/LES_Model/Figures/virtual-flight_angle.svg){ align=center }
+
+
+flight_begin:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Start time of virtual flight measurement.
+    long: |
+      Relative time since start of the 3D-model.
+
+
+flight_end:
+  category: General Settings
+  type: R
+  default:
+    value: ~
+  si-unit: s
+  description:
+    short: End time of virtual flight measurement.
+    long: |
+      Relative time since start of the 3D-model. By default, the flight is continued until the end of the simulation.
+
+
+flight_level:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: 100.0
+  si-unit: m
+  description:
+    short: Flight level.
+    long: |
+      Flight level relates to the bottom model boundary at `z = 0`.
+
+
+leg_mode:
+  category: Mode
+  type: C*6
+  shape: (500)
+  default:
+    value: 'cyclic'
+  description:
+    short: Flag to choose steering of flight mode.
+    long: ''
+  allowed_values:
+    - value: cyclic
+      description: |
+        Starting at ([x_start](#virtual_flight_parameters--x_start), [y_start](#virtual_flight_parameters--y_start)), the flight direction is determined only by [flight_angle](#virtual_flight_parameters--flight_angle) and the sensor moves cyclically through the model domain. Parameters [x_end](#virtual_flight_parameters--x_end) and [y_end](#virtual_flight_parameters--y_end) are ignored.
+    - value: return
+      description: |
+        The flight direction is determined by ([x_start](#virtual_flight_parameters--x_start), [y_start](#virtual_flight_parameters--y_start)) and ([x_end](#virtual_flight_parameters--x_end), [y_end](#virtual_flight_parameters--y_end)). The sensor turns around at the end-position and flies back, where it turns around again at the start-position and so on, until [flight_end](#virtual_flight_parameters--flight_end) is reached. Parameter [flight_angle](#virtual_flight_parameters--flight_angle) is ignored.
+
+
+max_elev_change:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: 0.0
+  description:
+    short: Maximum possible elevation change if [rate_of_climb](#virtual_flight_parameters--rate_of_climb) $\neq$ 0.0.
+    long: |
+      If the maximum elevation change is reached, the virtual aircraft starts descending/ascending until the original start level is reached again. For longer flights, the sensor moves vertically between [flight_level](#virtual_flight_parameters--flight_level) and [flight_level](#virtual_flight_parameters--flight_level) + [max_elev_change](#virtual_flight_parameters--max_elev_change) or [flight_level](#virtual_flight_parameters--flight_level) - [max_elev_change](#virtual_flight_parameters--max_elev_change) depending on the sign of [rate_of_climb](#virtual_flight_parameters--rate_of_climb).
+
+      Please note, [flight_level](#virtual_flight_parameters--flight_level) +/- [max_elev_change](#virtual_flight_parameters--max_elev_change) must not exceed the top/bottom of the model domain.
+
+
+rate_of_climb:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: 0.0
+  si-unit: m s^-1^
+  description:
+    short: Vertical speed of the aircraft.
+    long: |
+      Positive and negative values are allowed.
+
+
+speed_agl:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: 25.0
+  si-unit: m s^-1^
+  description:
+    short: Ground speed of the aircraft.
+    long: ''
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to switch on/off the module.
+    long: |
+      If [switch_off_module](#virtual_flight_parameters--switch_off_module) = *.T.*, the virtual flight module is not activated even if the namelist is present in the parameter file.
+
+
+x_end:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: End-position of the flight leg along `x`.
+    long: |
+      This parameter is mandatory if [leg_mode](#virtual_flight_parameters--leg_mode) = *'return'*. If [leg_mode](#virtual_flight_parameters--leg_mode) = *'cyclic'*, the parameter is ignored.
+
+
+x_start:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: Start-position of the flight leg along `x`.
+    long: |
+      This parameter is mandatory.
+
+
+y_end:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: End-position of the flight leg along `y`.
+    long: |
+      This parameter is mandatory if [leg_mode](#virtual_flight_parameters--leg_mode) = *'return'*. If [leg_mode](#virtual_flight_parameters--leg_mode) = *'cyclic'*, the parameter is ignored.
+
+
+y_start:
+  category: General Settings
+  type: R
+  shape: (500)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: Start-position of the flight leg along `y`.
+    long: |
+      This parameter is mandatory.

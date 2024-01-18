@@ -1,0 +1,285 @@
+
+ ******************************    --------------------------------------------
+ * PALM (git SHA-1): da9a1e02 *    atmosphere - nested run initialized by interpolation from parent
+ ******************************    --------------------------------------------
+
+ Date:               2023-08-02    Run:       cbl_particle_nested__gfortran_defa
+ Time:                 08:59:59    Run-No.:   00
+ Run on host:        gfortran_d
+ Number of PEs:               2    Processor grid (x,y): (   1,   2) calculated
+                                   A 1d-decomposition along y is used
+                                   Max. # of parallel I/O streams is     4
+
+ Nesting information:
+ --------------------
+ Nesting boundary conditions:      3d_nested
+ Nesting mode:                     two-way
+ Nesting-datatransfer mode:        mixed
+
+ Nest id  parent  number   lower left coordinates   name
+ (*=me)     id    of PEs      x (m)     y (m)
+    01      **         2         0.00      0.00     coarse
+  * 02      01         2       400.00    400.00     fine
+ ------------------------------------------------------------------------------
+
+ Numerical Schemes:
+ -----------------
+
+ --> Use the 1.5-order turbulence closure (LES mode).
+ --> Use the boussinesq approximation for the model equations.
+ --> Solve perturbation pressure via multigrid method (w-cycle)
+     number of grid levels:                    3
+     Gauss-Seidel red/black iterations:        2
+     fixed number of multigrid cycles:           2
+     perturbation pressure is calculated at every Runge-Kutta step
+ --> Momentum advection via Wicker-Skamarock-Scheme 5th order
+ --> Scalar advection via Wicker-Skamarock-Scheme 5th order
+ --> Loop optimization method: cache
+ --> Time differencing scheme: runge-kutta-3       
+ ------------------------------------------------------------------------------
+
+
+ Run time and time step information:
+ ----------------------------------
+
+ Timestep:             variable     maximum value: 20.000 s    CFL-factor: 0.90
+ Start time:              0.000 s
+ End time:              100.000 s
+
+
+ Computational grid and domain size:
+ ----------------------------------
+
+ Grid length:      dx =      25.000 m    dy =      25.000 m
+                dz(1) =      25.000 m
+
+ Domain size:       x =   1000.000 m     y =   1000.000 m  z(u) =   1012.500 m
+
+
+
+ Number of gridpoints (x,y,z):  (0:  39, 0:  39, 0:  41)
+ Subdomain size (x,y,z):        (    40,     20,     42)
+
+
+    Characteristic levels of the geo. wind component ug:
+
+       Height:         0.0     0.0  m
+       ug:            1.00    1.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+    Characteristic levels of the geo. wind component vg:
+
+       Height:         0.0     0.0  m
+       vg:            1.00    1.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+
+ Topography information:
+ ----------------------
+
+ Topography: single_building                         
+ Building size (x/y/z) in m: 200.0 / 200.0 / 200.0
+ Horizontal index bounds (l/r/s/n):   16 /   24 /   16 /   24
+ Topography grid definition convention:
+ cell edge (staggered grid points
+ (u in x-direction, v in y-direction))
+
+
+
+ Boundary conditions:
+ -------------------
+
+                     p                    uv                                  pt
+
+ B. bound.: p(0)     = p(1)   | uv(0)     = -uv(1)                | pt(0)     = pt(1)            
+ T. bound.: p(nzt+1) = p(nzt) | uv(nzt+1) = uv(nzt)               |                              
+
+                     e
+
+ B. bound.: e(0)     = e(1)                                                                      
+ T. bound.: e(nzt+1) = e(nzt) = e(nzt-1)                                                         
+
+ Bottom surface fluxes are used in diffusion terms at k=1
+       Predefined constant heatflux:    0.100000 K m/s
+
+
+    Constant flux layer between bottom surface and first computational u,v-level:
+
+       z_mo =  12.50 m   z0 = 0.1000 m   z0h = 0.10000 m   kappa = 0.40
+       zeta value range:     -20.00 <= zeta <= 20.00
+
+
+ Lateral boundaries:
+       left/right:  nested              
+       north/south: nested              
+
+       pt damping layer width =     0.00 m, pt damping factor = 0.0000
+
+
+ Initial profiles:
+ ----------------
+
+    Characteristic levels of the initial temperature profile:
+
+       Height:           0.0   793.8   846.2  m
+       Temperature:   285.00  285.00  301.00  K
+       Gradient:      ------   32.00    0.70  K/100m
+       Gridpoint:          0      32      34
+
+
+ List output:
+ -----------
+
+    1D-Profiles:
+       Output every             9999999.90 s
+       Time averaged over          3600.00 s
+       Averaging input every          0.00 s
+
+
+ Data output:
+ -----------
+
+       Time averaged over          3600.00 s
+       Averaging input every          0.00 s
+
+    3D-Arrays:
+       Output format: netCDF 64bit offset                     
+
+       Arrays:  u, v, w,                                                             
+       Output every                3600.00 s  
+       Upper output limit at       1012.50 m  (GP   41)
+
+       Number of output time levels allowed: unlimited
+
+    3D-Arrays(time-averaged):
+       Output format: netCDF 64bit offset                     
+
+       Arrays:  u, v, w,                                                             
+       Output every                3600.00 s  
+       Time averaged over          3600.00 s
+       Averaging input every          0.00 s
+       Upper output limit at     1012.50 m  (GP   41)
+
+       Number of output time levels allowed: unlimited
+
+    Time series:
+       Output format: netCDF 64bit offset                     
+       Output every                   0.00 s
+
+ ------------------------------------------------------------------------------
+
+
+ Physical quantities:
+ -------------------
+
+    Geograph. latitude  :   latitude  =  55.0 degr
+    Geograph. longitude :   longitude =   0.0 degr
+    Rotation angle      :   rotation_angle =   0.0 degr
+    Angular velocity    :   omega  = 0.729E-04 rad/s
+    Coriolis parameter  :   f      =  0.000119 1/s
+                            f*     =  0.000084 1/s
+
+    Date and time at model start : 2019-06-21 12:00:00 +00
+
+    Gravity             :   g      =  9.8 m/s**2
+
+    Reference state used in buoyancy terms: initial_profile
+
+
+ Cloud physics quantities / methods:
+ ----------------------------------
+
+
+
+ LES / Turbulence quantities:
+ ---------------------------
+
+    Mixing length is limited close to surfaces
+
+
+ Actions during the simulation:
+ -----------------------------
+
+    Disturbance impulse (u,v) every :   9999999.90 s
+    Disturbance amplitude           :     0.25 m/s
+    Lower disturbance level         :    62.50 m (GP    3)
+    Upper disturbance level         :   312.50 m (GP   13)
+    Disturbances continued during the run from i/j =  10 to i/j =  29
+    Random number generator used    : random-parallel
+
+    Particles:
+    ---------
+
+       Particle advection is active (switched on at t =     1.0 s)
+       Interpolation of particle velocities is done by using trilinear method
+       Boundary conditions: left/right: cyclic          north/south: cyclic         
+                            bottom:     reflect         top:         absorb         
+       Maximum particle age:                       100.0 s
+
+       Release of new particle generations every    20.0 s
+       Release of new particles stopped at t =      21.0 s
+
+       SGS velocity components are used for particle advection
+          minimum timestep for advection: 0.00020
+
+       Number of particles in total domain:            0
+
+       Number of particle groups:  1
+
+       Particle group  1:
+          Particle radius:  0.000E+00m
+          Particles are advected only passively (no inertia)
+
+          Boundaries of particle source: x:     1.0 -     -1.0 m
+                                         y:     1.0 -     -1.0 m
+                                         z:     1.0 -     -1.0 m
+          Particle distances:  dx =     50.0 m  dy =     50.0 m  dz =      1.0 m
+
+ ------------------------------------------------------------------------------
+
+
+
+Run-control output:
+------------------
+
+RUN  ITER. HH:MM:SS.SS    DT(E)     UMAX     VMAX     WMAX     U*    W*      THETA*     Z_I     ENERG.   DISTENERG    DIVOLD     DIVNEW     UMAX(KJI)    VMAX(KJI)    WMAX(KJI)   ADVECX   ADVECY   MGCYC
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  0      0 00:00:00.00  18.9000A   1.1899D  1.1775D  0.1181  0.000  0.00   0.000E+00    800.  0.923E+00  0.374E-02  0.481E-03  0.119E-03   17   2  30   19  -3  14    9  36  -3    0.000    0.000       2
+  0      1 00:00:18.89   0.3890A -57.8045 -56.6277  15.9872  0.329  0.00  -0.333E+00      0.  0.831E+01  0.180E+01  0.323E-01  0.516E-02    4  25  16    4  16  25    8  15  25    0.000    0.000       2
+  0      2 00:00:19.28   0.5580A -40.3471 -39.6655 -11.8585  0.208  0.00  -0.534E+00     25.  0.413E+01  0.111E+01  0.122E-02  0.354E-03    4  25  16    4  16  25    8  16  26    0.000    0.000       2
+  0      3 00:00:19.84   0.6240A -36.0339 -35.3035 -11.3931  0.131  0.00  -0.101E+01     25.  0.234E+01  0.827E+00  0.169E-02  0.617E-03    4  25  15    4  15  25    8  16  26    0.000    0.000       2
+  0      4 00:00:20.47   0.7910D -27.2738 -26.9709 -10.5579  0.107  0.54  -0.141E+01    100.  0.190E+01  0.678E+00  0.742E-03  0.167E-03    4  25  15    6  15  25    8  26  16    0.000    0.000       2
+  0      5 00:00:21.26   0.8830D  22.8725  23.0627 -10.0181  0.099  0.00  -0.153E+01      0.  0.171E+01  0.569E+00  0.498E-03  0.385E-04    5  15  25    5  25  15    8  17  26    0.000    0.000       2
+  0      6 00:00:22.14   0.9340D  19.4402  19.9276   9.4332  0.095  0.00  -0.158E+01     25.  0.160E+01  0.490E+00  0.418E-03  0.148E-04    4  15  26    4  26  15    2  25  14    0.000    0.000       2
+  0      7 00:00:23.07   1.0300D  18.3048  18.6146  -9.4690  0.093  0.00  -0.160E+01     25.  0.152E+01  0.434E+00  0.380E-03  0.114E-04    4  15  26    4  26  15    7  25  14    0.000    0.000       2
+  0      8 00:00:24.10   1.1800D  16.0323  16.1253  -9.3674  0.092  0.00  -0.162E+01     25.  0.147E+01  0.391E+00  0.365E-03  0.109E-04    4  15  26    4  26  15    7  25  14    0.000    0.000       2
+  0      9 00:00:25.28   1.3800D  13.2539  13.6563  -8.7244  0.091  0.00  -0.161E+01     25.  0.144E+01  0.358E+00  0.376E-03  0.113E-04    3  15  26    5  26  14    7  17  25    0.000    0.000       2
+  0     10 00:00:26.66   1.6000D  12.0938  13.3032  -8.9775  0.091  0.00  -0.160E+01     25.  0.141E+01  0.329E+00  0.401E-03  0.122E-04    5  14  26    5  27  14    6  17  25    0.000    0.000       2
+  0     11 00:00:28.26   1.7300A  11.9274  13.0411  -8.8366  0.090  0.00  -0.157E+01     25.  0.139E+01  0.305E+00  0.432E-03  0.129E-04    5  14  27    5  27  14    6  17  25    0.000    0.000       2
+  0     12 00:00:29.99   1.8000A  11.1462  12.5063  -8.2529  0.091  0.00  -0.156E+01     25.  0.138E+01  0.285E+00  0.440E-03  0.129E-04    5  14  27    5  28  14    6  17  25    0.000    0.000       2
+  0     13 00:00:31.79   1.9100A  10.9209  11.7531  -7.5331  0.091  0.00  -0.156E+01     25.  0.137E+01  0.269E+00  0.435E-03  0.123E-04    5  14  28    5  28  14    6  17  25    0.000    0.000       2
+  0     14 00:00:33.70   1.9400A  10.1339  11.6090  -6.9353  0.092  0.00  -0.154E+01     25.  0.137E+01  0.255E+00  0.438E-03  0.118E-04    5  14  28    5  29  14    5  18  25    0.000    0.000       2
+  0     15 00:00:35.64   2.0600A  10.2073  10.9197  -6.4731  0.092  0.00  -0.148E+01     25.  0.136E+01  0.243E+00  0.424E-03  0.110E-04    5  14  29    5  29  14    5  16  26    0.000    0.000       2
+  0     16 00:00:37.70   2.0700A   9.6385  10.8489  -6.1386  0.093  0.00  -0.142E+01     25.  0.136E+01  0.233E+00  0.429E-03  0.106E-04    5  14  29    5  30  14    5  16  26    0.000    0.000       2
+  0     17 00:00:39.77   2.1900A   9.6989  10.2932  -5.6744  0.095  0.00  -0.137E+01     25.  0.137E+01  0.225E+00  0.412E-03  0.992E-05    5  13  30    5  30  14    5  16  26    0.000    0.000       2
+  0     18 00:00:41.96   2.2400A   9.2234  10.0641  -5.1284  0.096  0.00  -0.132E+01     25.  0.137E+01  0.218E+00  0.416E-03  0.961E-05    5  13  30    5  31  14    5  16  26    0.000    0.000       2
+  0     19 00:00:44.20   2.3500A   9.1176   9.5804  -4.6201  0.097  0.00  -0.129E+01     25.  0.137E+01  0.211E+00  0.406E-03  0.905E-05    5  13  31    5  31  14    5  16  27    0.000    0.000       2
+  0     20 00:00:46.55   2.4400A   8.7468   9.2200  -4.4404  0.098  0.00  -0.126E+01     25.  0.138E+01  0.205E+00  0.407E-03  0.873E-05    5  13  31    5  32  14    5  16  27    0.000    0.000       2
+  0     21 00:00:48.99   2.5500A   8.4199   8.8203  -4.4970  0.099  0.00  -0.123E+01     25.  0.138E+01  0.200E+00  0.404E-03  0.841E-05    5  13  32    5  32  13    4  29  15    0.000    0.000       2
+  0     22 00:00:51.54   2.6900A   8.1347   8.3696  -4.5410  0.100  0.00  -0.122E+01     25.  0.139E+01  0.195E+00  0.404E-03  0.821E-05    5  13  32    5  33  13    4  16  28    0.000    0.000       2
+  0     23 00:00:54.23   2.7900A   7.6821   8.0746  -4.6949  0.101  0.00  -0.120E+01     25.  0.139E+01  0.190E+00  0.407E-03  0.817E-05    5  13  33    5  33  13    4  16  28    0.000    0.000       2
+  0     24 00:00:57.02   2.9400A   7.4441   7.6644  -4.4151  0.103  0.00  -0.118E+01     25.  0.140E+01  0.186E+00  0.402E-03  0.810E-05    5  13  33    5  33  13    4  16  28    0.000    0.000       2
+  0     25 00:00:59.96   3.0800A   7.0116   7.3103  -4.2602  0.104  0.00  -0.115E+01     25.  0.141E+01  0.181E+00  0.403E-03  0.824E-05    5  13  33    5  34  13    4  16  29    0.000    0.000       2
+  0     26 00:01:03.04   3.2500A   6.7288   6.9157  -3.9905  0.105  0.00  -0.112E+01     25.  0.141E+01  0.177E+00  0.402E-03  0.841E-05    5  13  34    5  34  13    4  29  16    0.000    0.000       2
+  0     27 00:01:06.29   3.4400A   6.3349   6.5356  -3.7121  0.106  0.00  -0.110E+01     25.  0.142E+01  0.173E+00  0.405E-03  0.871E-05    5  13  34    5  35  13    4  30  16    0.000    0.000       2
+  0     28 00:01:09.73   3.6600A   6.0100   6.1442  -3.3871  0.107  0.00  -0.109E+01     25.  0.142E+01  0.168E+00  0.412E-03  0.901E-05    5  13  35    5  35  13    4  30  16    0.000    0.000       2
+  0     29 00:01:13.39   3.8900A   5.6404   5.7774  -3.1739  0.109  0.00  -0.107E+01     25.  0.143E+01  0.164E+00  0.424E-03  0.938E-05    5  13  35    5  36  13    4  31  16    0.000    0.000       2
+  0     30 00:01:17.28   4.1600A   5.3047   5.4125  -3.0782  0.110  0.00  -0.105E+01     25.  0.143E+01  0.159E+00  0.437E-03  0.976E-05    5  13  36    5  37  13    3  31  16    0.000    0.000       2
+  0     31 00:01:21.44   4.4500A   4.9682   5.0567  -2.9986  0.111  0.00  -0.104E+01     25.  0.144E+01  0.155E+00  0.453E-03  0.101E-04    5  13  36    6  36  12    6  26  19    0.000    0.000       2
+  0     32 00:01:25.89   4.5200A   4.6743   4.9814  -3.0513  0.112  0.00  -0.102E+01     25.  0.144E+01  0.150E+00  0.473E-03  0.105E-04    5  13  36    6  36  12    6  26  19    0.000    0.000       2
+  0     33 00:01:30.41   4.7200A   4.5495   4.7703  -3.0313  0.113  0.00  -0.101E+01     25.  0.144E+01  0.146E+00  0.473E-03  0.102E-04    6  12  36    6  36  12    6  26  19    0.000    0.000       2
+  0     34 00:01:35.13   4.8600A   4.3780   4.6285  -2.9437  0.114  0.00  -0.100E+01     25.  0.145E+01  0.142E+00  0.488E-03  0.103E-04    6  12  36    6  37  12    6  26  19    0.000    0.000       2
+  0     35 00:01:39.99   5.0900A   4.3229   4.4235  -2.8167  0.115  0.00  -0.996E+00     25.  0.145E+01  0.138E+00  0.500E-03  0.100E-04    6  12  37    6  37  12    6  26  19    0.000    0.000       2
+  0     36 00:01:45.08   5.3000A   4.1706   4.2468  -2.6717  0.116  0.00  -0.993E+00     25.  0.145E+01  0.135E+00  0.523E-03  0.996E-05    6  11  37    6  38  12    6  26  19    0.000    0.000       2

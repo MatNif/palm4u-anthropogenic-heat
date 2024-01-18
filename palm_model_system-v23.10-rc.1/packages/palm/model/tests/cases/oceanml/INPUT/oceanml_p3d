@@ -1,0 +1,145 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+!   This is a setup for generating an ocean mixed layer including the effects
+!   of Stokes drift (Langmuir circulation) and wave breaking, based on the
+!   case described in Noh, Y., H.S. Min and S. Raasch (2004): Large-eddy
+!   simulation of the ocean mixed layer: The effects of wave breaking and
+!   Langmuir circulation. J. Phys. Oceanogr., 34, 720-735.
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- grid parameters
+!-------------------------------------------------------------------------------
+    nx                      = 63,  ! Number of gridboxes in x-direction (nx+1)
+                                   ! For Noh et al. change to nx = 239
+    ny                      = 63,  ! Number of gridboxes in y-direction (ny+1)
+                                   ! For Noh et al. change to nx = 239
+    nz                      = 64,  ! Number of gridboxes in z-direction (nz)
+
+    dx                      = 1.25, ! Size of single gridbox in x-direction
+    dy                      = 1.25, ! Size of single gridbox in y-direction
+    dz                      = 1.25, ! Size of single gridbox in z-direction
+!
+!-- initialization
+!-------------------------------------------------------------------------------
+    initializing_actions    = 'set_constant_profiles', ! initial conditions
+
+    latitude                = 55.0,  ! corresponds to a Coriolis parameter 
+                                     ! f = 1.2**-4 s-1
+
+    ug_surface              = 0.0,   ! u-comp of geostrophic flow at surface
+    vg_surface              = 0.0,   ! v-comp of geostrophic flow at surface
+
+    pt_surface              = 300.0, ! initial surface potential temp
+!
+!-- boundary conditions
+!-------------------------------------------------------------------------------
+    bc_uv_b                 = 'neumann',
+    bc_uv_t                 = 'neumann',
+    bc_pt_b                 = 'neumann',
+    bc_pt_t                 = 'neumann',
+    bc_p_b                  = 'neumann',
+    bc_p_t                  = 'neumann',
+
+    use_top_fluxes          = .T.,
+    use_surface_fluxes      = .F.,
+    constant_flux_layer     = .F.,
+
+    top_momentumflux_u      = -0.0001,    ! corresponds to u* = 0.01 m/s
+    top_momentumflux_v      = 0.0,
+
+    top_heatflux            = 1.02e-4,    ! gives weak cooling at ocean
+                                          ! surface to initiate buoyancy driven
+                                          ! turbulence,
+                                          ! see surface_cooling_spinup_time
+                                          ! below
+!
+!-- numerics
+!-------------------------------------------------------------------------------
+    fft_method              = 'temperton-algorithm',   ! build-in fft method
+
+    momentum_advec          = 'ws-scheme',  ! attention: Noh et al. used the
+                                            ! Piascek-Williams advection scheme
+    scalar_advec            = 'ws-scheme',  ! attention: Noh et al. used the
+                                            ! Piascek-Williams advection scheme
+
+/ ! end of initialization parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                =   120.0, ! simulation time of the 3D model
+                                       ! For Noh et al. change to  28800.0 s
+
+    create_disturbances     = .TRUE.,  ! randomly perturbate horiz. velocity
+                                       ! at beginning of the run
+    disturbance_amplitude   = 0.25e-3, ! maximum perturbation amplitude
+
+!
+!-- data output
+!-------------------------------------------------------------------------------
+    netcdf_data_format = 2,            ! output in NetCDF3 64bit offset format
+
+    dt_run_control          = 0.0,     ! output interval for run control
+
+! remove the following line to create output of time series 
+    dt_dots                 = 100000.0,
+
+    dt_dopr                 = 120.0,   ! For Noh et al. change to 1800.0
+
+    averaging_interval_pr   = 120.0,   ! For Noh et al. change to 600.0
+    dt_averaging_input_pr   = 10.0
+    data_output_pr          = 'e', 'e*', '#theta',
+                              'prho', 'u', 'v', 'w', 'km', 'kh', 'l',
+                              'u*2', 'v*2', 'w*2', 'theta*2', 'w*3',
+                              'wu', 'w*u*', 'w"u"',
+                              'wv', 'w*v*', 'w"v"',
+                              'w*e*', 'w*p*',
+                              'w*u*u*ddz', 'w*p*ddz', 'w"eddz',
+
+! uncomment following lines to create some of the output that is shown in
+! the Noh et al. paper
+!    dt_data_output          = 3600.0,
+!    data_output             = 'w', 'theta',
+
+/ ! end of runtime parameter namelist
+
+
+!-------------------------------------------------------------------------------
+!-- OCEAN PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/oceanpar
+!-------------------------------------------------------------------------------
+&ocean_parameters
+
+    stokes_waveheight          = 1.0      ! results in a turbulent Langmuir
+                                          ! number La = 0.45
+    stokes_wavelength          = 40.0,    ! results in a turbulent Langmuir
+                                          ! number La = 0.45
+    wave_breaking              = .F.,     ! The implemented parameterization is
+                                          ! designed for a vertical grid spacing
+                                          ! of dz = 1.25m and time steps of
+                                          ! about 4 s. It will probably fail for
+                                          ! other setups.
+                                          ! Attention:
+                                          ! For Noh et al. switch to .T.
+    surface_cooling_spinup_time = 900.0,  ! add a surface cooling only at start
+                                          ! in order to initiate turbulence
+
+    salinity                   = .TRUE.,  ! salinity switched on just for
+                                          ! testing the salinity code
+                                          ! remove this and the following two
+                                          ! parameters for simulating the
+                                          ! Noh et al. case
+    bc_sa_t                    = 'neumann',
+    top_salinityflux           = 0.0,     ! zero salinityflux at ocean surface
+
+/ ! end of ocean parameters
+
+  ! WARNING: do not remove this blank line from the end of this file

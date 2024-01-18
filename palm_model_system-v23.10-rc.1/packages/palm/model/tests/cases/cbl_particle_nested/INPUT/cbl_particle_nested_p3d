@@ -1,0 +1,146 @@
+!------------------------------------------------------------------------------
+!-- NESTING PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/nestpar
+!------------------------------------------------------------------------------
+ &nesting_parameters
+
+   domain_layouts             = 'coarse',  1,  -1,  2,    0.0,    0.0,0.0,
+                                'fine',    2,   1,  2,  400.0,  400.0,0.0,
+
+   nesting_mode               = 'two-way',
+   nesting_datatransfer_mode  = 'mixed',
+
+ /  ! end of nesting_parameters namelist
+
+!------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!------------------------------------------------------------------------------
+ &initialization_parameters
+!
+!-- grid parameters
+!------------------------------------------------------------------------------
+    nx                         = 39,
+    ny                         = 39,
+    nz                         = 40,
+
+    dx                         = 50.0,
+    dy                         = 50.0,
+    dz                         = 50.0,
+!
+!-- Pressure solver
+!------------------------------------------------------------------------------
+    psolver   = 'multigrid',
+    cycle_mg  = 'w',
+    mg_cycles = 2,
+!
+!-- initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'set_constant_profiles',
+    ug_surface           = 1.0,
+    vg_surface           = 1.0,
+
+    pt_surface                 = 285.0,
+    pt_vertical_gradient       = 32.0, 0.7,
+    pt_vertical_gradient_level = 793.75, 846.25,
+    surface_heatflux           = 0.1,
+
+    roughness_length = 0.1,
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+   scalar_advec   = 'ws-scheme',
+   momentum_advec = 'ws-scheme',
+!
+!-- Boundary conditions
+!------------------------------------------------------------------------------
+    bc_lr   = 'cyclic',
+    bc_ns   = 'cyclic',
+
+    bc_p_b  = 'neumann',
+    bc_p_t  = 'dirichlet',
+
+    bc_uv_b = 'dirichlet',
+    bc_uv_t = 'dirichlet',
+
+    bc_pt_b = 'neumann',
+    bc_pt_t = 'initial_gradient',
+
+ /  ! end of initialization_parameters namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+!
+!-- run steering
+!------------------------------------------------------------------------------
+    end_time = 100.0,
+
+    create_disturbances      = .T.,
+    disturbance_energy_limit = 0.01,
+
+!
+!-- general output settings
+!------------------------------------------------------------------------------
+    dt_run_control = 0.0,
+
+    dt_data_output        = 3600.0,
+    dt_averaging_input    = 0.0,
+    averaging_interval    = 3600.0,
+    data_output           = 'u',  'u_av',
+                            'v',  'v_av',
+                            'w',  'w_av',
+
+    dt_dots               = 0.0,
+
+ /  ! end of runtime_parameters namelist
+
+!-------------------------------------------------------------------------------
+!-- Particle PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/parpar
+!-------------------------------------------------------------------------------
+ &particle_parameters
+!
+!-- Particle steering, release time, age, etc.
+!------------------------------------------------------------------------------
+    particle_advection_start = 1.0,
+    dt_prel                  = 20.0,
+    end_time_prel            = 21.0,
+    particle_maximum_age     = 100.0,
+!
+!-- Advection
+    particle_advection_interpolation =  'trilinear',
+!
+!-- Initial particles start locations
+!------------------------------------------------------------------------------
+    psl = 0.0,
+    psr = 1000.0,
+    pss = 0.0,
+    psn = 1000.0,
+    psb = 5.0,
+    pst = 5.1,
+!
+!-- Initial distances between particles start locations
+!------------------------------------------------------------------------------
+    pdx = 50.0,
+    pdy = 50.0,
+    pdz = 1.,
+!
+!-- Release one particle per start locations
+!------------------------------------------------------------------------------
+    particles_per_point = 1,
+!
+!-- Apply stochastic equation to model particle movement on subgrid scale
+!------------------------------------------------------------------------------
+    use_sgs_for_particles = .T.,
+!
+!-- Particle boundary conditions
+!------------------------------------------------------------------------------
+    bc_par_b  = 'reflect',
+    bc_par_lr = 'cyclic',
+    bc_par_ns = 'cyclic',
+    bc_par_t  = 'absorb',
+
+ /  ! end of particle_parameters namelist

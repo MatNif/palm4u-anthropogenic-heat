@@ -1,0 +1,63 @@
+BIO0001:
+  loglevel: ERROR
+  message: |
+    output of "..." requires uv_exposure = .TRUE. in namelist "biometeorology_parameters"
+  description: |
+    To output the requested variable, the UV exposure calculation must be switched on which is part of the biometeorology module. See the [UVEM documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/biomet#UVExposureModelUVEM) for more details.
+
+BIO0002:
+  loglevel: ERROR
+  message: |
+    illegal value for data_output: "..." only 2d-horizontal cross sections are allowed for this value
+  description: |
+    The listed quantities are pure two-dimensional xy-cross-sections. They are not available as 3d data or xz/yz cross-sections. Note that these quantities are always marked by an asterisk as last character. See also [data_output](../Namelists/#runtime_parameters--data_output).
+
+BIO0003:
+  loglevel: ERROR
+  message: |
+    output of "..." requires radiation = .TRUE.
+  description: |
+    To output the requested variable, the radiation model must be switched on.
+
+BIO0004:
+  loglevel: ERROR
+  message: |
+    thermal comfort requires humidity = .TRUE.
+  description: |
+    The calculation of thermal comfort requires air humidity information, and therefore [humidity](../Namelists/#initialization_parameters--humidity) = *.TRUE.* has to be set in the namelist file.
+
+BIO0005:
+  loglevel: ERROR
+  message: |
+    uv_exposure = .TRUE. but input file "PIDS_UVEM" is not present
+  description: |
+    The UV exposure calculation requires an additional input file which is not given. See the [UVEM documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/biomet#UVExposureModelUVEM) for more details.
+
+BIO0006:
+  loglevel: ERROR
+  message: |
+    uv_exposure = .TRUE. but one or more required input varaibles are not present in file "PIDS_UVEM"
+  description: |
+    The UV exposure calculation requires special input variables given in the input file PIDS_UVEM. See the [UVEM documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/biomet#UVExposureModelUVEM) for more details.
+
+BIO0007:
+  loglevel: ERROR
+  message: |
+    consider_obstructions = .TRUE. but varaible "obstruction" is not present in file "PIDS_UVEM"
+  description: |
+    To consider obstruction, e.g. by buildings, for UV exposure, the obstruction must be pre-calculated for each grid point and be provided within the input file PIDS_UVEM. See the [UVEM documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/biomet#UVExposureModelUVEM) for more details.
+
+BIO0008:
+  loglevel: ERROR
+  message: |
+    combination of mrt_minlevel = ... and mrt_nlevels = ... does not include bio_cell_level (gravimetric center of the sample human body 1,1 m)
+  description: ' '
+
+BIO0009:
+  loglevel: ERROR
+  message: |
+    thermal comfort requires radiation_interaction = .TRUE.
+  description: |
+    The calculation of thermal comfort requires to consider radiation interactions, and therefore [radiation_interactions_on](../Namelists/#radiation_parameters--radiation_interactions_on) = *.TRUE.* has to be set in the namelist file.
+
+

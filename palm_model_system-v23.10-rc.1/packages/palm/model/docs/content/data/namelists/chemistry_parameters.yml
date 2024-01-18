@@ -1,0 +1,1132 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "chemistry_parameters" for the pollen model
+
+bc_cs_b:
+  category: Boundary Conditions
+  type: C*20
+  default: 'dirichlet'
+  description:
+    short: Bottom boundary condition of the chemical species (cs) concentration. For constant surface flux bc_cs_b must be set to 'neumann'.
+    long: |
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        cs(k=0) = constant = [cs_surface](#chemistry_parameters--cs_surface);
+    - value: 'neumann'
+      description: |
+        When a constant surface concentration flux is used [(surface_csflux)](#chemistry_parameters--surface_csflux) or [emissions_anthropogenic](#chemistry_parameters--emissions_anthropogenic) = .T.), bc_cs_b = 'neumann' must be used.
+
+bc_cs_l:
+  category: Boundary Conditions
+  type: C*20
+  default: ~
+  description:
+    short: Left boundary condition of the chemical species (cs) concentration.
+    long: |
+      If the value of the parameter is not set by the user, then the value given by the parameter [bc_lr](#initialization_parameters--bc_lr) will be used. If 'cyclic' has been chosen, parameter bc_cs_r must also be set to 'cyclic'. Horizontal boundary conditions for chemical species can be set independently from horizontal boundary conditions that have been chosen for the remaining model quantities via parameters bc_lr and bc_ns. For instance,  you can choose cyclic boundary conditions for chemical species, while the flow field uses non-cyclic conditions, or vice-a-versa.
+
+      For nested runs (child domain or offline-nested root domain) boundary values will be set using values from parent domains or from the dynamic driver file, depending on the setting of [nesting_offline_chem](#chemistry_parameters--nesting_offline_chem) and [nesting_chem](#chemistry_parameters--nesting_chem).
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles;
+    - value: 'neumann'
+      description: |
+        Zero concentration gradient;
+    - value: 'cyclic'
+      description: ''
+
+bc_cs_n:
+  category: Boundary Conditions
+  type: C*20
+  default: ~
+  description:
+    short: North boundary condition of the chemical species (cs) concentration.
+    long: |
+      If the value of the parameter is not set by the user, then the value of the parameter [bc_ns](#initialization_parameters--bc_ns) will be used. If 'cyclic' boundary condition has been chosen, then the parameter bc_cs_s must also be set to 'cyclic'. Horizontal boundary conditions for chemical species can be set independently from horizontal boundary conditions that have been chosen for the meteorological quantities via parameters bc_lr and bc_ns. For instance you can choose cyclic boundary conditions for chemical species, while the flow field uses non-cyclic conditions, or vice-a-versa.
+
+      For nested runs (child domain or offline-nested root domain) boundary values will be set using values from parent domains or from the dynamic driver file, depending on the setting of [nesting_offline_chem](#chemistry_parameters--nesting_offline_chem) and [nesting_chem](#chemistry_parameters--nesting_chem).
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles;
+    - value: 'neumann'
+      description: |
+        Zero concentration gradient;
+    - value: 'cyclic'
+      description: ''
+
+bc_cs_r:
+  category: Boundary Conditions
+  type: C*20
+  default: ~
+  description:
+    short: Right boundary condition of the chemical species (cs) concentration.
+    long: |
+      If the value of the parameter is not set by the user, then the value of the parameter [bc_lr](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/initialization_parameters#bc_lr) will be used. If 'cyclic' boundary condition has been chosen, then the parameter bc_cs_l must also be set to 'cyclic'. Horizontal boundary conditions for chemical species can be set independently from horizontal boundary conditions that have been chosen for the meteorological quantities via parameters bc_lr and bc_ns. For instance, you can choose cyclic boundary conditions for chemical species, while the flow field uses non-cyclic conditions, or vice-a-versa.
+
+      For nested runs (child domain or offline-nested root domain) boundary values will be set using values from parent domains or from the dynamic driver file, depending on the setting of [nesting_offline_chem](#chemistry_parameters--nesting_offline_chem) and [nesting_chem](#chemistry_parameters--nesting_chem).
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles;
+    - value: 'neumann'
+      description: |
+        Zero concentration gradient;
+    - value: 'cyclic'
+      description: ''
+
+bc_cs_s:
+  category: Boundary Conditions
+  type: C*20
+  default: ~
+  description:
+    short: South boundary condition of the chemical species (cs) concentration.
+    long: |
+      If the value of the paramenter is not set by the user, then the value of the parameter [bc_ns](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/initialization_parameters#bc_ns) will be used. If 'cyclic' boundary condition has been chosen, parameter bc_cs_s must be set to 'cyclic'. Horizontal boundary conditions for chemical species can be set independently from horizontal boundary conditions that have been chosen for the meteorological quantities via parameters bc_lr and bc_ns. For instance, you can choose cyclic boundary conditions for chemical species, while the flow field uses non-cyclic conditions, or vice-a-versa.
+
+      For nested runs (child domain or offline-nested root domain) boundary values will be set using values from parent domains or from the dynamic driver file, depending on the setting of [nesting_offline_chem](#chemistry_parameters--nesting_offline_chem) and [nesting_chem](#chemistry_parameters--nesting_chem).
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles;
+    - value: 'neumann'
+      description: |
+        zero concentration gradient;
+    - value: 'cyclic'
+      description: ''
+
+bc_cs_t:
+  category: Boundary Conditions
+  type: C*20
+  default: 'initial_gradient'
+  description:
+    short: Top boundary condition of the chemical species (cs) concentration.
+    long: |
+      For nested runs (child domain or offline-nested root domain) boundary values will be set using values from parent domains or from the dynamic driver file, depending on the setting of [nesting_offline_chem](#chemistry_parameters--nesting_offline_chem) and [nesting_chem](#chemistry_parameters--nesting_chem).
+  allowed_values:
+    - value: 'dirichlet'
+      description: |
+        Constant concentration over the entire simulation as given by the initial profiles;
+    - value: 'neumann'
+      description: |
+        zero concentration gradient (cs(k=nz+1) = cs(k=nz));
+    - value: 'initial_gradient'
+      description: |
+        value of the scalar concentration gradient at the top is calculated from the initial scalar concentration profile (see [cs_profile](#chemistry_parameters--cs_profile)). Using this value (assumed constant during the run) the concentration boundary values are calculated as cs(k=nz+1) = cs(k=nz) + bc_cs_t_val * dzu(nz+1) with bc_cs_t_val being the concentration gradient between levels nzt and nzt+1.
+
+call_chem_at_all_substeps:
+  category: General Setting
+  type: L
+  default: .F.
+  description:
+    short: Switch, whether chemistry is called (.TRUE.) or not called (.FALSE.) at intermediate substepss of the Runge-Kutta scheme. Recommended is the default (.FALSE.).
+    long: |
+      Switch, whether chemistry is called at intermediate substeps of the Runge-Kutta scheme. Note that seting this parameter to .TRUE. is only appropriate for test purposes and does not increase the accuracy since the intermediate steps of the Runge-Kutta scheme do not represent a physical state.
+
+chem_gasphase_on:
+  category: General Setting
+  type: L
+  default: .T.
+  description:
+    short: Switches the gas-phase chemistry ON (.TRUE.) or OFF (.FALSE.)
+    long: |
+      When the parameter is set to .TRUE. both gas-phase reactions and transport are activated. If the parameter is switched OFF,  no chemical reactions will be calculated, only the transport for all chemical compounds will occur. This is useful for test purposes.
+
+chem_isorropia:
+  category: ISORROPIA Parameter
+  type: L
+  default: .F.
+  description:
+    short: Activation of ISORROPIA coupling
+    long: ''
+
+chem_isorropia_activity_coefficient_method:
+  category: ISORROPIA Parameter
+  type: I
+  default: 1
+  description:
+    short: Method of activity coefficient calculation
+    long: ''
+  allowed_values:
+    - value: 0
+      description: |
+        Calculate activity coefficients during runtime.
+    - value: 1
+      description: |
+        Use precalculated tables for activity coefficients.
+        See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_activity_tolerance:
+  category: ISORROPIA Parameter
+  type: R
+  default: 0.05
+  description:
+    short: Activity coefficient convergence criterion
+    long: |
+      Defines the convergence criterion for activity coefficient calculations in ISORROPIA. Any positive floating point is possible.
+      See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_aerosol_state:
+  category: ISORROPIA Parameter
+  type: R
+  default: 0.0
+  description:
+    short: Defines the aerosol state
+    long: ''
+  allowed_values:
+    - value: 0.0
+      description: |
+        The aerosol can have both solid and liquid phases (deliquescent).
+    - value: 1.0
+      description: |
+        The aerosol is in only liquid state (metastable aerosol).
+        See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_mass_conservation_mode:
+  category: ISORROPIA Parameter
+  type: I
+  default: 1
+  description:
+    short: Mass conservation enforcement (ISORROPIA II only)
+    long: |
+        Defines whether ISORROPIA will force conservation of mass up to the precision of the machine. This option is only available for ISORROPIA II.
+  allowed_values:
+    - value: 0
+      description: |
+        Normal calculation mode.
+    - value: 1
+      description: |
+        After calculating the thermodynamic solution, “adjust” concentrations of species so that total conservation of mass is satisfied to machine precision.
+        See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_mdr_weight_method:
+  category: ISORROPIA Parameter
+  type: I
+  default: 0
+  description:
+    short: Type of weighting algorithm for mutual deliquescence regions (MDR)
+    long: |
+        Defines the type of weighting algorithm for the solution in Mutual Deliquescence Regions (MDR's).
+  allowed_values:
+    - value: 0
+      description: |
+        MDRs are assumed dry. This is equivalent to the approach used in equilibrium routine SEQUILIB.
+    - value: 1
+      description: |
+        The solution is assumed half dry and half wet throughout the MDR.
+    - value: 2
+      description: |
+        The solution is a relative-humidity weighted mean of the dry and wet solutions.
+        See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_max_activity_sweep:
+  category: ISORROPIA Parameter
+  type: I
+  default: 4
+  description:
+    short: Maximum activity coefficient sweeps in ISORROPIA
+    long: |
+      Defines the maximum number of iterations for activity coefficient calculations in ISORROPIA. Any positive integer is possible.
+      See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_max_iteration:
+  category: ISORROPIA Parameter
+  type: I
+  default: 100
+  description:
+    short: Maximum number of iterations in ISORROPIA
+    long: |
+      Defines the maximum number of iterations for all iterative processes in ISORROPIA, except those for activity coefficient calculations (see also [chem_isorropia_max_activity_sweep](#chemistry_parameters--chem_isorropia_max_activity_sweep)). Any positive integer is possible.
+      See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_problem_type:
+  category: ISORROPIA Parameter
+  type: R
+  default: 0.0
+  description:
+    short: Maximum number of iterations in ISORROPIA
+    long: ''
+  allowed_values:
+    - value: 0.0
+      description: |
+        Forward problem is solved. In this case, the array of species concentrations contains GAS and AEROSOL concentrations together.
+    - value: 1.0
+      description: |
+        Reverse problem is solved. In this case, the array of species concentrations contains AEROSOL concentrations only.
+        See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_solver_tolerance:
+  category: ISORROPIA Parameter
+  type: R
+  default: 1.0E-6
+  description:
+    short: Solver convergence criterion
+    long: |
+      Defines the convergence criterion for all iterative processes in ISORROPIA, except those for activity coefficient calculations ([chem_isorropia_activity_tolerance](#chemistry_parameters--chem_isorropia_activity_tolerance) controls that). Any positive floating point is possible.
+      See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_isorropia_root_subdivisions:
+  category: ISORROPIA Parameter
+  type: I
+  default: 5
+  description:
+    short: Number of subdivisions for root tracking
+    long: |
+      Defines the number of subdivisions for root tracking in ISORROPIA, when the bisection method is used for numerically solving equilibrium equations. Normally this parameter should not have to change, but is included for completeness. Any positive integer is possible.
+      See [ISORROPIA model description](https://www.epfl.ch/labs/lapi/software/isorropia/)
+
+chem_wet_deposition:
+  category: Wet deposition
+  type: L
+  default: .F.
+  description:
+    short: Activation of wet deposition module
+    long: |
+      Turns on the wet deposition parametrization based on Simpson et al 2012, DOI 10.5194/acp-12-7825-2012.
+
+chem_wet_deposition_update_interval:
+  category: Wet deposition
+  type: R
+  default: 300.0
+  description:
+    short: Interval between update of scavenging rates
+    long: |
+      Scavenging rates are updated at the start of the model run, and afterwards at every user-defined update interval. The default is 300 seconds, but any positive value can be specified.
+
+chem_wet_deposition_model_override:
+  category: Wet deposition
+  type: L
+  default: .F.
+  description:
+    short: Activation of model override
+    long: |
+      Allows wet desposition to take place without cloud and precipitation input from the bulk cloud model.
+
+chem_wet_deposition_cloud_level_lower:
+  category: Wet deposition
+  type: I
+  default: 10
+  description:
+    short: Vertical level for lower cloud layer
+    long: |
+      Defines index of lower cloud layer when chem_wet_deposition_model_override is set to .TRUE..
+
+chem_wet_deposition_cloud_level_upper:
+  category: Wet deposition
+  type: I
+  default: 10
+  description:
+    short: Vertical level for upper cloud layer
+    long: |
+      Defines index of upper cloud layer when chem_wet_deposition_model_override is set to .TRUE..
+
+chem_wet_deposition_rain_rate:
+  category: Wet deposition
+  type: R
+  default: 1.0
+  description:
+    short: Rain rate in domain
+    long: |
+      Defines the rain rate of all cells when chem_wet_deposition_model_override is set to .TRUE..
+
+chem_mechanism:
+  category: General Setting
+  type: C*30
+  default: 'phstap'
+  description:
+    short : Chemical mechanism to be used for gasphase/aerosol chemistry.
+    long: |
+      The setting in the namelist must match with the mechanism in the code, i.e. in chem_gasphase_mod.f90. For currently available gas-phase chemistry options and how to access them see the [chemistry mechanisms summary](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/chemmech) For the pollen model currently only one mechanism is available i.e."empol1.0". The "empol1.0" must be selected to run the pollen model.
+
+cs_heights:
+  category: Initial Conditions
+  type: R
+  shape: (99,100)
+  default: ~
+  description:
+    short : Height levels for the initial profile of chemical compounds.
+    long: |
+      Height levels (in m above the gound) to go with [cs_profile](#chemistry_parameters--cs_profile) in order to define initial profiles of chemical species. The first index refers to the chemical compound, and the second to the height level.
+
+      Example:
+      cs_heights(1,:) = 0.0, 5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0, 95.0, (heights for profile of first chemical species)
+      cs_heights(2,:) = 0.0, 5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0, 95.0, (heights for profile of second chemical species)
+
+cs_name:
+  category: Initial Conditions
+  type: C*11
+  shape: (99)
+  default: 'novalue'
+  description:
+    short : Names of chemical species where surface concentrations or concentration profiles ([cs_profile](#chemistry_parameters--cs_profile)) are prescribed.
+    long: |
+      Example:
+      cs_name = 'O3', 'NO', 'NO2', 'CO', 'RCHO', 'PM10', 'PM25',
+      It is not necessary to specify cs_name (and cs_surface and cs_profile/cs_heights-pairs) for all compounds of the chosen chemical mechanism. Names of compounds which do not occur in the mechanism, are ignored.
+
+cs_profile:
+  category: Initial Conditions
+  type: R
+  shape: (99,100)
+  default: ~
+  description:
+    short : Concentration values of chemical species (gases in ppm, and PM compounds in kg m-3) at heights  [cs_heights](#chemistry_parameters--cs_heights).
+    long: |
+      Example:
+      cs_profile(1,:) = 0.020, 0.023, 0.026, 0.029, 0.032, 0.035, 0.038, 0.041, 0.044, 0.047, 0.050, (Values for initial profile of first species)
+      cs_profile(2,:) = 0.080, 0.073, 0.064, 0.057, 0.050, 0.043, 0.036, 0.029, 0.022, 0.015, 0.007, (Values for initial profile of second species)
+
+      The individual chemical species are identified using cs_name. These initial profiles become only effective when 'set_constant_profiles' is set for [initializing_actions](#initialization_parameters--initializing_actions). 'set_constant_profiles' can be combined with 'read_from_file' if the dynamic input file only contains meteorological variables and constant profiles are only set for chemistry.
+
+cs_surface:
+  category: Initial Conditions
+  type: R
+  shape: (99)
+  default: 0.0
+  description:
+    short : Initial surface concentrations of chemical compounds (gases in ppm, particulate matter in kg m-3).
+    long: |
+      Initial surface concentrations of chemical compounds (gases in ppm, and particulate matter in kg m-3) for the chemical species which are specifield by [cs_name](#chemistry_parameters--cs_name).
+
+daytype_mdh:
+  category: Anthropogenic Emissions
+  type: C*80
+  default: 'workday'
+  description:
+    short: Type of weekday (workday, weekend, holiday)
+    long: |
+      Type of weekday required for the MDH (MonthDayHour) case of the LOD 1 mode of the emissions module. Possible values are: workday, weekend, holiday. See also [time_fac_type](#chemistry_parameters--time_fac_type).
+
+deposition_dry:
+  category: General Setting
+  type: L
+  default: .F.
+  description:
+    short: Switch to  turn dry deposition ON (.TRUE.) or OFF (.FALSE.).
+    long: |
+      Switches the deposition calculation for particles and gases ON (.TRUE.) or OFF (.FALSE.).
+
+ebio_dt:
+  category: BVOC Emission
+  type: R
+  default: 0.0
+  description:
+    short : Time interval to call the biogenic VOC emission model.
+    long: |
+      Time-step of biogenic emission model, that is how often biogenic emission would be updated. The default value is 0. If user does not define ebio_dt, the BEM will use models physical time-step. In case user defines ebio_dt but it is less than model's physical time-step then model will issue a warning and make ebio_dt = dt_timestep.
+
+ebio_ef_pft:
+  category: BVOC Emission
+  type: R
+  default: ~
+  description:
+    short : Emission potentials for each [vegetation type (PFT)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/land_surface_parameters#vegetation_type).
+    long: ''
+
+ebio_ef_tree:
+  category: BVOC Emission
+  type: R
+  default: ~
+  description:
+    short : Emission potentials for each [tree type (single trees)](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/palm_csd#Singletrees)
+    long: ''
+
+ebio_emis_name:
+  category: BVOC Emission
+  type: C*11
+  shape: (99)
+  default: 'novalue'
+  description:
+    short : Names of the biogenic volatile organic compounds (BVOCs).
+    long: |
+      Names of biogenic VOCs. The species names must be available in both BVOC [Table 1](#BVOC_model) as well as in the chemical mechanism. User should follow the naming convention in th given chemistry mechanism. At the moment only CBM4 and SMOG chemistry mechanisms have been implemented in the biogenic voc model.
+
+ebio_max_emis_day:
+  category: BVOC Emission
+  type: I
+  default: 200
+  description:
+    short : The day when the emissions are expected to be the maximum, The default is 200 which is 19th/20th of July.
+    long: ''
+
+ebio_pft:
+  category: BVOC Emission
+  type: I
+  default: ~
+  description:
+    short : Vegetation types (plant functional types). PALM utilizes ECMWF-IFS classification for [vegetation types](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/land_surface_parameters#vegetation_type).
+    long: ''
+
+ebio_ppfd_factor:
+  category: BVOC Emission
+  type: R
+  default: 202.0
+  description:
+    short : Photosynthetic photo flux density (PPFD) factor .
+    long: |
+      Photosynthetic photo flux density factor (PPFD). The default value is the photosynthetically active radiation(PAR) within the visible range (400-700nm) absorbed by plants. The PPFD value is obtained  by converting  solar radiaton in $W m^{-2}$  incident on a grid box to mol $m^{-2} s^{-1}$.
+
+ebio_rad_method:
+  category: BVOC Emission
+  type: I
+  default: ~
+  description:
+    short: Radiation method for biogenic model defines as how radiation would be used to calculate bvoc emissions.
+    long: |
+  allowed_values:
+    - value: 0
+      description: |
+        The first method is based on calculating the average shortwave radiation (both direct and diffused components) at each plant canopy box (PCB) considering all radiative transfer processes, including shade and reflections. The RTM calculates this flux density using the absorbed radiation at each PCB and given that albedo is set to zero, please see [(Krc et al., 2021)](https://gmd.copernicus.org/articles/14/3095/2021/).
+    - value: 1
+      description: |
+        The second planned method (= 1), is based on calculating the shade ratio of each PCB and the radiation received for the unshaded part. This method is based on the assumption that the radiation reduces from the top face toward the inner centre of the PCB because the leaves on the top surface receive full radiation and leaves inside the grid cell receive less radiation due to being in the shade of the leaves above. This method is not yet implemented.
+
+ebio_soilm_method:
+  category: BVOC Emission
+  type: C*11
+  default: ~
+  description:
+    short: Choose the method for calculation fo soil moisture correction  factor.
+    long: |
+      The BEM offers the choice of algorithm in calculation of soil moisture correction factor.
+  allowed_values:
+    - value: 'bulk'
+      description: |
+        The default option 'bulk' is the simple method same as implemented in MEGAN [(Guenther et al., 2012)](https://gmd.copernicus.org/articles/5/1471/2012/)
+    - value: 'weighted'
+      description: |
+        The 'weighted' option is more complex and needs detailed data of soil, wilting point and field capacity.
+
+ebio_tree:
+  category: BVOC Emission
+  type: I
+  default: ~
+  description:
+    short : Tree types in the simulation domain. The current PALM database has 86 tree types [tree types](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/palm_csd#Singletrees) . The user need to choose tree types from this table.
+    long: ' '
+
+emis_biogenic:
+  category: BVOC Emission
+  type: L
+  default: .F.
+  description:
+    short : Switch to turn the biogenic emissions ON (.TRUE.) or OFF (.FALSE.).
+    long: ''
+
+emis_biogenic_lod:
+  category: BVOC Emission
+  type: I
+  default: 0
+  description:
+    short: Level of detail i.e. biogenic emission mode.
+    long: |
+      Two differet level of details have been planned for the BVOC model. Currently on LOD 0 is implemented.
+  allowed_values:
+    - value: 0
+      description: |
+        The currently implemented bvoc model is based on [Guenther et al., (1999)]( https://doi.org/10.1029/1999JD900391).
+
+    - value: 1
+      description: |
+        The Model of Emissions of Gases and Aerosols from Nature (MEGAN) is based on [Guenther et al., (2012)](https://gmd.copernicus.org/articles/5/1471/2012/). Not yet implemented.
+
+emis_domestic:
+  category: Domestic emissions
+  type: L
+  default: .F.
+  description:
+    short: Activation of domestic emissions module
+    long: ''
+
+emis_domestic_base_temperature:
+  category: Domestic emissions (LOD 0)
+  type: R
+  default: 15.0
+  description:
+    short: Base temperature for determining temperature deficit
+    long: |
+      The mean domestic indoor temperature to be maintained by heating. The default is 15 C.
+
+emis_domestic_compact_factors:
+  category: Domestic emissions (LOD 0)
+  type: R
+  shape: (6)
+  default: [0.23, 0.28, 0.28, 0.26, 0.29, 0.29]
+  description:
+    short: Compactness factors for each of the six building types
+    long: |
+      The compactness factor is an indicator of building density, which is defined for each building type (1-6).
+
+emis_domestic_energy_demands:
+  category: Domestic emissions (LOD 0)
+  type: R
+  shape: (6)
+  default: [30.0, 100.0, 100.0, 11.0, 89.0, 89.0]
+  description:
+    short: Annual energy demand for each of the six building types
+    long: |
+      The annual specific energy demand estimates the energy requirement for the building per unit footprint area, which is defined for each building type (1-6).
+
+emis_domestic_heating_degree:
+  category: Domestic emissions (LOD 0)
+  type: R
+  default: 2100.0
+  description:
+    short: Annual heating degree
+    long: |
+      The amount of heating required on an annual basis are inferred by the so-called annual heating degree, that is, the cumulative temperature, in degrees, to be heated above ambient temperature to the base temperature throughout the year. A value of 2100 K is presented as default.
+
+emis_domestic_lod:
+  category: Domestic emissions
+  type: I
+  default: 2
+  description:
+    short: Level of detail for domestic emissions
+    long: |
+  allowed_values:
+    - value: 0
+      description: |
+        Full parameterization (namelist driven)
+    - value: 2
+      description: |
+        No pararmeterization (input supplied in _domestic file)
+
+emis_domestic_species_emission_factors:
+  category: Domestic emissions (LOD 0)
+  type: R
+  default: ~
+  description:
+    short: Emission factor for each species defined
+    long: |
+      Emission factors are to be presented on a name-value pair represented by these two arrays in the _p3d file. Emission factors are expressed in a per terajoule (TJ) of energy consumed, and are to be presented in moles for all gas phase species, and kilograms for particulate species. In theory, the user can define up to 20 species, each represented by a name of up to 64 characters. However, only names that are found in the active chemical mechanism will have their corresponding emission factors extracted and used in the parametrization. Due to the variability species names in active chemical mechanisms, the user must provide all species names and corresponding emission factors.
+
+emis_domestic_species_names:
+  category: Domestic emissions
+  type: C*64
+  shape: (99)
+  default: ~
+  description:
+    short: Name of emission species
+    long: |
+      Emission factors are to be presented on a name-value pair represented by these two arrays in the _p3d file. Emission factors are expressed in a per terajoule (TJ) of energy consumed, and are to be presented in moles for all gas phase species, and kilograms for particulate species. In theory, the user can define up to 20 species, each represented by a name of up to 64 characters. However, only names that are found in the active chemical mechanism will have their corresponding emission factors extracted and used in the parametrization. Due to the variability species names in active chemical mechanisms, the user must provide all species names and corresponding emission factors.
+
+emis_domestic_update_interval:
+  category: Domestic emissions (LOD 0)
+  type: R
+  default: 300.0
+  description:
+    short: Interval between emission source updates
+    long: |
+      Emission sources at each stack location are updated at the start of the model run, and afterwards at every user-defined update interval. The default is 300 seconds, but any positive value can be specified.
+
+emis_generic:
+  category: Generic emissions
+  type: L
+  default: .F.
+  description:
+    short: Activation of generic emissions module
+    long: ' '
+
+emis_generic_lod:
+  category: Generic emissions
+  type: I
+  default: 2
+  description:
+    short: Level of detail for generic emissions
+    long: |
+      For generic emission mode only LOD 2 is implemented
+  allowed_values:
+    - value: 2
+      description: |
+        No pararmeterization (input supplied in _generic file)
+
+emiss_factor_main:
+  category: Anthropogenic Emission
+  type: R
+  default: ~
+  description:
+    short: Constant emission scaling factor for MAIM street types used in the PARAMETERIZED mode of chem emission module. The number and the order of the values has to correspond to the names of emission species provided for `surface_csflux_name`.
+    long: ''
+
+emiss_factor_side:
+  category: Anthropogenic Emission
+  type: R
+  default: ~
+  description:
+    short: Constant emission scaling factor for SIDE (secondary) street types used in the PARAMETERIZED mode of chemistry emission module. The number and the order of the values has to correspond to the names of emission species provided for `surface_csflux_name`.
+    long: ''
+
+emiss_interpolate:
+  category: Anthropogenic Emission
+  type: L
+  default: .F.
+  description:
+    short: Enables temporal interpolation of the emission between 'PIDS_CHEM' emission time-steps.
+    long: ''
+
+emiss_lod:
+  category: Anthropogenic Emission
+  type: I
+  default: ~
+  description:
+    short: Level of detail/mode of chemistry emissions.
+    long: ''
+  allowed_values:
+    - value: 0
+      description: |
+        (=='PARAMETERIZED'): Parameterized traffic emissions based on street types supplied additionally in the _static input file (e.g from OpenStreetMap). Please note that LOD = 0 is not applicable if the horizontal grid exceeds 10 to 15 m at maximum (depending on the width of the streets in the considered area). In this context, it must also be considered, that streets, which are only one grid point wide in the STATIC file will probably be eliminated in the topography filtering during runtime, i.e. emissions from steets which are only one grid point wide will be supressed.
+    - value: 1
+      description: |
+        (=='DEFAULT'): Input of yearly gridded emissions and MDH courses (see also [time_fac_type](#chemistry_parameters--time_fac_type)).
+    - value: 2
+      description: |
+        (=='PRE-PROCESSED'): Input of fully preprocessed emissions at fixed time intervals as given in the [_chemistry](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/chem) file which contains the emission fields.
+
+emis_pollen:
+  category: Pollen Emission
+  type: L
+  default: .F.
+  description:
+    short: Parameter to switch pollen emissions ON (.TRUE.) or OFF (.FALSE.)
+    long: |
+      This parameter is used to activate pollen model. Default is OFF (.FALSE.). To run the pollen model this parameter must be turned on (.TRUE.)
+
+emis_pt_source:
+  category: Anthropogenic emissions
+  type: L
+  default: .F.
+  description:
+    short: Switches the LOD 0 point sources mode ON (.TRUE.) or OFF (.FALSE.)
+    long: |
+      When set to .TRUE. volume source emissions from point sources can be included in the domain via the namelist (LOD 0). Up to 200 point sources can be included.
+
+emis_pt_source_annual_values:
+  category: Anthropogenic emissions
+  type: R
+  shape: (99)
+  default: 0.0
+  description:
+    short: Emissions values for point sources (LOD 0) in mol/m3/year.
+    long: |
+      Annual volume source emissions of point sources (emiss_lod = 0) in mol/m3/year given at locations defined with [emis_pt_source_locations_ijk](#chemistry_parameters--emis_pt_source_locations_ijk).
+      Example:
+      For two point sources with emissions of three pollutants (NO2, SO2 and PM10) included in the chemistry mechanism and defined with
+      [emis_pt_source_species_names](#chemistry_parameters--emis_pt_source_species_names) = 'no2', 'so2', 'pm10',
+      the emission example values would be given as
+      emis_pt_source_annual_values(1,:) = 100, 200, 300,
+      emis_pt_source_annual_values(2,:) = 100, 200, 300,
+
+emis_pt_source_k_spread:
+  category: Anthropogenic emissions
+  type: I
+  default: 3
+  description:
+    short: Z-distribution of point source emission
+    long: |
+      This parameter allows the user to spread the point source emission over several vertical levels. It is adviced to spread the point source emission over at least 2 levels, 3 is the default.
+  allowed_values:
+    - value: 1
+      description: |
+        Emissions defined using [emis_pt_source_annual_values](#chemistry_parameters--emis_pt_source_annual_values) are spread over one vertical level.
+    - value: 2
+      description: |
+        Emissions defined using [emis_pt_source_annual_values](#chemistry_parameters--emis_pt_source_annual_values) are spread over two vertical levels.
+    - value: 3
+      description: |
+        Emissions defined using [emis_pt_source_annual_values](#chemistry_parameters--emis_pt_source_annual_values) are spread over three vertical levels.
+    - value: 4
+      description: |
+        Emissions defined using [emis_pt_source_annual_values](#chemistry_parameters--emis_pt_source_annual_values) are spread over four vertical levels.
+    - value: 5
+      description: |
+        Emissions defined using [emis_pt_source_annual_values](#chemistry_parameters--emis_pt_source_annual_values) are spread over five vertical levels.
+
+emis_pt_source_k_weights:
+  category: Anthropogenic emissions
+  type: R
+  shape: (5)
+  default:
+    depends_on: no weights, equal distribution over defined emission levels
+  description:
+    short: Vertical emission distribution weights
+    long: |
+      Normalized mass distribution weights for the point source emission levels defined using [emis_pt_source_k_spread](#chemistry_parameters--emis_pt_source_k_spread).
+
+      Example:
+      In case the user has chosen 5 vertical levels to spread the point source emission ([emis_pt_source_k_spread](#chemistry_parameters--emis_pt_source_k_spread) = 5) of all point sources defined in the domain, the weights could exemplary look like this:
+      emis_pt_source_k_weights = 0.6, 0.2, 0.1, 0.05, 0.05,
+
+emis_pt_source_locations_ijk:
+  category: Anthropogenic emissions
+  type: I
+  default: ~
+  description:
+    short: Point source locations in the model domain
+    long: |
+      Defines the locations of point source emissions in the model domain following the grid spacing (defined in the Initialization parameters) in the horizontal x- (i) and y-directions (j) and in the vertical z-direction (k).
+      Example:
+      For two point sources, the first one located at i = 5, j = 10 and z = 3 and the second one located at i = 15, j = 10 and z = 5.
+      emis_pt_source_location_ijk(1,:) =  5, 10, 3,
+      emis_pt_source_location_ijk(2,:) = 15, 10, 5,
+
+emis_pt_source_species_names:
+  category: Anthropogenic emissions
+  type: C*64
+  shape: (99)
+  default: ~
+  description:
+    short :  Names of chemical compounds of parameterized point source emissions (emiss_lod = 0).
+    long: |
+     Names of chemical compounds of parameterized point source emissions. The species name should be available in the chemical mechanism. User should follow the naming convention in th given chemistry mechanism. Names that do not appear in the applied chemistry machanism will be ignored.
+
+     Example:
+     emis_pt_source_species_names = 'no2', 'so2', 'pm10',
+
+emis_traffic:
+  category: Traffic emissions
+  type: L
+  default: .F.
+  description:
+    short: Activation of traffic emissions module
+    long: ''
+
+emis_traffic_lod:
+  category: Traffic emissions
+  type: I
+  default: 2
+  description:
+    short: Level of detail for traffic emissions
+    long: ''
+  allowed_values:
+    - value: 2
+      description: |
+        No pararmeterization (input supplied in _traffic file)
+
+emissions_anthropogenic:
+  category: Anthropogenic Emission
+  type: L
+  default: .F.
+  description:
+    short: Switches surface emissions ON (.TRUE.) or OFF (.FALSE.) from anthropogenic sources.
+    long: ''
+
+epol_ignore_precip:
+  category: Pollen Emission
+  type: L
+  default: .T.
+  description:
+    short: Parameter to witch precipitation OFF (.TRUE.) or include (.FALSE.) in the pollen release processes.
+    long: |
+      Parameter to switch precipitation in OFF (.TRUE.) or include  (.FALSE.). in the pollen release processes. Currently precipitation is turned off in the pollen model code.
+
+epol_ignore_solar:
+  category: Pollen Emission
+  type: L
+  default: .T.
+  description:
+    short: Switch to ignore (.TRUE.) or include solar radiation (.FALSE.) in the pollen release prrocesses.
+    long: |
+      Switch to include or exclude solar radiation in the pollen release processes. Currently solar activiy is turned off that is set to (.TRUE.) in the pollen model code.
+
+epol_model:
+  category: Pollen Emission
+  type: C*64
+  default: 'zink'
+  description:
+    short: Selection of the pollen model from the available pollen parameterizations.
+    long: |
+      This parameter offers the choice of pollen emissin parameterizations. Currently only 'zink' (Zink et al., 2013), is implemented and available. In the future releases of the pollen model, 'hlebig' (Helbig et al., 2004) , and 'sofiev', (Sofiev et al., 2013) , would be included.
+
+epol_pool_reset_hour:
+  category: Pollen Emission
+  type: I
+  default: 0
+  description:
+    short: Parameter to reset/replenish the pollen pool
+    long: |
+      The time in UTC when the pollen emission pool is reset and replenished. In most of the cases, it is 00:00 hours local time.
+
+epol_seasonal_factors:
+  category: Pollen Emission
+  type: R
+  default: 0.0
+  description:
+    short: Seasonal description of pollen species.
+    long: |
+      Seasonal description of pollen species. The parameter varies between 0 and 1. This parameter describes start, end and peak of the pollen season. A value of 0 means no pollen emission season, and a value close to 1 indicates peak of pollen emission season.
+
+epol_specs_names:
+  category: Pollen Emission
+  type: C*64
+  default: 'no_value'
+  description:
+    short: pollen emitting plant species names, 'POL_BETU',(Birch tree),'POL_ALNU' (Alder tree), 'POL_POAC', (Grasses) and 'POL_AMBR', (Ambrosia/Ragweed)
+    long: |
+      Names of the pollen emitting plant species. Currently thee species are available, namely, birch (Betula), Alder, and grasses (Poaceae). Due to reasons for algorithm testing and authentication, parameterization for Ambrosia has not not been activated as yet. Ambrosia will be availabe in the next release of the pollen model.
+
+epol_tke_scheme:
+  category: Pollen Emission
+  type: C*64
+  default: 'default'
+  description:
+    short:  Parameterization to estimate TKE. Currently three TKE schemes are available namely, 'default' 'dynamic', and 'adhoc'
+    long: |
+      Parameterised turbulence kinetic energy(TKE) for pollen emission processes. Three tke schemes have been implemented namely, 'default', 'dynamic' and 'adhoc'.
+
+epol_tke_sgs_fraction:
+  category: Pollen Emission
+  type: R
+  default: 0.1
+  description:
+    short: Fraction to calculatte TKE for the 'default' TKE scheme
+    long: |
+      The TKE fraction is required to calculate TKE for the 'default' TKE scheme 'epol_tke_scheme'. The value may vary between 0 and 1. The greater the fraction, the higher the magnitude of the TKE.
+
+epol_tree_specs:
+  category: Pollen Emission
+  type: I
+  default: ~
+  description:
+    short: |
+      Pollen emitting tree types. Currently two tree and one grass pollen have been implemented, these are, Birch (POL_BETU) with tree id 7, Alder 'POL_ALNU' and grass 'POL_POAC' with vegetation id 3. The index for Alder is not available since Alder is not provided in the [tree data base](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/palm_csd#Singletrees)
+    long: |
+      Pollen emitting tree types. The current PALM database has 86 [tree types](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/palm_csd#Singletrees). The EMPOL model calculates pollen from Birch (betula) and Alder trees. The user can choose other pollen emitting trees also from this database, however, the user need to provide the pollen attributes for the desired tree pollen.
+
+epol_tuning_factors:
+  category: Pollen Emission
+  type: R
+  default: 1.0
+  description:
+    short: Tunning factor to adjust maximum possible release of pollen per day per squared meter from a pollen species.
+    long: |
+      This parameter is used to tune the maximum pollen release per day per squared meter of a particular pollen species based on the observations. The value must be greater than 0. There is no upper bound for this parameter, however, in most of the cases it will remain less than 10.
+
+epol_update_interval:
+  category: Pollen Emission
+  type: R
+  default: 300.0
+  description:
+    short: Time interval to update the pollen model.
+    long: |
+      Time-step of pollen model that is how often the pollen model would be updated. In case user defined update interval is less than model's physical time-step, then the pollen model will issue a warning and set the epol_tuning_factors equals to dt_timestep.
+
+epol_vegetation_specs:
+  category: Pollen Emission
+  type: I
+  default: ~
+  description:
+    short: Pollen emitting vegetation. Currently only grasses (Poaceae) vegetation type is available.
+    long: |
+      Vegetation types. PALM utilizes ECMWF-IFS classification for [vegetation types](#land_surface_parameters#vegetation_type). The EMPOL model  calculates pollen from grasses(poaceae). The user can also choose other pollen emitting vegetation types from this database, however, the user need to provide the pollen attributes for the new vegetation type(s).
+
+
+icntrl:
+  category: KPP Parameter
+  type: I
+  shape: (20)
+  default: 0
+  description:
+    short: Integer steering parameters for the chemistry solver from KPP.
+    long: |
+      In order to offer more control over the integrator, the KPP-generated integrator subroutine (e.g. SUBROUTINE rosenbrock in chem_gasphase_mod.f90) provides the optional input parameters ICNTRL_U and RCNTRL_U. Each of them is an array of 20 elements that allow the fine-tuning of the integrator, e.g. by setting a particular integrator method, tolerances, minimum and maximum step sizes, etc.
+      Note: For input parameters which are not specified in the namelist the default values of the corresponding variables are used.
+
+      ICNTRL(1) = 1: F = F(y) Independent of T (AUTONOMOUS), = 0: F = F(t,y) Depends on T (NON-AUTONOMOUS)
+      ICNTRL(2) = 0: abstol, reltol are N-dimensional vectors, = 1: Abstol, Reltol are scalars
+      ICNTRL(3) -> selection of a particular Rosenbrock method
+        0 : Rodas3 (Default from KPP)
+        1 : Ros2 (Simplest Rosenbrock solver, will also do)
+        2 : Ros3
+        3 : Ros4
+        4 : Rodas3
+        5 : Rodas4
+      ICNTRL(4) -> maximum number of integration steps; For ICNTRL(4) =0) the default value of 100000 is used. ...
+      See [(KPP the Kinetic PreProcessor)](https://people.cs.vt.edu/asandu/Software/Kpp/)
+
+      Example (recommended values for PALM):
+       icntrl(3) = 1,     ! ros2 (a bit less time consuming than the Rodas3 solver recommended by KPP)
+       icntrl(4) = 500,   ! max. number of chem-substeps
+
+main_street_id:
+  category: Anthropogenic Emissions
+  type: I
+  default: 0
+  description:
+    short: Parameter for [emiss_lod](#chemistry_parameters--emiss_lod) = 0 parameterized traffic emissions based on OpenStreetMap.
+    long: |
+      Index for identifying main streets with high traffic emission following street type classes from OpenStreetMap.
+      This parameter is only required for [emiss_lod](#chemistry_parameters--emiss_lod) = 0.
+      main_street_id specifies the starting index for the main streets, i.e. main streets are streets with
+      [main_street_id](#chemistry_parameters--main_street_id) =< street_type < max_street_id.
+      The recommend value is for main_street_id is 11.
+
+      street_type must be included in the static file. OpenStreetMap street types are mapped to values for street_type according to the surface classifications given in the [description of the static file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static#street_type).
+
+max_street_id:
+  category: Anthropogenic Emissions
+  type: I
+  default: 0
+  description:
+    short: Parameter for [emiss_lod](#chemistry_parameters--emiss_lod) = 0 parameterized traffic emissions based on OpenStreetMap.
+    long: |
+      Index for identifying the maximum street type class from OpenStreetMap which is considered as a main street.
+      This parameter is only required for [emiss_lod](#chemistry_parameters--emiss_lod) = 0.
+      max_street_id specifies the end index for the main streets, i.e. main streets are streets with
+      main_street_id =< street_type < max_street_id.
+      The recommended (and maximum possible) value for max_street_id is 19.
+
+      street_type must be included in the static file. OpenStreetMap street types are mapped to values for street_type according to the surface classifications given in the [description of the static file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static#street_type).
+
+mode_emis:
+  category: Anthropogenic Emissions
+  type: C*80
+  default: 'PARAMETERIZED'
+  description:
+    short: Depricated, please use [emiss_lod](#chemistry_parameters--emiss_lod) instead,
+    long: |
+      Mode of chemistry emissions (Depricated), use [emiss_lod](#chemistry_parameters--emiss_lod) instead.
+      Possible values are (the values have to be in capital letters):
+      'DEFAULT' Input of yearly gridded emissions and MDH courses (see also [time_fac_type](#chemistry_parameters--time_fac_type)).
+      'PRE-PROCESSED' Input of fully preprocessed emissions at fixed time intervals as given in the [_chemistry](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/chem) file which contains the emission fields.
+
+      'PARAMETERIZED' Parameterized traffic emissions based on street types supplied additionally in the _static input file (e.g from OpenStreetMap).
+
+nesting_chem:
+  category: Nesting
+  type: L
+  default: .T.
+  description:
+    short: Switch for self-nesting for the chemistry model.
+    long: |
+      Parameter to switch off offline-nesting for chemistry variables. If nesting_chem = .F. , the boundary conditions for chemistry variables of nest are set according to the setting of [bc_cs_b](#chemistry_parameters--bc_cs_b), [bc_cs_t](#chemistry_parameters--bc_cs_t), [bc_cs_l](#chemistry_parameters--bc_cs_l), [bc_cs_r](#chemistry_parameters--bc_cs_r), [bc_cs_n](#chemistry_parameters--bc_cs_n), and [bc_cs_s](#chemistry_parameters--bc_cs_s).
+
+nesting_offline_chem:
+  category: Offline Nesting
+  type: L
+  default: .T.
+  description:
+    short: Switch for offline nesting for the chemistry model.
+    long: |
+      Parameter to switch off offline-nesting for chemistry variables. If nesting_offline_chem = .F., the boundary conditions for chemistry variables are defined according to the setting of [bc_cs_b](#chemistry_parameters--bc_cs_b), [bc_cs_t](#chemistry_parameters--bc_cs_t), [bc_cs_l](#chemistry_parameters--bc_cs_l), [bc_cs_r](#chemistry_parameters--bc_cs_r), [bc_cs_n](#chemistry_parameters--bc_cs_n), and [bc_cs_s](#chemistry_parameters--bc_cs_s).
+      With nesting_offline_chem = .T., a [_dynamic](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/dynamic) file, which includes at least boundary conditions for some relevant chemistry compounds must be available.
+
+photolysis_scheme:
+  category: General Setting
+  type: C*10
+  default: 'simple'
+  description:
+    short: Photolysis Scheme
+    long: |
+      Photolysis scheme for photochemical reactions.
+  allowed_values:
+    - value: 'constant'
+      description: |
+        'constant' uses photolysis frequencies at a zenith angle of 45 degrees.
+
+    - value: 'simple'
+      description: |
+        'simple' describes parameterized time-dependent photolysis frequencies as supplied with MCM ([​http://mcm.leeds.ac.uk/MCM](​http://mcm.leeds.ac.uk/MCM), Saunders et al. (2003)). As the solar zenith angle must be available for this scheme, at least the simple [clear sky radiation scheme](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radiation_parameters#radiation_scheme) must be active. The 'simple' photolysis scheme also includes shading effect.
+
+photolysis_shading:
+  category: General Setting
+  type: L
+  default: .F.
+  description:
+    short: Switch to turn ON (.TRUE.) or OFF (.FALSE.) shading effects due to buildings on photolysis frequencies
+    long: |
+      For photolysis_shading = .T., shading effects of buildings on photolysis frequencies are accounted for depending on buildung heights and solar elevation.
+
+      [radiation_volumetric_flux](#radiation_parameters--radiation_volumetric_flux) = .T. in the radiation namelist section (&radiation_parameters) is required for photolysis_shading = .T.
+
+      For photolysis_shading = .T., there is also a simple parameterisation of cloud effects on photolysis whenever the incoming solar radiation rad_sw_in_dir(j,i) + rad_sw_in_diff(j,i) is deviation from the clear sky incoming radiation due to the presence of clouds.
+
+rcntrl:
+  category: KPP Parameter
+  type: R
+  shape: (20)
+  default: 0.0
+  description:
+    short: Real type steering parameters for the chemistry solver from KPP.
+    long: |
+      Steering of the chemistry solver.
+      Note: For input parameters which are not specified in the namelist the default values of the corresponding variables are used.
+
+      RCNTRL(1) -> Hmin, lower bound for the integration step size. It is strongly recommended to keep Hmin = ZERO
+      RCNTRL(2) -> Hmax, upper bound for the integration step size
+      RCNTRL(3) -> Hstart, starting value for the integration step size
+      RCNTRL(4) -> Facmin (lower bound on step decrease factor, default=0.2)
+      RCNTRL(5) -> Facmax (upper bound on step increase factor, default=6)
+      RCNTRL(6) -> Facrej (step decrease factor after multiple rejections)
+      RCNTRL(7) -> Facsafe (by which the new step is slightly smaller than the predicted value, default=0.9). ...
+      See [(KPP the Kinetic PreProcessor)](https://people.cs.vt.edu/asandu/Software/Kpp/)
+
+      Example (recommended values for PALM):
+      rcntrl(3) = 0.1,   ! Starting time step of the chemistry solver hstart in sec.
+                         ! Setting of hstart can result in savings of computatinal time of 30% and more.
+
+side_street_id:
+  category: Anthropogenic Emissions
+  type: I
+  default: 0
+  description:
+    short: Parameter for [emiss_lod](#chemistry_parameters--emiss_lod) = 0, to identify side streets for parameterized traffic emissions based on OpenStreetMap.
+    long: |
+      Index for identifying side streets with high traffic emission following street type classes from OpenStreetMap.
+      This parameter is only required for ([emiss_lod](#chemistry_parameters--emiss_lod) = 0.
+      side_street_id specifies the starting index for the side streets, i.e. side streets are streets with moderate emissions.
+      [side_street_id](#chemistry_parameters--side_street_id) =< street_type < [main_street_id](#chemistry_parameters--main_street_id).
+      The recommend value is for side_street_id is 8.
+
+      street_type must be included in the static file. OpenStreetMap street types are mapped to values for street_type according to the surface classifications given in the [description of the static file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static#street_type).
+
+surface_csflux:
+  category: Anthropogenic Emissions
+  type: R
+  shape: (99)
+  default: 0.0
+  description:
+    short : Surface emissions of chemical compounds for parameterized emissions ([emiss_lod](#chemistry_parameters--emiss_lod) = 0).
+    long: |
+      Values of surface fluxes of chemistry emissions to be used for [emiss_lod](#chemistry_parameters--emiss_lod) = 0 (PARAMETERIZED mode). This parameter is only required for LOD 0!
+
+      The number and the order of the values has to correspond to the names of the emission species provided to surface_csflux_name](#chemistry_parameters--surface_csflux_name).
+
+      Units of the input values differ between gases and PMs. For gases, surface_csflux must be provided in micromoles/m2*d, while for PMs, input emission values have to be in kg/m2*d.
+
+      It is not necessary to specify [surface_csflux_name](#chemistry_parameters--surface_csflux_name) and surface_csflux for all compounds of the chosen chemical mechanism. Names of compounds which do not occur in the mechanism are ignored.
+
+surface_csflux_name:
+  category: Anthropogenic Emissions
+  type: C*11
+  shape: (99)
+  default: 'novalue'
+  description:
+    short :  Names of chemical compounds of surface emissionsfor parameterized emissions ([emiss_lod](#chemistry_parameters--emiss_lod) = 0).
+    long: |
+      Values of surface fluxes of chemistry emissions to be used for [emiss_lod](#chemistry_parameters--emiss_lod) = 0 (PARAMETERIZED mode). This parameter is only required for LOD 0!
+
+      The number and the order of the values of surface_csflux](#chemistry_parameters--surface_csflux) has to correspond to the order specified by surface_csflux_name.
+
+      Example:
+      surface_csflux_name = 'NO', 'NO2', 'CO', 'RCHO', 'PM10', 'PM25',
+      It is not necessary to specify surface_csflux_name and [surface_csflux](#chemistry_parameters--surface_csflux) for all compounds of the chosen chemical mechanism. Names of compounds which do not occur in the mechanism are ignored.
+
+switch_off_module:
+  category: General Setting
+  type: L
+  default: .F.
+  description:
+    short: Local namelist parameter to switch off the module
+    long: |
+      Allows to switch off the chemistry module entirely for switch_off_module = .T.
+
+time_fac_type:
+  category: Anthropogenic Emissions
+  type: C*80
+  default: 'MDH'
+  description:
+    short: Type of time treatment for LOD 1 emissions
+    long: |
+      Type of time treatment for [emiss_lod](#chemistry_parameters--emiss_lod) = 1 mode of the chem_emission module.
+      Possible values are: HOUR or MDH (MonthDayHour).

@@ -1,0 +1,99 @@
+#$Id$
+#column 1          column 2
+#name of variable  value of variable (~ must not be used)
+#----------------------------------------------------------------------------
+%base_directory      $HOME/palm
+%base_data           $HOME/palm/JOBS
+%source_path         $HOME/palm/palm_model_system/packages/palm/model/src
+%user_source_path    $base_data/$run_identifier/USER_CODE
+%fast_io_catalog     /scratch/usr/<replace_by_your_HLRN_username>
+%restart_data_path   $fast_io_catalog
+%output_data_path    $base_data
+%local_jobcatalog    $base_data/$run_identifier/LOG_FILES
+%remote_jobcatalog   $base_data/$run_identifier/LOG_FILES
+
+%local_ip            <replace by IP of your local computer>
+%local_username      <replace_by_your_local_username>
+%remote_ip           130.73.234.1
+%remote_loginnode    blogin1
+%remote_username     <replace_by_your_HLRN_username>
+%ssh_key             id_rsa_hlrn
+%defaultqueue        standard96:test
+%project_account     <replace_by_your_default_HLRN_project_account>
+%submit_command      /cm/shared/batch/bin/sbatch
+%compiler_name       mpiifort
+%compiler_name_ser   ifort
+%cpp_options         -cpp -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__parallel -D__netcdf -D__netcdf4 -D__netcdf4_parallel -D__intel_compiler -D__fftw
+%make_options        -j 4
+%compiler_options    -fpe0 -g -traceback -O0 -check -check nooutput_conversion -check noarg_temp_created -align all -ftz -xCORE-AVX512 -no-prec-div -no-prec-sqrt -ip -convert little_endian -I \\`nf-config --includedir\\` -I /sw/numerics/fftw3/intel-19.0.5/3.3.8_d/skl/include
+%linker_options      -Wl,-rpath=\\$LD_RUN_PATH,-rpath=/sw/numerics/fftw3/intel-19.0.5/3.3.8_d/skl/lib \\`nf-config --flibs\\` -L /sw/numerics/fftw3/intel-19.0.5/3.3.8_d/skl/lib -lfftw3
+%module_commands     module load intel/19.0.5 impi/2018.5 netcdf-parallel/impi/intel/4.7.3
+%execute_command     srun --propagate=STACK --kill-on-bad-exit -n {{mpi_tasks}} -N {{nodes}} --ntasks-per-node={{tasks_per_node}}  palm
+%execute_command_for_combine   srun --propagate=STACK -n 1 --ntasks-per-node=1  combine_plot_fields.x
+%memory              3700
+
+# BATCH-directives to be used for batch jobs. If $-characters are required, hide them with 3 backslashes
+BD:#!/bin/bash
+#BD:#SBATCH --dependency=afterany:{{previous_job}}
+BD:#SBATCH -A {{project_account}}
+BD:#SBATCH --job-name={{run_id}}
+BD:#SBATCH --time={{cpu_hours}}:{{cpu_minutes}}:{{cpu_seconds}}
+BD:#SBATCH --ntasks={{mpi_tasks}}
+BD:#SBATCH --nodes={{nodes}}
+BD:#SBATCH --ntasks-per-node={{tasks_per_node}}
+BD:#SBATCH --partition={{queue}}
+BD:#SBATCH --output={{job_protocol_file}}
+BD:#SBATCH --error={{job_protocol_file}}
+#BD:#SBATCH --mail-type=ALL
+#BD:#SBATCH --mail-user=<replace_by_your_email_address>
+
+# BATCH-directives for batch jobs used to send back the jobfile from a remote to a local host
+BDT:#!/bin/bash
+BDT:#SBATCH -A {{project_account}}
+BDT:#SBATCH --job-name=job_transfer
+BDT:#SBATCH --time=00:30:00
+BDT:#SBATCH --ntasks=1
+BDT:#SBATCH --nodes=1
+BDT:#SBATCH --ntasks-per-node=1
+BDT:#SBATCH --partition={{queue}}
+BDT:#SBATCH --output={{job_transfer_protocol_file}}
+BDT:#SBATCH --error={{job_transfer_protocol_file}}
+
+#----------------------------------------------------------------------------
+# INPUT-commands, executed before running PALM - lines must start with "IC:"
+#----------------------------------------------------------------------------
+# my settings
+IC:ulimit -s unlimited # requires --propagate=STACK in srun command to distribute to all nodes
+IC:export PSM2_MEMORY=large
+IC:export PSM2_MQ_RECVREQS_MAX=268435456
+
+# Lustre file settings. The sum of all specified stripe count should be <= 28
+# for Lise. stripe count must be set for each file (e.g., BINOUT, BINOUT_N02)
+# separately. The default is 1. The below preset of 8 should give a sufficient
+# performance unless the file is getting very large. In case of large setups and
+# therefore large restart files (>100GB), stripe count should be increased further.
+# For more information see HLRN Anwenderschulung 2020 - Lustre IO.pdf under
+# https://www.hlrn.de/doc/display/PUB/Workshop+2020+Material
+IC:export I_MPI_EXTRA_FILESYSTEM=on
+IC:export I_MPI_EXTRA_FILESYSTEM_LIST=lustre
+IC:export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$I_MPI_ROOT/lib64
+IC:lfs setstripe --stripe-count 8 BINOUT
+# IC:lfs setstripe --stripe-count 20 BINOUT_N02
+
+IC:module list
+
+#----------------------------------------------------------------------------
+# ERROR-commands - executed when program terminates abnormally
+#----------------------------------------------------------------------------
+EC:[[ \$locat = execution ]]  &&  cat  RUN_CONTROL
+EC:[[ \$locat = execution ]]  &&  cat  PARTICLE_INFOS/*
+
+#----------------------------------------------------------------------------
+# OUTPUT-commands - executed when program terminates normally
+#----------------------------------------------------------------------------
+# Combine 1D- and 3D-profile output (these files are not usable for plotting)
+#OC:[[ -f LIST_PROFIL_1D     ]]  &&  cat  LIST_PROFIL_1D  >>  LIST_PROFILE
+#OC:[[ -f LIST_PROFIL        ]]  &&  cat  LIST_PROFIL     >>  LIST_PROFILE
+
+# Combine all particle information files
+#OC:[[ -f PARTICLE_INFOS/_0000 ]]  &&  cat  PARTICLE_INFOS/* >> PARTICLE_INFO

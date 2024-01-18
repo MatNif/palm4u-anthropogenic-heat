@@ -1,0 +1,55 @@
+---
+# this is a palmtest build configuration file
+
+compiler:
+  id: Cray
+  c_executable: "{{Cray.c_executable}}"
+  executable: "{{Cray.executable}}"
+  mpi_wrapper: "{{Cray.mpi_wrapper}}"
+  definitions:
+    - "MPI_REAL=MPI_DOUBLE_PRECISION"
+    - "MPI_2REAL=MPI_2DOUBLE_PRECISION"
+    - "__parallel"
+    - "__netcdf"
+    - "__netcdf4"
+    - "__netcdf4_parallel"
+    - "__fftw"
+    - "__rrtmg"
+    - "__fastv8"
+  c_options:
+    default:
+      - "-O3"
+    debug:
+      - "-O0"
+      - "-g"
+  options:
+    default:
+      - "-e Z"
+      - "-em"
+      - "-K trap=fp"
+      - "-O3"
+      - "-hfp3"
+      - "-hdynamic"
+      - "-hnoomp"
+      - "-hnoacc"
+    debug:
+      - "-e Z"
+      - "-eD"
+      - "-em"
+      - "-K trap=fp"
+      - "-O0"
+      - "-g"
+      - "-R b"
+      - "-hnoomp"
+      - "-hnoacc"
+  includes:
+    - "{{Cray.include.netcdf}}"
+    - "{{Cray.include.fftw}}"
+    - "{{Cray.include.rrtmg}}"
+
+linker:
+  options:
+    - "-dynamic"
+    - "{{Cray.lib.netcdf}}"
+    - "{{Cray.lib.fftw}}"
+    - "{{Cray.lib.rrtmg}}"

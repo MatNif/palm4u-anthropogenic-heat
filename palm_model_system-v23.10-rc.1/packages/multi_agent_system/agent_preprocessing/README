@@ -1,0 +1,137 @@
+Author: Simon Ward, IMUK, Date: 2018-03-23
+
+AN UPDATE WILL FOLLOW SOON
+
+This document serves as a preliminary documentation for the MultiAgentSystem 
+(MAS). For any questions, please do not hesitate to contact me at 
+ward@muk.uni-hannover.de
+
+Find the description of some test setups at the bottom of this document.
+
+The MAS is a tool implemented in PALM that serves the purpose of simulating the
+movement of pedestrians through an (urban) environment. The encompasses
+
+  1. The navigation of agents through static obstacles towards their respective
+     targets,
+  2. the interaction of agents with static obstacles to avoid collision and
+  3. the interaction of agents with each other, i.e. to anticipate potential 
+     collisions and avoiding them. 
+
+For (1), a navigation mesh (NavMesh) is used. It consists of a set of meshpoints
+that agents can walk towards on the way to their ultimate goal. These meshpoints
+also contain information about all other meshpoints they are connected to. 
+E.g., no connection will be made between to points, if the direct line between
+them crosses through a building. 
+The points in the NavMesh consist of the convex corners of the simplified
+polygons (see parameter tolerance_dp for more information) that describe the
+PALM building topography.
+
+The NavMesh is created during a preprocessing step which currently has to be
+executed manually. For this, FORTRAN program nav_mesh.f90 has to be compiled
+(preferably ifort, if gfortran has to be used, comment lines 1327 and 1399-1411)
+and run from the INPUT folder of the current simulation. So:
+ifort nav_mesh.f90
+./a.out 
+This will create a binary file named <run_identifier>_nav in the INPUT folder, 
+that will in turn be read by PALM during the run. It contains all necessary 
+NavMesh information. Each agent uses this information to find the shortes way throug the NavMesh to her target, using the A* (A-Star) algorithm. Her path then consists of a number of intermittent targets that she will walk toward on the way to her final goal, each time walking towards the next intermittent target once the current one is reached.
+
+The nav_mesh.f90 program *DOES NOT* support NetCDF building data!
+It only reads ASCII files in the format (X,nx*(F5.1)), e.g.:
+  0.0  0.0  0.0  0.0
+  8.0  8.0  8.0  8.0
+ 17.2 17.2 17.2 17.2
+ 20.0 20.0 20.0 20.0
+Support for other formats will follow shortly. If you wish to modify the format
+manually, take a look at line 366 of nav_mesh.f90.
+
+To use the nav_mesh program, a NAMELIST prepro_par has to be added to the
+<run_identifier>_p3d file.
+It MUST contain the following variables and they MUST be the same as in the
+inipar namelist:
+nx, ny, dx, dy
+It CAN, additionally, contain the following variables:
+
+Name          Type Dim Default    Description
+--------------------------------------------------------------------------------
+tolerance_dp     R   5    2.99    
+                          1.99    
+                          1.41    
+                          0.7     
+                          0.35   A polygon structure is used to store buildinginformation. Each building initially consists of all inner and outer corner of the original PALM gridded building topography. The Douglas-Peucker-algorithm is used to simplify the polygons. A line segment between to vertices of the polygon is used to approximate a segment of the polygon. If the maximum distance of any vertex between the two is smaller than tolerance_dp, the segment is  accepted. If not, the segment is split in two at that vertex, leaving two line segements that recursively go through the same  procedure.  If the algorithm using tolerance_dp(0) leaves a polygon with less than 4 vertices, it is reverted to its original state and the process starts again with tolerance_dp(1) and so on. 
+--------------------------------------------------------------------------------                                
+corner_offset    R   1    0.5     To avoid the collision of agents with corners of buildings, the navigation points are shifted outward from the corners by this distance in meters.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+PLEASE NOTE: To enable PALM to read the <run_identifier>_nav file, please add
+             the following lines to your .palm.iofiles in the appropriate places
+             and place your .palm.iofiles in your current_version folder:
+#-------------------------------------------------------------------------------------------
+# List of input-files
+#-------------------------------------------------------------------------------------------
+...
+...
+NAVIGATION_DATA          inopt:tr   d3#:d3r  $base_data/$jobname/INPUT          _nav*
+...
+
+ALSO:        Add the following for propper copying of netcdf output:
+#-------------------------------------------------------------------------------------------
+# List of output-files
+#-------------------------------------------------------------------------------------------
+...
+...
+DATA_AGT_NETCDF            out:tr   *         $base_data/$jobname/OUTPUT         _agt       nc
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+For (2) and (3), a Social Forces aproach based on the ideas of Helbig (1995) and
+using the concept of a power law by Karamouzas (2014) for pedestrian
+interactions is used. The idea is that ostacles will exert a repulsive force on
+pedestrians. The sum of these forces added to the attractive force toward the
+target determines the acceleration of each pedestrian.
+
+To steer the MAS in PALM, use the following parameters in the 
+NAMELIST agents_par:
+
+Name                          Type Dim   Default    Description
+--------------------------------------------------------------------------------
+a_rand_target                    L 100         .F.  If .T., each agent in that group will have a random target just outside the model domain.
+adx                              R 100   9999999.9  Distance along x between agents within an agent source (in m). 
+ady                              R 100   9999999.9  Distance along y between agents within an agent source (in m). 
+agent_maximum_age                R 100   9999999.9  If agent is older than this value, it will be deleted
+alloc_factor_mas                 R   1        20.0  Factor (in percent) describing the memory allocated additionally to the memory needed for initial agents at a given grid cell.
+asl                              R 100   9999999.9  Left edge of a agent source (in m). NOTE: Agent sources are defined as point sources in an area. asl, asn, asr, ass, describe the edge of this source. adx and ady describe the distance betwee two sources starting at the left south edge. To randomize the starting positions within a threshold, see random_start_position_agents.
+asn                              R 100   9999999.9  North edge of a agent source (in m). 
+asr                              R 100   9999999.9  Right edge of a agent source (in m). 
+ass                              R 100   9999999.9  South edge of a agent source (in m). 
+at_x                             R 100   9999999.9  x-coordinate of agent group target (in m). NOTE: this is superseeded if a_rand_target == .T. for that group
+at_y                             R 100   9999999.9  y-coordinate of agent group target (in m).
+bc_mas_lr                        C  15    'absorb'  Boundary condition for agents along x. Default is recommended. 'cyclic' is also possible.
+bc_mas_ns                        C  15    'absorb'  Boundary condition for agents along y. Default is recommended. 'cyclic' is also possible.
+deallocate_memory_mas            L   1         .T.  Parameter to enable deallocation of unused memory. If the number of agents in a grid box exceeds the allocated memory, new memory is allocated. However, in case the number of agents per grid box in only temporarily high, most of the memory remains unused. If deallocate_memory = .T., the allocated memory used for agents will be dynamically adjusted with respect to the current number of agents every step_dealloc_mas's timestep. 
+dist_to_int_target               R   1        0.4  Distance to the current intermittent target at which the agent will count this target as reached an will begin walking towards the next one. 
+dt_agent                         R   1      0.016  Agent timestep. The default value is recommended, as this is about the time scale at which humans perceive and react to their environment. No guaratees can be given that agent behavior remains realistic at larger timesteps. This has no effect on the PALM timestep, as the agent model will be called multiple times during each model timestep.
+dt_doats                         R   1  9999999.9  Output timestep for timeseries. So far, no timeseries functionality.
+dt_arel                          R   1  9999999.9  Time interval (in s) that defines the release of new agents starting at multi_agent_system_start for each agent group in the source areas defined by asl, asn, asr and ass. 
+dt_write_agent_data              R   1  9999999.9  Time interval (in s) at which agent data is output. By default, agent data is output to one NetCDF file with two unlimited dimensions (time and agent number). This (requires netcdf_data_format = 3 or 5) This data includes an ID, position, speed, group and others. Before each output, all agents from all PEs are gathered into one array and then written to the NetCDF file without beeing sorted before. The reason being, that some agents might be deleted during the simulation, while others are created after the simulation start. The slots for these agents would thus have to be filled with placeholders, increasing the already high memory usage. If an individual based agent analysis is wished during postprocessing, the sorting by id will have to be done manually. This state is not very desirable, please contact me with any suggenstions that would improve it.
+end_time_arel                    R   1  9999999.9  Time at which release of agents will stop.
+max_dist_from_path               R   1        0.3  If an agents deviates further than this value from her currently calculated path, a new path will be calculated.
+min_nr_agent                     R   1          2  Minimum number of agents for which memory is allocated at every grid cell.
+multi_agent_system_start         R   1  9999999.9  Time (in s) at which agent release starts.
+number_of_agent_groups           I   1          1  Number of agent groups.
+radius_agent                     R   1        0.3  For collision calculation purposes, agents are assumed to occupy a circular area with a radius of radius_agent.
+random_start_position_agents     L   1        .T.  By default, a small random fluctuation is added to the starting postion of each agent (as defined by adx, ady, asl, asn, asr and ass). Turn this off by setting this parameter to .F.
+read_agents_from_restartfile     L   1        .F.  Restart functionality not implemented so far.
+repuls_agent                     R   1        1.5  Defines the strength of the repulsive force two already colliding agents exert on each other. May be removed going forward.
+repuls_wall                      R   1       10.0  Defines the strength of the repulsive force a wall in proximity to an agent exerts on that agent. Value taken from Helbig (1995).
+scan_radius_agent                R   1        3.0  Radius in which each agent scans for other agents that she could potentially collide with. NOTE: Due to the ghost layers between PEs only consisting of 3 grid cells, this value should be smaller than 3*MIN(dx,dy) it can be larger, but then, the scan radius will be smaller at subdomain boundaries than in the rest of the domain. ALSO NOTE: The agent model can get very computationally expensive due to the small timestep in combination with the interaction between agents. A smaller value here will increase performance at the cost of realistic collision avoidance.
+step_dealloc_mas                 I   1        100  Number of timesteps after which agent memory is deallocated.
+tau_accel_agent                  R   1        0.5  Relaxation time for the agent to accelerate to her desired velocity.
+
+################################################################################
+Currently, three test setups are provided under EXAMPLES/agents.
+(1) canyon : A simple street canyon with two groups of agents moving in opposite directions along the canyon. Demonstrates collision avoidance.
+
+(2) nav_test: A simple generic building setup with two agent groups with intersecting paths. Demonstrates collision avoidance, repellance by buildings and pathfinding.
+
+(3) urban_test: A sample urban test case with a 200 m * 300 m test area in Berlin and 9 agent groups with variing targets. Primarily demonstrates pathfinding in complex areas. Simulation setup tested for 20*10 cores

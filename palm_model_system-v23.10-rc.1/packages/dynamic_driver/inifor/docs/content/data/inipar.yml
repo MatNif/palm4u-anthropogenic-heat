@@ -1,0 +1,74 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "inipar"
+
+nx:
+  category: Grid Settings
+  type: I4
+  default: ~
+  description:
+     short: Number of PALM gridpoints in x-direction
+     long:  |
+       A value for this parameter must be assigned. Since the lower array bound in PALM starts with i = 0, the actual number of grid points is equal to nx+1. In case of cyclic boundary conditions along x, the domain size is (nx+1)* [dx](#initialization_parameters--dx).
+
+       For parallel runs nx+1 must be an integral multiple of the number of processors along x-direction (see npex). If the fft-solver is used for calculating the Poisson equation (see psolver), it must be an integral multiple of the number of processors along y-direction, too (see npey), due to data transposition restrictions.
+
+       For coupled runs (see details) the product of dx and nx in both parameter files PARIN and PARIN_O has to be same (same model domain length in x-direction).
+
+
+ny:
+  category: Grid Settings
+  type: I4
+  default: ~
+  description:
+     short: Number of PALM gridpoints in y-direction
+     long: |
+       A value for this parameter must be assigned. Since the lower array bound in PALM starts with j = 0, the actual number of grid points is equal to ny+1. In case of cyclic boundary conditions along y, the domain size is (ny+1) * [dy](#initialization_parameters--dy).
+
+       For parallel runs ny+1 must be an integral multiple of the number of processors along y-direction. (see npey). If the fft-solver is used for calculating the Poisson equation (see psolver), it must be an integral multiple of the number of processors along x-direction, too (see npex), due to data transposition restrictions.
+
+       For coupled runs (see details) the product of dy and ny in both parameter files PARIN and PARIN_O has to be same (same model domain length in y-direction).
+
+
+nz:
+  category: Grid Settings
+  type: I4
+  default: ~
+  description:
+     short: Number of PALM gridpoints in z-direction
+     long: |
+       A value for this parameter must be assigned. Since the lower array bound in PALM starts with k = 0 and since one additional grid point is added at the top boundary (k = nz+1), the actual number of grid points is nz+2. However, the prognostic equations are only solved up to nz (u, v, scalar quantities) or up to nz-1 (w). The top boundary for u, v and scalar quantities is at k = nz+1 (u, v) while at k = nz for w.
+
+       For parallel runs, and if the fft-solver is used for calculating the Poisson equation (see psolver), nz must be an integral multiple of the number of processors in x-direction (due to data transposition restrictions).
+
+
+dx:
+  category: Grid Settings
+  type: R4
+  default: 1.0
+  si-unit: m
+  description:
+     short: Size of single PALM gridbox in x-direction
+     long:  |
+       Along x-direction, only a constant grid spacing is allowed.
+
+
+dy:
+  category: Grid Settings
+  type: R4
+  default: 1.0
+  si-unit: m
+  description:
+     short: Size of single PALM gridbox in y-direction
+     long: |
+       Along y-direction, only a constant grid spacing is allowed.
+
+
+dz:
+  category: Grid Settings
+  type: R4 (10)
+  default: 1.0
+  si-unit: m
+  description:
+     short: Size of single PALM gridbox in z-direction
+     long: |
+       At least one value must be assigned by the user because no realistic value is given. dz must not be set to the default value of dz_max = 999.0.

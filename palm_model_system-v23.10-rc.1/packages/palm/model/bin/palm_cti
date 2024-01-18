@@ -1,0 +1,950 @@
+#!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 2022-2022 pecanode GmbH
+#--------------------------------------------------------------------------------#
+# preprocessor that produces strong turbulence recycling inflow drivers
+#--------------------------------------------------------------------------------#
+import os
+import sys
+import datetime
+import textwrap
+import glob
+from parse import parse
+import f90nml
+from tqdm import tqdm
+
+
+try:
+    from argparse import ArgumentParser
+    from argparse import RawTextHelpFormatter
+except ImportError:
+    sys.exit(
+        'ERROR: You need argparse!\n' +
+        '   install it from http://pypi.python.org/pypi/argparse\n' +
+        '   or run \"pip install argparse\".'
+    )
+
+try:
+    import numpy
+except ImportError:
+    sys.exit(
+        'ERROR: You need numpy!\n' +
+        '   install it from http://pypi.python.org/pypi/numpy\n' +
+        '   or run \"python3 -m pip install numpy\".'
+    )
+
+try:
+    import netCDF4
+except ImportError:
+    sys.exit(
+        'ERROR: You need netCDF4!\n' +
+        '   install it from http://pypi.python.org/pypi/netCDF4\n' +
+        '   or run \"python3 -m pip install netCDF4\".'
+    )
+
+try:
+    import yaml
+except ImportError:
+    sys.exit(
+        'ERROR: You need PyYAML!\n' +
+        '   install it from http://pypi.python.org/pypi/PyYAML\n' +
+        '   or run \"python3 -m pip install PyYAML\".'
+    )
+
+try:
+    import argcomplete
+except ImportError:
+    print(
+        'INFO: To use Tab-completion you need argcomplete!\n' +
+        '   install it from http://pypi.python.org/pypi/argcomplete\n' +
+        '   or run \"python3 -m pip install argcomplete\".'
+    )
+    has_argcomplete = False
+else:
+    has_argcomplete = True
+
+try:
+    from termcolor import colored as tcolored
+except ImportError:
+    def tcolored(string, color):
+        return string
+
+disable_colored_output = False
+
+
+def colored(string, color):
+    if not disable_colored_output:
+        return tcolored(string, color)
+    else:
+        return string
+
+
+def disable_color():
+    global disable_colored_output
+    disable_colored_output = True
+
+
+version = '0.0.1'
+
+
+def norm_path(string):
+    return os.path.realpath(
+        os.path.abspath(
+            os.path.normpath(
+                os.path.expanduser(
+                    os.path.expandvars(
+                        string
+                    )
+                )
+            )
+        )
+    )
+
+
+def print_error(string):
+    string_wrapped = textwrap.fill(string, width=100, initial_indent=' '*11 + '-  ', subsequent_indent=' '*14)
+    string = colored('ERROR:', 'red') + string_wrapped[6:]
+    print(string)
+
+
+def print_warning(string):
+    string_wrapped = textwrap.fill(string, width=100, initial_indent=' '*9 + '-  ', subsequent_indent=' '*14)
+    string = colored('WARNING:', 'yellow') + string_wrapped[6:]
+    print(string)
+
+
+class SetupLoadingError(FileNotFoundError):
+    pass
+
+
+class DataLoadingError(FileNotFoundError):
+    pass
+
+
+class DynamicDriver:
+
+    fill_value_f4 = -9999.0
+
+    @classmethod
+    def initialize(cls, path, time_inflow, z, zw, y, yv):
+        with netCDF4.Dataset(path, 'w', format='NETCDF4') as ncfile:
+            date_time_created = datetime.datetime.now()
+            ncfile.date_time_created = date_time_created.strftime("%Y-%m-%d %H:%M:%S +00")
+            ncfile.title = 'PIDS_DYNAMIC'
+            ncfile.author = "pcycle by pecanode GmbH (support@pecanode.com)"
+
+            # Set dimensions
+
+            ncfile.createDimension('time_inflow', len(time_inflow))
+            nc_time = ncfile.createVariable('time_inflow', 'f4', ('time_inflow',), fill_value=cls.fill_value_f4)
+            nc_time.long_name = "time_inflow"
+            nc_time.units = "s"
+            nc_time[:] = [v - time_inflow[0] for v in time_inflow]
+
+            ncfile.createDimension('z', len(z))
+            nc_z = ncfile.createVariable('z', 'f4', ('z',))
+            nc_z.long_name = "z"
+            nc_z.units = "m"
+            nc_z[:] = z
+
+            ncfile.createDimension('zw', len(zw))
+            nc_zw = ncfile.createVariable('zw', 'f4', ('zw',))
+            nc_zw.long_name = "zw"
+            nc_zw.units = "m"
+            nc_zw[:] = zw
+
+            ncfile.createDimension('y', len(y))
+            nc_y = ncfile.createVariable('y', 'f4', ('y',))
+            nc_y.long_name = "y"
+            nc_y.units = "m"
+            nc_y[:] = y
+
+            ncfile.createDimension('yv', len(yv))
+            nc_yv = ncfile.createVariable('yv', 'f4', ('yv',))
+            nc_yv.long_name = "yv"
+            nc_yv.units = "m"
+            nc_yv[:] = yv
+
+        return cls(path=path)
+
+    def __init__(self, path, mode='r+'):
+        self._path = path
+        self._mode = mode
+        self._ncfile = None
+        with netCDF4.Dataset(self.path, 'r') as ncfile:
+            nc_time = ncfile.variables['time_inflow']
+            self._time_inflow = nc_time[:]
+            nc_z = ncfile.variables['z']
+            self._z = nc_z[:]
+            nc_zw = ncfile.variables['zw']
+            self._zw = nc_zw[:]
+            nc_y = ncfile.variables['y']
+            self._y = nc_y[:]
+            nc_yv = ncfile.variables['yv']
+            self._yv = nc_yv[:]
+        self.start_time = self._time_inflow[0]
+        self.end_time = self._time_inflow[-1]
+        self.duration = self.end_time - self.start_time
+
+    def __enter__(self):
+        self._ncfile = netCDF4.Dataset(self.path, self._mode, format='NETCDF4')
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self._ncfile.close()
+        self._ncfile = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @property
+    def ncfile(self):
+        return self._ncfile
+
+    @property
+    def time_inflow(self):
+        return self._time_inflow
+
+    @property
+    def z(self):
+        return self._z
+
+    @property
+    def zw(self):
+        return self._zw
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def yv(self):
+        return self._yv
+
+    def dump_3d_array(self, varname, dimensions, array, dtype='f4', units='m/s', fill_value=-9999.0):
+        if dtype == 'f4':
+            fill_value = self.fill_value_f4
+        assert self._ncfile is not None
+        nc_var = self.ncfile.createVariable(
+            varname,
+            dtype,
+            dimensions,
+            fill_value=fill_value,
+        )
+        nc_var.long_name = varname
+        nc_var.units = units
+        nc_var[:, :, :] = array
+
+
+class Data2DYZ:
+
+    fill_value_f4 = -9999.0
+
+    def __init__(self, path):
+        self._path = path
+        print(' - Data file: {}'.format(self.path))
+        if not os.path.isfile(path):
+            print_error('Missing 2D YZ cross-section data file: {}'.format(path))
+            sys.exit(1)
+        self._mode = 'r'
+        self._ncfile = None
+        with netCDF4.Dataset(self.path, 'r') as ncfile:
+            nc_time = ncfile.variables['time']
+            self._time = nc_time[:]
+            nc_zu = ncfile.variables['zu']
+            self._zu = nc_zu[:]
+            nc_zw = ncfile.variables['zw']
+            self._zw = nc_zw[:]
+            nc_y = ncfile.variables['y']
+            self._y = nc_y[:]
+            nc_yv = ncfile.variables['yv']
+            self._yv = nc_yv[:]
+
+        # remove fill-value times
+        ind = numpy.ma.flatnotmasked_edges(self.time)
+        self.start_index = ind[0]
+        self.end_index = ind[1]
+        self._time = self._time[self.start_index:self.end_index+1]
+        self.start_time = self._time[0]
+        self.end_time = self._time[-1]
+        self.duration = self.end_time - self.start_time
+
+    def __repr__(self):
+        return '{}({})'.format(
+            self.__class__.__name__,
+            self.path,
+        )
+
+    def __enter__(self):
+        self._ncfile = netCDF4.Dataset(self.path, self.mode)
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self._ncfile.close()
+        self._ncfile = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @property
+    def ncfile(self):
+        return self._ncfile
+
+    @property
+    def time(self):
+        return self._time
+
+    @property
+    def zu(self):
+        return self._zu
+
+    @property
+    def zw(self):
+        return self._zw
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def yv(self):
+        return self._yv
+
+    def get_list_of_available_variables(self):
+        assert self._ncfile is not None
+        return self.ncfile.variables.keys()
+
+    def load_timeseries_of_cross_sections(self, varname, time_index_array, z_slice=slice(1, -1), x_index=0):
+        assert self._ncfile is not None
+        time_index_array = time_index_array + self.start_index
+        nc_var = self.ncfile.variables[varname]
+        array = nc_var[time_index_array, z_slice, :, x_index]
+        return array
+
+
+class Parin:
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+        print(' - Setup file: {}'.format(self.file_path))
+        if not os.path.isfile(file_path):
+            print_error('Missing setup file: {}'.format(file_path))
+            sys.exit(1)
+        self.nml = f90nml.read(file_path)
+        if 'initialization_parameters' not in self.nml:
+            print_error(
+                'Unable to find mandatory namelist "{}" in setup file: {}'.format(
+                    'initialization_parameters',
+                    file_path,
+                )
+            )
+            sys.exit(1)
+        if 'runtime_parameters' not in self.nml:
+            print_error(
+                'Unable to find mandatory namelist "{}" in setup file: {}'.format(
+                    'runtime_parameters',
+                    file_path,
+                )
+            )
+            sys.exit(1)
+
+    def check_match(self, other: 'Parin', matching_parameters):
+        match_passed = True
+        for nml in matching_parameters.keys():
+            for p in matching_parameters[nml]:
+                if self.get_parameter(nml, p) != other.get_parameter(nml, p):
+                    print_error(
+                        'in namelist "{}" the parameter "{}" does not match'.format(
+                            nml,
+                            p,
+                        )
+                    )
+                    match_passed = False
+        return match_passed
+
+    def check_restrictions(self, restricted_parameters):
+        restrictions_passed = True
+        for nml in restricted_parameters.keys():
+            for p in restricted_parameters[nml].keys():
+                value = self.get_parameter(nml, p)
+                if value in restricted_parameters[nml][p]['vorbidden_values']:
+                    if value is None:
+                        print_error(
+                            'in namelist "{}" the mandatory parameter "{}" is missing'.format(
+                                nml,
+                                p,
+                            )
+                        )
+                    else:
+                        print_error(
+                            'in namelist "{}" the parameter "{}" is set to "{}", which is a prohibited value'.format(
+                                nml,
+                                p,
+                                value,
+                            )
+                        )
+                    restrictions_passed = False
+        return restrictions_passed
+
+    def get_parameter(self, namelist, parameter, default=None):
+        try:
+            return self.nml[namelist][parameter]
+        except KeyError:
+            return default
+
+
+class Run:
+
+    def __init__(self, path, cycle_number=-1, no_data_loading=False):
+        self.run_identifier = os.path.basename(path)
+        self.path = dict(
+            base=path,
+            INPUT=os.path.join(path, 'INPUT'),
+            MONITORING=os.path.join(path, 'MONITORING'),
+            OUTPUT=os.path.join(path, 'OUTPUT'),
+            p3d=os.path.join(path, 'INPUT', self.run_identifier + '_p3d'),
+            driver_dynamic=os.path.join(path, 'INPUT', self.run_identifier + '_dynamic'),
+        )
+        self.path['p3d'] = os.path.join(self.path['INPUT'], self.run_identifier + '_p3d')
+        self.path['p3dr'] = os.path.join(self.path['INPUT'], self.run_identifier + '_p3dr')
+        self.path['driver_dynamic'] = os.path.join(self.path['INPUT'], self.run_identifier + '_dynamic')
+
+        print(' - Run path: {}'.format(self.path['base']))
+        if not os.path.isdir(self.path['base']):
+            print_error('Missing run directory: {}'.format(self.path['base']))
+            sys.exit(1)
+        if not os.path.isdir(self.path['INPUT']):
+            print_error('Missing input directory: {}'.format(self.path['INPUT']))
+            sys.exit(1)
+        # Checking if output data can be loaded
+        if no_data_loading:
+            self.cycle_number = None
+            self.path['data_2d_yz'] = None
+            self.path['parin'] = self.path['p3d']
+        else:
+            if not os.path.isdir(self.path['OUTPUT']):
+                print_error('Missing output data directory {}'.format(self.path['OUTPUT']))
+                sys.exit(1)
+            if not os.path.isdir(self.path['MONITORING']):
+                print_error('Missing monitoring directory {}'.format(self.path['MONITORING']))
+                sys.exit(1)
+            glob_str = os.path.join(self.path['OUTPUT'], self.run_identifier + '_yz.*.nc')
+            file_list = glob.glob(glob_str)
+            if file_list is None:
+                print_error('Unable to find suitable 2D YZ cross-section data at path {}'.format(glob_str))
+                sys.exit(1)
+            available_cycle_numbers = []
+            for f in file_list:
+                available_cycle_numbers.append(
+                    int(parse(os.path.join(self.path['OUTPUT'], self.run_identifier + '_yz.{}.nc'), f)[0])
+                )
+            self.available_cycle_numbers = sorted(available_cycle_numbers)
+            if cycle_number == -1:
+                self.cycle_number = self.available_cycle_numbers[-1]
+            else:
+                if cycle_number not in self.available_cycle_numbers:
+                    print_error('Selected cycle number {} not found'.format(cycle_number))
+                    sys.exit(1)
+                self.cycle_number = cycle_number
+
+            self.path['parin'] = os.path.join(
+                self.path['MONITORING'], self.run_identifier + '_parin.{:03d}'.format(self.cycle_number)
+            )
+            self.path['data_2d_yz'] = os.path.join(
+                self.path['OUTPUT'], self.run_identifier + '_yz.{:03d}.nc'.format(self.cycle_number)
+            )
+
+        self.parin = Parin(self.path['parin'])
+        self.setup_is_humid = self.parin.get_parameter('initialization_parameters', 'humidity', default=False)
+        self.setup_is_neutral = self.parin.get_parameter('initialization_parameters', 'neutral', default=False)
+        self.setup_start_time = self.parin.get_parameter('runtime_parameters', 'skip_time_data_output', default=0.0)
+        self.setup_end_time = self.parin.get_parameter('runtime_parameters', 'end_time')
+        self.setup_duration = self.setup_end_time - self.setup_start_time
+        self.data_2d_yz = None
+        if self.path['data_2d_yz'] is not None:
+            self.data_2d_yz = Data2DYZ(
+                path=self.path['data_2d_yz'],
+            )
+        self.dynamic_driver = None
+
+    def initialize_dynamic_driver(self, time_inflow, z, zw, y, yv):
+        self.dynamic_driver = DynamicDriver.initialize(
+            path=self.path['driver_dynamic'],
+            time_inflow=time_inflow,
+            z=z,
+            zw=zw,
+            y=y,
+            yv=yv,
+        )
+
+
+class Converter:
+
+    def __init__(self, precursor_run: Run, target_run: Run):
+        self.precursor_run = precursor_run
+        self.target_run = target_run
+        self.y_resize_operation = None
+
+    def convert(self, step_time=0.0, end_time=0.0, x_index=0):
+        # check setups
+        print('\nChecking for violated restrictions in precursor-run setup' + colored('...', 'green'))
+        print('   Setup file: {}'.format(self.precursor_run.parin.file_path))
+        precursor_run_restrictions_passed = self.precursor_run.parin.check_restrictions(
+            restricted_parameters=dict(
+                initialization_parameters=dict(
+                    nx=dict(
+                        vorbidden_values=[None]
+                    ),
+                    ny=dict(
+                        vorbidden_values=[None]
+                    ),
+                    nz=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dx=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dy=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dz=dict(
+                        vorbidden_values=[None]
+                    ),
+                ),
+                runtime_parameters=dict(
+                    interpolate_to_grid_center=dict(
+                        vorbidden_values=[True]
+                    ),
+                ),
+            ),
+        )
+        print('\nChecking for violated restrictions in target-run setup' + colored('...', 'green'))
+        print('   Setup file: {}'.format(self.target_run.parin.file_path))
+        target_run_restrictions_passed = self.target_run.parin.check_restrictions(
+            restricted_parameters=dict(
+                initialization_parameters=dict(
+                    nx=dict(
+                        vorbidden_values=[None]
+                    ),
+                    ny=dict(
+                        vorbidden_values=[None]
+                    ),
+                    nz=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dx=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dy=dict(
+                        vorbidden_values=[None]
+                    ),
+                    dz=dict(
+                        vorbidden_values=[None]
+                    ),
+                ),
+            ),
+        )
+
+        print('\nChecking for incompatibilities between precursor-run setup and target-run setup' + colored('...', 'green'))
+        match_passed = self.precursor_run.parin.check_match(
+            other=self.target_run.parin,
+            matching_parameters=dict(
+                initialization_parameters=[
+                    'dx',
+                    'dy',
+                    'dz',
+                    'dz_stretch_factor',
+                    'dz_stretch_level',
+                    'nz',
+                    'neutral',
+                    'humidity',
+                ],
+            ),
+        )
+        if not precursor_run_restrictions_passed:
+            print('Conversion impossible due to violated restrictions in precursor-run setup')
+        if not target_run_restrictions_passed:
+            print('Conversion impossible due to violated restrictions in target-run setup')
+        if not match_passed:
+            print('Conversion impossible due to incompatible setups')
+        if not match_passed or not precursor_run_restrictions_passed or not target_run_restrictions_passed:
+            print('\nGeneral setups checks {}!'.format(colored('failed', 'red')))
+            return
+        else:
+            print('\nGeneral setups checks {}!'.format(colored('passed', 'green')))
+
+        # shift values to zeroed
+        time_zeroed = self.precursor_run.data_2d_yz.time - self.precursor_run.data_2d_yz.time[0]
+        if end_time == 0.0:
+            end_time = self.target_run.parin.get_parameter('runtime_parameters', 'end_time')
+        if end_time < self.target_run.parin.get_parameter('runtime_parameters', 'end_time'):
+            updated_end_time = max(
+                self.target_run.parin.get_parameter('runtime_parameters', 'end_time'),
+                end_time,
+            )
+            print_warning(
+                'You chose a too small time_inflow duration ({} s) for the selected target_run. '
+                'I have increased it to {} for you.'.format(
+                    end_time,
+                    updated_end_time,
+                )
+            )
+            end_time = updated_end_time
+        if end_time > time_zeroed[-1]:
+            print_error(
+                'target_run has end_time={}, which is beyond the available precursor_run time range of {}'.format(
+                    end_time,
+                    time_zeroed[-1],
+                )
+            )
+            return
+
+        index_list = []
+        for i, t in enumerate(time_zeroed):
+            index_list.append(i)
+            if t > end_time:
+                break
+        time_length_all = len(index_list)
+        if step_time > 0.0:
+            list_of_steps = [0.0]
+            while list_of_steps[-1] < end_time:
+                list_of_steps.append(list_of_steps[-1] + step_time)
+            index_list = [0]
+            current_index = 0
+            for s in list_of_steps:
+                while time_zeroed[current_index] < s:
+                    current_index += 1
+                if index_list[-1] < current_index:
+                    index_list.append(current_index)
+        if len(index_list) == time_length_all:
+            step_time = 'minimum available'
+        time_index_array = numpy.array(index_list)
+        slice_zu = slice(1, -1)
+        slice_zw = slice(1, -2)
+        pre_ny = self.precursor_run.parin.get_parameter('initialization_parameters', 'ny')
+        tar_ny = self.target_run.parin.get_parameter('initialization_parameters', 'ny')
+        tar_dy = self.target_run.parin.get_parameter('initialization_parameters', 'dy')
+
+        if tar_ny > pre_ny:
+            self.y_resize_operation = 'increase'
+        elif tar_ny < pre_ny:
+            self.y_resize_operation = 'decrease'
+
+        tar_y = self.precursor_run.data_2d_yz.y
+        tar_yv = self.precursor_run.data_2d_yz.yv
+        if self.y_resize_operation == 'increase':
+            resized_y = numpy.resize(tar_y, tar_ny+1)
+            for i in range(pre_ny+1, tar_ny+1):
+                resized_y[i] = resized_y[i-1] + tar_dy
+            tar_y = resized_y
+            resized_yv = numpy.resize(tar_yv, tar_ny+1)
+            for i in range(pre_ny+1, tar_ny+1):
+                resized_yv[i] = resized_yv[i-1] + tar_dy
+            tar_yv = resized_yv
+        elif self.y_resize_operation == 'decrease':
+            tar_y = tar_y[:tar_ny+1]
+            tar_yv = tar_yv[:tar_ny+1]
+        assert numpy.all(numpy.diff(tar_y) == tar_dy)
+        assert numpy.all(numpy.diff(tar_yv) == tar_dy)
+
+        self.target_run.initialize_dynamic_driver(
+            time_inflow=time_zeroed[time_index_array],
+            z=self.precursor_run.data_2d_yz.zu[slice_zu],
+            zw=self.precursor_run.data_2d_yz.zw[slice_zw],
+            y=tar_y,
+            yv=tar_yv,
+        )
+
+        print('\nDetails about precursor_run' + colored('...', 'green'))
+        print(' - Run Identifier: {}'.format(self.precursor_run.run_identifier))
+        if self.precursor_run.data_2d_yz is None:
+            print_error('run "{}" has no usable output data'.format(self.precursor_run.run_identifier))
+            return
+        else:
+            print('   - Available Cycle Numbers: {}'.format(self.precursor_run.available_cycle_numbers))
+            print('   - Selected Cycle Number: {}'.format(self.precursor_run.cycle_number))
+            print(' - YZ cross-section output data:')
+            print('   - start_time: {}'.format(self.precursor_run.data_2d_yz.start_time))
+            print('   - end_time: {}'.format(self.precursor_run.data_2d_yz.end_time))
+            print('   - duration: {}'.format(self.precursor_run.data_2d_yz.duration))
+
+        print('\nDetails about target_run' + colored('...', 'green'))
+        print(' - Run Identifier: {}'.format(self.target_run.run_identifier))
+        print(' - Setup:')
+        print('   - start_time: {}'.format(self.target_run.setup_start_time))
+        print('   - end_time: {}'.format(self.target_run.setup_end_time))
+        print('   - duration: {}'.format(self.target_run.setup_duration))
+
+        print('\nDetails about requested conversion' + colored('...', 'green'))
+        print(' - Time:')
+        print('   - start: {}'.format(self.target_run.dynamic_driver.start_time))
+        print('   - end: {}'.format(self.target_run.dynamic_driver.end_time))
+        print('   - duration: {}'.format(self.target_run.dynamic_driver.duration))
+        print('   - step: {}'.format(step_time))
+        print('   - length: {}'.format(time_index_array.shape[0]))
+        print(' - Space:')
+        print('   - x_index: {}'.format(x_index))
+        print('   - resize_y: {} -> {}'.format(pre_ny, tar_ny))
+
+        var_list = []
+        var_list.append(
+            dict(
+                name='inflow_plane_u',
+                units='m/s',
+                dimensions=('time_inflow', 'z', 'y'),
+                source='u_yz',
+                z_slice=slice_zu,
+            )
+        )
+        var_list.append(
+            dict(
+                name='inflow_plane_v',
+                units='m/s',
+                dimensions=('time_inflow', 'z', 'yv'),
+                source='v_yz',
+                z_slice=slice_zu,
+            )
+        )
+        var_list.append(
+            dict(
+                name='inflow_plane_w',
+                units='m/s',
+                dimensions=('time_inflow', 'zw', 'y'),
+                source='w_yz',
+                z_slice=slice_zw,
+            )
+        )
+        var_list.append(
+            dict(
+                name='inflow_plane_e',
+                units='m2/s2',
+                dimensions=('time_inflow', 'z', 'y'),
+                source='e_yz',
+                z_slice=slice_zu,
+            )
+        )
+        if not self.target_run.setup_is_neutral:
+            var_list.append(
+                dict(
+                    name='inflow_plane_pt',
+                    units='K',
+                    dimensions=('time_inflow', 'z', 'y'),
+                    source='theta_yz',
+                    z_slice=slice_zu,
+                )
+            )
+        if self.target_run.setup_is_humid:
+            var_list.append(
+                dict(
+                    name='inflow_plane_q',
+                    units='Kg/Kg',
+                    dimensions=('time_inflow', 'z', 'y'),
+                    source='q_yz',
+                    z_slice=slice_zu,
+                )
+            )
+
+        print(' - Scheduled variable mappings:')
+        prep_fail = False
+        with self.precursor_run.data_2d_yz as src:
+            src_var_list = src.get_list_of_available_variables()
+            for item in var_list:
+                print(
+                    '   - {:10} -> {:10}'.format(
+                        '"{}"'.format(item['source']),
+                        '"{}"'.format(item['name']),
+                    )
+                )
+                if item['source'] not in src_var_list:
+                    print_error(
+                        'Required netCDF variable "{}" was not found in precursor run data'.format(
+                            item['source'],
+                        )
+                    )
+                    prep_fail = True
+        if prep_fail:
+            return
+
+        print('\nConverting precursor-run data into strong turbulent inflow data' + colored('...', 'green'))
+        with self.precursor_run.data_2d_yz as src, self.target_run.dynamic_driver as dst:
+            iterator = tqdm(var_list, unit='variables', desc='Conversion')
+            for item in iterator:
+                iterator.set_description(' - var: {}'.format(item['name']))
+                array = src.load_timeseries_of_cross_sections(
+                    varname=item['source'],
+                    time_index_array=time_index_array,
+                    z_slice=item['z_slice'],
+                    x_index=x_index,
+                )
+                if self.y_resize_operation == 'increase':
+                    array = numpy.pad(array, ((0, 0), (0, 0), (0, tar_ny-pre_ny)), mode='wrap')
+                elif self.y_resize_operation == 'decrease':
+                    array = array[:, :, :tar_ny+1]
+                dst.dump_3d_array(
+                    varname=item['name'],
+                    dimensions=item['dimensions'],
+                    array=array,
+                    dtype='f4',
+                    units=item['units'],
+                )
+                iterator.write(
+                    ' - Finished mapping {:10} -> {:10}'.format(
+                        '"{}"'.format(item['source']),
+                        '"{}"'.format(item['name']),
+                    )
+                )
+
+
+class PALMCycle:
+
+    def __init__(self, args):
+        self.args = args
+
+    def execute(self):
+        print('PCYCLE is a tool that converts PALM YZ cross-section data into inflow-planes')
+        print('       for a dynamic driver to be use as strong turbulent inflow data.')
+        palm_inflow_lib = os.getenv('PALM_INFLOW_LIB')
+        if palm_inflow_lib is None:
+            print_warning('environment variable PALM_INFLOW_LIB is unset. (using default: $(pwd)/JOBS)')
+            palm_inflow_lib = 'JOBS'
+        palm_inflow_lib = norm_path(palm_inflow_lib)
+
+        print('\nLoading precursor run' + colored('...', 'green'))
+        if os.path.isabs(self.args.precursor_run):
+            precursor_run = Run(
+                path=norm_path(self.args.precursor_run),
+                cycle_number=self.args.cycle_number,
+            )
+        else:
+            precursor_run = Run(
+                path=os.path.join(palm_inflow_lib, self.args.precursor_run),
+                cycle_number=self.args.cycle_number,
+            )
+
+        print('\nLoading target run' + colored('...', 'green'))
+        if os.path.isabs(self.args.target_run):
+            target_run = Run(
+                path=norm_path(self.args.target_run),
+                no_data_loading=True,
+            )
+        else:
+            target_run = Run(
+                path=os.path.join(palm_inflow_lib, self.args.target_run),
+                no_data_loading=True,
+            )
+        converter = Converter(
+            precursor_run=precursor_run,
+            target_run=target_run,
+        )
+        converter.convert(
+            step_time=self.args.step_time,
+            end_time=self.args.end_time,
+            x_index=self.args.x_index,
+        )
+
+
+class PALMCycleArgumentParser(ArgumentParser):
+
+    def __init__(self):
+        super().__init__(
+            description='This is the PALM strong turbulence recycling preprocessor\n' +
+                        'Developer Support: support@pecanode.com',
+            formatter_class=RawTextHelpFormatter,
+            add_help=True,
+        )
+        self.add_argument(
+            '--version',
+            action='version',
+            version=version,
+        )
+        self.add_argument(
+            '--precursor-run', '-p',
+            dest='precursor_run',
+            action='store',
+            help='name of the precursor run (needs to exist and contain appropriate output data).',
+            required=True,
+            type=str,
+            metavar='STR',
+        )
+        self.add_argument(
+            '--target-run', '-t',
+            dest='target_run',
+            action='store',
+            help='name of the main run, the driver should be designed for (needs to already contain a namelist file).',
+            required=True,
+            type=str,
+            metavar='STR',
+        )
+        self.add_argument(
+            '--step-time', '-s',
+            dest='step_time',
+            action='store',
+            default=0.0,
+            help='Time in seconds between each of the inflow cross sections.',
+            required=False,
+            type=float,
+            metavar='FLOAT',
+        )
+        self.add_argument(
+            '--end-time', '-e',
+            dest='end_time',
+            action='store',
+            default=0.0,
+            help='Time in seconds that the dynamic driver should cover.',
+            required=False,
+            type=float,
+            metavar='FLOAT',
+        )
+        self.add_argument(
+            '--x-index', '-x',
+            dest='x_index',
+            action='store',
+            default=0,
+            help='Index of the x-coordinate that selects the yz cross-section data from the precursor-run',
+            required=False,
+            type=int,
+            metavar='INT',
+        )
+        self.add_argument(
+            '--cycle-number', '-c',
+            dest='cycle_number',
+            action='store',
+            default=-1,
+            help='Cycle number of the precursor run output data (default: last)',
+            required=False,
+            type=int,
+            metavar='INT',
+        )
+
+
+if __name__ == '__main__':
+    parser = PALMCycleArgumentParser()
+    if has_argcomplete:
+        argcomplete.autocomplete(parser)
+    args = parser.parse_args()
+    palm_cycle = PALMCycle(args)
+    palm_cycle.execute()

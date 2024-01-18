@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+# project install script
+#--------------------------------------------------------------------------------#
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+   SOURCE="$(readlink "$SOURCE")"
+   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_LOCATION="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+project_root_dir=$(readlink -f "${SCRIPT_LOCATION}/")
+project_bin_dir=$(readlink -f "${project_root_dir}/bin/")
+project_build_dir=$(readlink -f "${project_root_dir}/build/")
+project_lib_dir=$(readlink -f "${project_root_dir}/lib/")
+project_share_dir=$(readlink -f "${project_root_dir}/share/")
+project_src_dir=$(readlink -f "${project_root_dir}/src/")
+
+install_prefix="${project_lib_dir}"
+build_prefix="${project_build_dir}"
+
+program_name="RRTMG library"
+
+prog="librrtmg"
+version="1.0"
+
+compiler_name="$(nf-config --fc)"
+compiler_options="-O3 $(nf-config --fflags)"
+linker_options="$(nf-config --flibs)"
+
+install_function() {
+   printf "### %s\n" "Installing ${program_name} ..."
+   if [ "${do_clean}" == "true" ]; then
+      rm -r ${build_prefix}
+   fi
+   mkdir -p ${build_prefix}
+   cp -p ${project_src_dir}/*  ${build_prefix}/
+   cd ${build_prefix}
+   make -j PROG=${prog} F90="${compiler_name}" F90FLAGS="${compiler_options}" LDFLAGS="${linker_options}"
+   mkdir -p ${install_prefix}/lib
+   mkdir -p ${install_prefix}/include
+   cp -p ${build_prefix}/${prog}.so ${install_prefix}/lib/${prog}.so.$version
+   cp -p ${build_prefix}/*.mod    ${install_prefix}/include/
+   mkdir -p ${install_prefix}/share/data
+   cp -p ${project_root_dir}/share/data/*.nc ${install_prefix}/share/data/
+   ln -s -f ${install_prefix}/lib/${prog}.so.$version ${install_prefix}/lib/${prog}.so.1
+   ln -s -f ${install_prefix}/lib/${prog}.so.1 ${install_prefix}/lib/${prog}.so
+   echo "RRTMG installed at: ${install_prefix}"
+   printf "### %s\n" "Installing ${program_name} finished."
+}
+
+show_usage() {
+   echo "Usage: $0 [-h] [-b <build_prefix>] [-p <install_prefix>] [-c <compiler>] [-o <compiler_options>] [-l <linker_options>] [-x]"
+}
+
+show_help() {
+   show_usage
+   echo "      -h                     show this help message"
+   echo "      -b <build_prefix>      set build directory"
+   echo "      -p <install_prefix>    set installation directory"
+   echo "      -c <compiler>          set custom compiler executable"
+   echo "      -o <compiler_options>  set custom compiler options"
+   echo "      -l <linker_options>    set custom linker options"
+   echo "      -x                     clean already existing build files"
+}
+
+while getopts ":b:p:c:o:l:hx" o; do
+   case "${o}" in
+      b)
+         build_prefix="$(readlink -m "${OPTARG}")"
+         ;;
+      p)
+         install_prefix="$(readlink -m "${OPTARG}")"
+         ;;
+      c)
+         compiler_name="${OPTARG}"
+         ;;
+      o)
+         compiler_options="${OPTARG}"
+         ;;
+      l)
+         linker_options="${OPTARG}"
+         ;;
+      x)
+         do_clean="true"
+         ;;
+      h)
+         show_help
+         exit 0
+         ;;
+      *)
+         show_usage
+         exit 1
+         ;;
+   esac
+done
+# strip all parsed options from the options list
+shift $((OPTIND-1))
+
+install_function

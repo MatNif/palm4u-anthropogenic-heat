@@ -1,0 +1,1386 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "runtime_parameters"
+
+averaging_interval:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Averaging interval for all output of temporally averaged data.
+    long: |
+      This parameter defines the time interval length for temporally averaged data (vertical profiles, spectra, 2d cross-sections, 3d volume data). By default, data are not subject to temporal averaging. The maximum interval length is limited by the value of parameter [dt_data_output_av](#runtime_parameters--dt_data_output_av). In any case, [averaging_interval](#runtime_parameters--averaging_interval) <= [dt_data_output_av](#runtime_parameters--dt_data_output_av) must hold.
+
+      If an interval is defined, then by default the average is calculated from the data values of all time steps lying within this interval. The end point of the interval is always located at the output time as given by [dt_data_output_av](#runtime_parameters--dt_data_output_av). The number of time levels entering into the average can be reduced via parameter [dt_averaging_input](#runtime_parameters--dt_averaging_input).
+
+      If an averaging interval can not be completed at the end of a run, it will be finished at the beginning of the next restart run. Thus for restart runs, averaging intervals do not necessarily begin at the beginning of the run.
+
+      Parameters [averaging_interval_pr](#runtime_parameters--averaging_interval_pr) and [averaging_interval_sp](#runtime_parameters--averaging_interval_sp) can be used to define different averaging intervals for vertical profile data and spectra, respectively.
+
+
+averaging_interval_pr:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[averaging_interval](#runtime_parameters--averaging_interval)'
+  si-unit: s
+  description:
+    short: Averaging interval for output of vertical profiles to local file DATA_1D_PR_NETCDF.
+    long: |
+      If this parameter is given a non-zero value, temporally averaged vertical profile data are output. By default, profile data are not subject to temporal averaging. The maximum interval length is limited by the value of the parameter [dt_dopr](#runtime_parameters--dt_dopr). In any case [averaging_interval_pr](#runtime_parameters--averaging_interval_pr) <= [dt_dopr](#runtime_parameters--dt_dopr) must hold.
+
+      If an interval is defined, then by default the average is calculated from the data values of all time steps lying within this interval. The end point of the interval is always located at the output time as given by [dt_dopr](#runtime_parameters--dt_dopr). The number of time levels entering into the average can be reduced via parameter [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr).
+
+      If an averaging interval can not be completed at the end of a run, it will be finished at the beginning of the next restart run. Thus for restart runs, averaging intervals do not necessarily begin at the beginning of the run.
+
+
+bc_pt_b:
+  category: Boundary Conditions
+  type: C*20
+  default:
+    value: dirichlet
+  description:
+    short: Bottom boundary condition of the potential temperature at physical surfaces.
+    long:  |
+      See [initialization parameter bc_pt_b](#initialization_parameters--bc_pt_b) for further explanations.
+
+
+cpu_log_barrierwait:
+  category: parallelization
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Sets an MPI-barrier at the beginning of each CPU time measurement.
+    long: |
+      Measurement of code performance is carried out by default for most parts of the PALM code (see routine `cpu_log` for more information). In case that MPI-calls are part of code segments to be measured, the measurement might be seriously affected by idle times (if MPI-calls on some of the cores have to wait because of other, previous MPI-calls on other cores which are not yet finished). In order to avoid measuring these idle times, you can switch on an MPI-barrier at the beginning of each measurement by setting cpu_log_barrierwait = .TRUE.. You should keep in mind that these additional barriers may generally degrade the code performance, so they should be switched on only for getting precise CPU time measurements (and not for production runs).
+
+
+create_disturbances:
+  category: run steering
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Imposes random perturbations to the horizontal velocity field.
+    long: |
+      With [create_disturbances](#runtime_parameters--create_disturbances) = .T., random perturbations can be imposed to the horizontal velocity field at certain times e.g. in order to trigger the onset of convection, etc..
+
+      The temporal interval between these times can be steered with [dt_disturb](#runtime_parameters--dt_disturb), the vertical range of the perturbations with [disturbance_level_b](#runtime_parameters--disturbance_level_b) and [disturbance_level_t](#runtime_parameters--disturbance_level_t), and the perturbation amplitude with [disturbance_amplitude](#runtime_parameters--disturbance_amplitude). In case of non-cyclic lateral boundary conditions (see [bc_lr](#initialization_parameters--bc_lr) and [bc_ns](#initialization_parameters--bc_ns)), the horizontal range of the perturbations is determined by [inflow_disturbance_begin](#initialization_parameters--inflow_disturbance_begin) and [inflow_disturbance_end](#initialization_parameters--inflow_disturbance_end). A perturbation is added to each grid point with its individual value determined by multiplying the [disturbance amplitude](#runtime_parameters--disturbance_amplitude) with a uniformly distributed random number. As next steps, the arrays of `u` and `v` are smoothed by applying a Shuman-filter twice, and then divergence is removed from the disturbed velocity field by applying the pressure solver.
+
+      The random number generator to be used can be chosen via [random_generator](#initialization_parameters--random_generator).
+
+      As soon as the desired flow features have developed (e.g. convection has started), further imposing of perturbations is not required and can be omitted (may not hold for non-cyclic lateral boundaries!). This can be steered by assigning an upper limit value for the perturbation energy (the perturbation energy is defined by the deviation of the velocity from the mean flow) using the parameter [disturbance_energy_limit](#runtime_parameters--disturbance_energy_limit). As soon as the perturbation energy has exceeded this energy limit, random perturbations are added no more.
+
+      Timesteps where a random perturbation has been imposed are marked in the local file [RUN_CONTROL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#RUN_CONTROL) by the character "D" which is appended to the values of the maximum horizontal velocities.
+
+
+cross_profiles:
+  category: Data output
+  type: C*100
+  shape: (100)
+  default:
+    value:
+      - ' u v '
+      - ' theta '
+      - ' w"theta" w*theta* w*theta*BC wtheta wthetaBC '
+      - ' w"u" w*u* wu w"v"w*v* wv '
+      - ' km kh '
+      - ' / '
+  description:
+    short: Group variables in panels when plot script [`palmplot`](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/ncl) is used.
+    long: |
+      Determines which vertical profiles are to be presented in which coordinate system.
+
+      If output of vertical profiles is produced the appropriate data are written to a NetCDF file. Simultaneously, the model produces an attribute in the header of the NetCDF file which describes the layout for a plot to be generated with the plot software palmplot. The parameter [cross_profiles](#runtime_parameters--cross_profiles) determines how many coordinate systems (panels) the plot contains and which profiles are supposed to be drawn into which panel. (Currently, palmplot is limited to three profiles per panel.) [cross_profiles](#runtime_parameters--cross_profiles) expects a character string (up to 100 characters long) for each coordinate system, which consists of the names of the profiles to be drawn into this system (all available profiles and their respective names are described at parameter [data_output_pr](#runtime_parameters--data_output_pr)). The single names have to be separated by one blank (' ') and a blank must be spent also at the beginning and at the end of the string, e.g. [cross_profiles](#runtime_parameters--cross_profiles) = *' u v '*, *' theta '*.
+
+      In this case, the plot consists of two coordinate systems (panels) with the first panel containing the profiles of the horizontal velocity components of all output times (see [dt_dopr](#runtime_parameters--dt_dopr)) and the second one containing the profiles of the potential temperature.
+
+      Whether the coordinate systems are actually drawn, depends on whether data of the appropriate profiles were output during the run (profiles to be output have to be selected with the parameter [data_output_pr](#runtime_parameters--data_output_pr)). For example, if [data_output_pr](#runtime_parameters--data_output_pr) = *'u'*, *'v'* was assigned, then the plot only consists of one panel, since no profiles of the potential temperature were output. On the other hand, if profiles were assigned to [data_output_pr](#runtime_parameters--data_output_pr) whose names do not appear in [cross_profiles](#runtime_parameters--cross_profiles), this profiles will be plotted separately behind the profiles defined in [cross_profiles](#runtime_parameters--cross_profiles).
+
+      The arrangement of the panels in the plot can be controlled via parameters [profile_columns](#runtime_parameters--profile_columns) and [profile_rows](#runtime_parameters--profile_rows). Up to 100 panel systems are allowed in a plot (however, they may be put on several pages).
+
+
+data_output:
+  category: Data output
+  type: C*30
+  shape: (500)
+  default:
+    value: ''
+  description:
+    short: Quantities for which 2d cross section and/or 3d volume data are to be output.
+    long: |
+        Output of instantaneous data as well as of temporally averaged data is steered by strings assigned to this parameter. See [table of 3d output quantities](../Output_quantities/#3d-array-quantities) for allowed values.
+
+        Some of the quantities allow only 2d-output (horizontal sections). Their names must contain an asterisk `*` at the end, e.g. `pra*`. See [table of 2d output quantities](../Output_quantities/#2d-array-quantities) for allowed values.
+
+        All output files are in netCDF format. Information about the file content (kind of quantities, array dimensions and grid coordinates) are part of the self-describing netCDF format and can be extracted from the netCDF files using the command `ncdump -c <filename>`. See [netCDF data output](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/netcdf) for a list of the local filenames and their respective control parameters.
+
+        Multiple quantities can be assigned, e.g. data_output = *'e'*, *'u'*, *'w'* .
+
+        By assigning the pure strings of a 3d [output quantity](../Output_quantities/#3d-array-quantities), volume data is output. Cross section data can be output by appending strings *'_xy'*, *'_xz'*, or *'_yz'* to the respective 3d quantity. Time-averaged output is generated by appending the string *'_av'* (for cross section data, this string must be appended after the cross section string). Cross section data can also be (additionally) averaged along the direction normal to the respective section (see below). Assignments of quantities can be given in arbitrary order:
+
+        Example:
+
+            data_output = 'u', 'theta_xz_av', 'w_xy', 'u_av'
+
+        This example will create the following output: instantaneous 3d volume data of u-velocity component, temporally averaged 3d volume data of u-velocity component, instantaneous horizontal cross section data of w-velocity component, and temporally averaged vertical cross section data of potential temperature.
+
+        Output can be limited in the vertical direction up to a certain grid point via parameter [nz_do3d](#runtime_parameters--nz_do3d).
+
+        Cross sections extend through the total model domain. In the two horizontal directions all grid points with `0 <= i <= nx` and `0 <= j <= ny` are output. Be aware that in case of cyclic boundary conditions the respective opposite borders of the plots do not exactly match. The location(s) of the cross sections can be defined via parameters [section_xy](#runtime_parameters--section_xy), [section_xy_m](#runtime_parameters--section_xy_m), [section_xz](#runtime_parameters--section_xz), [section_xz_m](#runtime_parameters--section_xz_m), [section_yz](#runtime_parameters--section_yz), and [section_yz_m](#runtime_parameters--section_yz_m). Assigning `section_... =` *-1* causes the output data to be averaged along the direction normal to the respective section.
+
+        **Control of output times:**
+
+        The time interval of the output times is determined via [dt_data_output](#runtime_parameters--dt_data_output). This value is valid for all types of output quantities by default. Individual time intervals for instantaneous(!) 3d and section data can be declared using [dt_do3d](#runtime_parameters--dt_do3d), [dt_do2d_xy](#runtime_parameters--dt_do2d_xy), [dt_do2d_xz](#runtime_parameters--dt_do2d_xz), and [dt_do2d_yz](#runtime_parameters--dt_do2d_yz).
+
+        Also, an individual time interval for output of temporally averaged data can be assigned using parameter [dt_data_output_av](#runtime_parameters--dt_data_output_av). This applies to both 3d volume and cross section data. The length of the averaging interval is controlled via parameter [averaging_interval](#runtime_parameters--averaging_interval).
+
+        The parameter [skip_time_data_output](#runtime_parameters--skip_time_data_output) can be used to shift data output activities for a given time interval. Individual intervals can be set using [skip_time_do3d](#runtime_parameters--skip_time_do3d), [skip_time_do2d_xy](#runtime_parameters--skip_time_do2d_xy), [skip_time_do2d_xz](#runtime_parameters--skip_time_do2d_xz), [skip_time_do2d_yz](#runtime_parameters--skip_time_do2d_yz), and [skip_time_data_output_av](#runtime_parameters--skip_time_data_output_av).
+
+        **Output of user-defined quantities:**
+
+        Besides the standard quantities from the above list, the user can output any other quantities. These have to be defined and calculated within the user-defined code (see [User-defined output quantities](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output)). They can be selected for output with the user-parameter [data_output_user](#user_parameters--data_output_user) for which the same rules apply as for [data_output](#runtime_parameters--data_output). Output of the user-defined quantities (time interval, averaging, selection of cross sections, etc.) is controlled by the parameters listed above and data are written to the same file(s) as the standard quantities.
+
+        **Parallel output:**
+
+        By default ([netcdf_data_format](#runtime_parameters--netcdf_data_format) = *2*), for runs on more than one core (processor element, PE), the respective cores output only data of their respective subdomains into separate local files (file names are constructed by appending the five digit core ID, e.g. `<filename>_00000`, `<filename>_00001`, etc.). After a run has been finished, the contents of these individual files are sampled into one final file using the helper routine {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }}, which is automatically called by `palmrun`.
+
+        Alternatively, PALM is able to collect all grid points of a cross section on PE0 before an output is done. In this case, only one output file (DATA_2D_XY_NETCDF, etc.) is created and {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }} is not invoked. In case of very large numbers of horizontal grid points, sufficient memory is required on PE0. This method can be activated via [data_output_2d_on_each_pe](#runtime_parameters--data_output_2d_on_each_pe) = .F..
+
+        For [netcdf_data_format](#runtime_parameters--netcdf_data_format) < *5*, 3d volume data output is handled separately by each core so that {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }} has to be called after the simulation has been finished. Be aware of extremely large execution times of {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }}, since it executes on one core only. Using [netcdf_data_format](#runtime_parameters--netcdf_data_format) > *4*, output is written in parallel into one netCDF file during the run and {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }} is not invoked.
+
+
+data_output_2d_on_each_pe:
+  category: Data Output
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Output 2d cross section data by one or all cores.
+    long: |
+      In runs with using several cores, by default, each core outputs cross section data of its subdomain into an individual file. After the simulation has finished, the contents of these files have to be sampled into one file using the helper routine {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }}.
+
+      Alternatively, via [data_output_2d_on_each_pe](#runtime_parameters--data_output_2d_on_each_pe) = .F., the respective data is gathered on PE0 and output is done directly into one file, so {{ link_palm_repo_file('combine_plot_fields.x', 'src/combine_plot_fields.f90') }} does not have to be invoked. However, in case of very large numbers of horizontal grid points, sufficient memory is required on PE0.
+
+
+data_output_masks:
+  category: Data output
+  type: C*30
+  shape: (300,100)
+  default:
+    value: ''
+  description:
+    short: Quantities for which masked data are to be output.
+    long: |
+        Unlimited different masks can be defined (see [masked data output](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput)). For each mask different instantaneous or temporally averaged quantities (up to 100) can be output. The masks are steered via parameters [mask_x](#runtime_parameters--mask_x), [mask_y](#runtime_parameters--mask_y), [mask_z](#runtime_parameters--mask_z), [mask_x_loop](#runtime_parameters--mask_x_loop), [mask_y_loop](#runtime_parameters--mask_y_loop), [mask_z_loop](#runtime_parameters--mask_z_loop), and [mask_k_over_surface](#runtime_parameters--mask_k_over_surface). It is possible to scale the masked data with a specified length for each direction (see [mask_scale_x](#runtime_parameters--mask_scale_x), [mask_scale_y](#runtime_parameters--mask_scale_y), and [mask_scale_z](#runtime_parameters--mask_scale_z)).
+
+        By default, masked data are output to local files [`DATA_MASK_01_NETCDF`](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#DATA_MASK_01_NETCDF), etc. If the user has switched on the output of temporally averaged data, these are written separately to local files [`DATA_MASK_01_AV_NETCDF`](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#DATA_MASK_01_AV_NETCDF), etc. The file's format is netCDF. Further details about processing netCDF data are given in [netCDF data output](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/netcdf).
+
+        See [table of 3d mask output quantities](../Output_quantities/#masked-array-quantities) for allowed quantities.
+
+        **Example:**
+
+            data_output_masks(1,:) = 'u', 'v', 'u_av', 'v_av',
+            data_output_masks(2,:) = 'w', 'w_av',
+            data_output_masks(3,:) = 'theta', 'u', 'v', 'w',
+
+        This example will create the following output:
+
+          - Mask 1: Instantaneous data of u- and v-velocity component and temporally averaged data of u- and v-velocity component
+          - Mask 2: Instantaneous data of w-velocity component and temporally averaged data of w-velocity component
+          - Mask 3: Instantaneous data of potential temperature, u-, v- and w-velocity component
+
+        The user is allowed to extend the above list of quantities by defining his own output quantities (see the user-parameter [data_output_masks_user](#user_parameters--data_output_masks_user)).
+
+        The time intervals of the output times for each mask are determined via [dt_domask](#runtime_parameters--dt_domask). An individual time interval for output of temporally averaged data can be assigned using the parameter [dt_data_output_av](#runtime_parameters--dt_data_output_av). The length of the averaging interval is controlled via parameter [averaging_interval](#runtime_parameters--averaging_interval). No particular parameters are existent for steering the time-averaged output of each separate mask.
+
+        The parameter [skip_time_domask](#runtime_parameters--skip_time_domask) can be used to shift data output activities for a given time interval.
+
+        By default, up to 300 different masks can be assigned (`max_masks = 300`). If you wish to output more masks, change variable `max_masks` in {{ link_palm_repo_file('modules.f90', 'src/modules.f90') }} to the desired value. If `max_masks` exceeds 999, format descriptors in {{ link_palm_repo_file('check_open.f90', 'src/check_open.f90') }} for filename creation need to be further adapted. This case, please contact the PALM developer team.
+
+
+data_output_pr:
+  category: Data Output
+  type: C*30
+  shape: (500)
+  default:
+    value: ''
+  description:
+    short: Quantities for which vertical profiles (horizontally averaged) are to be output.
+    long: |
+      By default, vertical profile data is output to local netCDF file [`DATA_1D_PR_NETCDF`](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#DATA_1D_PR_NETCDF). Further details about processing of netCDF data are given in chapter [netCDF data output](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/netcdf).
+
+      For horizontally averaged vertical profiles, always all vertical grid points (`0 <= k <= nz+1`) are output to file. Vertical profile data refers to the total domain by default. But profiles for subdomains can also be output (see [statistic_regions](#initialization_parameters--statistic_regions)).
+
+      The temporal interval of the output times of profiles is assigned via [dt_dopr](#runtime_parameters--dt_dopr).
+
+      Profiles can also be temporally averaged (see [averaging_interval_pr](#runtime_parameters--averaging_interval_pr) and [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr)).
+
+      The list of available output quantities depends on the modules used for the simulation. See [table of profile quantities](../Output_quantities/#vertical-profile-quantities) for the entire list of all allowed quantities.
+
+      The profile data is either defined on u-v-levels (variables marked in red) or on w-levels (green). According to this, the z-coordinates of the individual profiles vary. Beyond that, with a constant flux layer switched on (see [constant_flux_layer](#initialization_parameters--constant_flux_layer)) the lowest output level is `z = zu(1)` instead of `z = zw(0)` for profiles *w"u"*, *w"v"*, *wu* and *wv*. Turbulence quantities such as *w\*u\** or *u\*2* are calculated from turbulent fluctuations that are defined as deviations from the instantaneous horizontal average.
+
+      Beyond that, initial profiles (at t = 0) of some variables can additionally be output. To trigger the output of initial profiles, a leading *'#'* must be added to the quantities' names. Possible values are:
+
+          #u, #v, #theta, #km, #kh, #l, #thetal, #q, #qv, #s, #sa, #thetav, #t_soil, #m_soil
+
+      A leading *'#'* will not suppress output at later timesteps, i.e., quantities must not be specified twice with and without a *'#'*.
+
+      The user is allowed to extend the above list of quantities by defining his own output quantities (see the user-parameter [data_output_pr_user](#user_parameters--data_output_pr_user)).
+
+      Additionally, the user can define further output quantities within the [user interface](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output#a1.Outputofuser-definedverticalprofiles).
+
+      **Note:**
+      The Kolmogorov length scale $\eta$ (output quantity *'eta'*) is defined by $(\frac{\nu^3}{\epsilon})^{1/4}$ with $\nu$ being the kinematic, molecular viscosity and $\epsilon$ the turbulent kinetic energy dissipation rate. However, as LES is not resolving the smallest scales of the turbulent velocity field, the direct determination of the dissipation rate and therefore of the Kolmogorov length scale is not possible in LES mode. Therefore, the output quantity *'eta'* has a meaningful value only if the simulation is run in DNS mode.
+
+
+debug_output:
+  category: debug
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch for output of debugging information during initialization phase and final actions of the simulation.
+    long: |
+      By adding the parameter [debug_output](#runtime_parameters--debug_output) = *.T.*, pre-defined debug_message(s) will be printed into separate files (one per core, using Fortran unit 9) in the temporary folder of a run, named `DEBUG_<core-id>`, where `<core-id>` is a six digit integer. Debug information may be helpful to narrow down the location of a model crash simply by setting this parameter instead of having to add WRITE statements and re-compile the code. Once the location is narrowed down, you may add further messages via `CALL debug_message (....)`. See the source code for string `debug_message` to find out how it works.
+
+      **Note:** <br>
+      Adding `CALL debug_message (....)` in new places might require adding:
+
+          USE control_parameters,                                                    &
+              ONLY:  debug_output, debug_string
+
+      in the declaration section of the source code file, if not already added.
+
+      Additionally, the flag [debug_output_timestep](#runtime_parameters--debug_output_timestep) enables debug output during timestepping. Keep in mind that this may create very large debug files.
+
+      **Important:** <br>
+      Do not forget the `-B` option in the `palmrun` call. Otherwise, the temporary job folder, in which the `DEBUG_00*` files are located, will be deleted after finishing the job.
+
+
+debug_output_timestep:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch for output of debugging information during timestepping.
+    long: |
+      For further details, see [debug_output](#runtime_parameters--debug_output).
+
+
+disturbance_amplitude:
+  category: run steering
+  type: R
+  default:
+    value: 0.25
+  si-unit: m s^-1^
+  description:
+    short: Maximum perturbation amplitude of the random perturbations.
+    long: |
+      Since the perturbation procedure includes two filter operations, the amplitude assigned by [disturbance_amplitude](#runtime_parameters--disturbance_amplitude) is only an approximate value of the real magnitude of the perturbation.
+
+      See parameter [create_disturbances](#runtime_parameters--create_disturbances) for how  random perturbations are imposed to the horizontal velocity field.
+
+
+disturbance_energy_limit:
+  category: run steering
+  type: R
+  default:
+    value: 0.01
+  si-unit: m^-2^ s^-1^
+  description:
+    short: Upper limit value of the perturbation energy.
+    long: |
+      The perturbation energy (resolved-scale turbulence kinetic energy) E* is defined as one half of the total domain volume average of the sum of the squares of the deviations of the velocity components from the mean flow (horizontal average) times. As soon as the perturbation energy exceeds the assigned value, random perturbations to the fields of horizontal velocities are imposed no more. The value of [disturbance_energy_limit](#runtime_parameters--disturbance_energy_limit) usually must be determined by trial and error (it depends e.g. on the total number of grid points).
+
+      Parameter [create_disturbances](#runtime_parameters--create_disturbances) describes how to impose random perturbations to the horizontal velocity field.
+
+
+disturbance_level_b:
+  category: run steering
+  type: R
+  default:
+    value_of: 'zu(3) or zu(nzt*2/3)'
+  si-unit: m
+  description:
+    short: Lower limit of the vertical range for random perturbations.
+    long: |
+      This parameter must hold the condition `zu(3)` <= [disturbance_level_b](#runtime_parameters--disturbance_level_b) <= `zu(nzt-2)`. Additionally, [disturbance_level_b](#runtime_parameters--disturbance_level_b) <= [disturbance_level_t](#runtime_parameters--disturbance_level_t) must also hold.
+
+      In case of [ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/ocean) runs the default value is [disturbance_level_b](#runtime_parameters--disturbance_level_b) = `zu(nzt* 2/3)` (negative).
+
+      Parameter [create_disturbances](#runtime_parameters--create_disturbances) describes how to impose random perturbations to the horizontal velocity field.
+
+
+disturbance_level_t:
+  category: run steering
+  type: R
+  default:
+    value_of: 'zu(nzt/3) or zu(nzt-3)'
+  si-unit: m
+  description:
+    short: Lower limit of the vertical range for random perturbations.
+    long: |
+      This parameter must hold the condition [disturbance_level_t](#runtime_parameters--disturbance_level_t) <= `zu(nzt-2)`. Additionally, [disturbance_level_b](#runtime_parameters--disturbance_level_b) <= [disturbance_level_t](#runtime_parameters--disturbance_level_t) must also hold.
+
+      In case of [ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/ocean) runs the default value is [disturbance_level_t](#runtime_parameters--disturbance_level_t) = `zu(nzt-3)` (negative).
+
+      Parameter [create_disturbances](#runtime_parameters--create_disturbances) describes how to impose random perturbations to the horizontal velocity field.
+
+do2d_at_begin:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Output of 2d cross section data at the beginning of a run.
+    long: |
+      The temporal intervals of output times of 2d cross section data (see [data_output](#runtime_parameters--data_output)) are usually determined via parameters [dt_do2d_xy](#runtime_parameters--dt_do2d_xy), [dt_do2d_xz](#runtime_parameters--dt_do2d_xz) and [dt_do2d_yz](#runtime_parameters--dt_do2d_yz). By assigning [do2d_at_begin](#runtime_parameters--do2d_at_begin) = *.T.*, an additional output will be made at the beginning of a run (thus at the time t = 0 or at the respective starting times of restart runs).
+
+
+do3d_at_begin:
+  category: Data Output
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Output of 3d volume data at the beginning of a run.
+    long: |
+      The temporal intervals of output times of 3d volume data (see data_output) is usually determined via parameter [dt_do3d](#runtime_parameters--dt_do3d). By assigning [do3d_at_begin](#runtime_parameters--do3d_at_begin) = *.T.* an additional output will be made at the beginning of a run (thus at the time t = 0 or at the respective starting times of restart runs).
+
+
+dt:
+  category: Run steering
+  type: R
+  default:
+    depends_on: 'CFL criterion'
+  si-unit: s
+  description:
+    short: Time step for the 3d-model.
+    long: |
+      See [dt](#initialization_parameters--dt) in *initialization_parameters* namelist.
+
+
+dt_averaging_input:
+  category: Data output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: The interval at which data enters into a temporal averaging period.
+    long: |
+      By default, data from each time step within the interval defined by [averaging_interval](#runtime_parameters--averaging_interval) enter into the calculation of the temporal average. By choosing [dt_averaging_input](#runtime_parameters--dt_averaging_input) > [dt](#initialization_parameters--dt), the number of time levels entering the average can be minimized. This reduces the CPU time of a run but may worsen the quality of the averages statistics.
+
+      With a variable time step (see [dt](#initialization_parameters--dt)), the number of time levels entering the average can vary from one averaging interval to the next (for a more detailed explanation see [averaging_interval](#runtime_parameters--averaging_interval)). It is approximately given by the ratio of [averaging_interval](#runtime_parameters--averaging_interval) / MAX( [dt_averaging_input](#runtime_parameters--dt_averaging_input), [dt](#initialization_parameters--dt)), which gives a more or less exact value, if a fixed time step is used and if this is an integral divisor of [dt_averaging_input](#runtime_parameters--dt_averaging_input).
+
+      **Example:** <br>
+      With [averaging_interval](#runtime_parameters--averaging_interval) = *100.0* and [dt_averaging_input](#runtime_parameters--dt_averaging_input) = *10.0*, the time levels entering the average have a (minimum) distance of 10.0 s. Their distance may, of course, be larger if the current time step is larger than 10.0 s, so the average is calculated from the data of (maximum) 10 time levels.
+
+      It is allowed to change [dt_averaging_input](#runtime_parameters--dt_averaging_input) during a job chain. In such a case, if the last averaging interval of the run previous to the change could not be completed (i.e. has to be finished in the current run), the data entering the averaging are not uniformly distributed over the averaging interval.
+
+      Parameter [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr) can be used to define a different temporal interval for vertical profile data and spectra.
+
+
+dt_averaging_input_pr:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_averaging_input](#runtime_parameters--dt_averaging_input)'
+  si-unit: s
+  description:
+    short: The interval at which vertical profiles and/or spectra data enter into a temporal averaging period.
+    long: |
+      By default, data from each time step within the interval defined by [averaging_interval_pr](#runtime_parameters--averaging_interval_pr), and [averaging_interval_sp](#runtime_parameters--averaging_interval_sp) enter into the calculation of the temporal average. By choosing [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr) > [dt](#initialization_parameters--dt), the number of time levels entering the average can be minimized. This reduces the CPU time of a run but may worsen the quality of the averages statistics.
+
+      For more explanations see parameter [dt_averaging_input](#runtime_parameters--dt_averaging_input).
+
+
+dt_coupling:
+  category: Run steering
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Temporal interval for the data exchange in case of runs with atmosphere / ocean coupling.
+    long: |
+      This parameter specifies the temporal interval at which data are exchanged at the interface between the atmosphere and the ocean model. [dt_coupling](#runtime_parameters--dt_coupling) must be explicitly specified in the parameter files for both coupled models. If values given for the atmosphere and the ocean don't match, the atmosphere value will be used for the ocean model. In order to ensure synchronous coupling throughout the simulation, [dt_coupling](#runtime_parameters--dt_coupling) should be chosen larger than [dt_max](#runtime_parameters--dt_max).
+
+
+dt_data_output:
+  category: Data output
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Temporal interval at which data shall be output.
+    long: |
+      This concerns 3d volume data (instantaneous or time averaged), cross sections (instantaneous or time averaged), vertical profiles and spectra. If data output is switched on (see [data_output](#runtime_parameters--data_output), [data_output_pr](#runtime_parameters--data_output_pr), [data_output_sp](#runtime_parameters--data_output_sp), and [section_xy]((#runtime_parameters--section_xy)), this parameter can be used to assign the temporal interval at which these data shall be output. Output can be skipped at the beginning of a simulation using parameter [skip_time_data_output](#runtime_parameters--skip_time_data_output), which has zero value by default. The reference time is the beginning of the simulation, i.e. output takes place at times t = [skip_time_data_output](#runtime_parameters--skip_time_data_output) + [dt_data_output](#runtime_parameters--dt_data_output), [skip_time_data_output](#runtime_parameters--skip_time_data_output) + 2*[dt_data_output](#runtime_parameters--dt_data_output), [skip_time_data_output](#runtime_parameters--skip_time_data_output) + 3*[dt_data_output](#runtime_parameters--dt_data_output), etc. Since output is only done at the discrete time levels given by the time step used, the actual output times can slightly deviate from these theoretical values.
+
+      Individual temporal intervals for the different output quantities can be assigned using parameters [dt_do3d](#runtime_parameters--dt_do3d), [dt_do2d_xy](#runtime_parameters--dt_do2d_xy), [dt_do2d_xz](#runtime_parameters--dt_do2d_xz), [dt_do2d_yz](#runtime_parameters--dt_do2d_yz), [dt_domask](#runtime_parameters--dt_domask), [dt_dopr](#runtime_parameters--dt_dopr), [dt_dosp](#runtime_parameters--dt_dosp), and [dt_data_output_av](#runtime_parameters--dt_data_output_av).
+
+      **Warning:** <br>
+      In case of parallel netCDF I/O ([netcdf_data_format](#runtime_parameters--netcdf_data_format) >= *5*), setting small values for [dt_data_output](#runtime_parameters--dt_data_output) may result in HDF errors during model initialization, since internal netCDF thresholds may be exceeded. This especially can happen if large 3d arrays are output.
+
+
+dt_data_output_av:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which time averaged data shall be output.
+    long: |
+      If data output of time averaged 2d and 3d data is switched on (see [data_output](#runtime_parameters--data_output)), this parameter can be used to assign the temporal interval at which they shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). Output can be skipped at the beginning of a simulation using parameter [skip_time_data_output_av](#runtime_parameters--skip_time_data_output_av).
+
+      The length of the averaging interval is controlled via parameter [averaging_interval](#runtime_parameters--averaging_interval).
+
+
+dt_disturb:
+  category: Run steering
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Temporal interval at which random perturbations are to be imposed on the horizontal velocity field.
+    long: |
+      See parameter [create_disturbances](#runtime_parameters--create_disturbances) for how random perturbations are imposed to the horizontal velocity field.
+
+
+dt_domask:
+  category: Data output
+  type: R
+  shape: (300)
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which instantaneous masked data shall be output.
+    long: |
+      If output of masked data is switched on (see [data_output_masks](#runtime_parameters--data_output_masks)), this parameter can be used to assign the temporal interval at which these data shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). For each mask, a separate output time can be assigned.
+
+      **Example:** <br>
+      [dt_domask](#runtime_parameters--dt_domask) = *600.0*, *1800.0*, *300.0* <br>
+      means that output of mask 1 is done every 600s, of mask 2 every 1800s, and of mask 3 every 300s.
+
+
+dt_dopr:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which data of vertical profiles shall be output.
+    long: |
+      If output of horizontally averaged vertical profiles is switched on (see [data_output_pr](#runtime_parameters--data_output_pr)), this parameter can be used to assign the temporal interval at which profile data shall be output. Output can be skipped at the beginning of a simulation using parameter [skip_time_dopr](#runtime_parameters--skip_time_dopr). The reference time is the beginning of the simulation, thus t = 0, i.e. output takes place at times t = [skip_time_dopr](#runtime_parameters--skip_time_dopr) + [dt_dopr](#runtime_parameters--dt_dopr), [skip_time_dopr](#runtime_parameters--skip_time_dopr) + 2*[dt_dopr](#runtime_parameters--dt_dopr), [skip_time_dopr](#runtime_parameters--skip_time_dopr) + 3*[dt_dopr](#runtime_parameters--dt_dopr), etc. Since profiles can not be calculated for times lying within a time step interval, the output times can deviate from these theoretical values. If a time step ranges from t = 1799.8 to t = 1800.2, then in the example above the output would take place at t = 1800.2. In general, the output always lie between t = 1800.0 and t = 1800.0 + `dt`. If the model uses a variable time step (which is the default), these deviations from the theoretical output times will, of course, be different for each output time.
+
+      In order to guarantee an output of profile data at the end of a simulation (see [end_time](#runtime_parameters--end_time)) in any way, [end_time](#runtime_parameters--end_time) should be equal or a little bit larger than the respective theoretical output time. For example, if [dt_dopr](#runtime_parameters--dt_dopr) = 900.0 and 3600.0 seconds are to be simulated, then [end_time](#runtime_parameters--end_time) >= 3600.0 should be chosen.
+
+      Profiles to be output can be selected via parameter [data_output_pr](#runtime_parameters--data_output_pr).
+
+
+dt_dopr_listing:
+  category: Data output
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Temporal interval at which data of vertical profiles shall be output in ASCII format.
+    long: |
+      This parameter can be used to assign the temporal interval at which profile data shall be output to local file [LIST_PROFIL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LIST_PROFIL). See [dt_dopr](#runtime_paramaters--dt_dopr) for further explanations.
+
+      Output data and format of file [LIST_PROFIL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LIST_PROFIL) are internally fixed. Profiles of the most important model variables are arranged in adjacent columns.
+
+
+dt_dots:
+  category: Data output
+  type: R
+  default:
+    depends_on: '[dt_run_control](#runtime_parameters--dt_run_control), [dt_dopr](#runtime_parameters--dt_dopr), [dt_averaging_input_pr](#runtime_parameters--dt_averaging_input_pr)'
+  si-unit: s
+  description:
+    short: Temporal interval at which time series data shall be output.
+    long: |
+      If not explicitly given, [dt_dots](#runtime_parameters--dt_dots) is defined via
+
+          IF ( averaging_interval_pr == 0.0 )  THEN
+             dt_dots = MIN( dt_run_control, dt_dopr )
+          ELSE
+             dt_dots = MIN( dt_run_control, dt_averaging_input_pr )
+          ENDIF
+
+      This limits the number of calculation of statistics and, hence, the computational costs.
+
+      The actual output intervals can deviate from [dt_dots](#runtime_parameters--dt_dots) due to a varying timestep [dt](#initialization_parameters--dt). To generate output at every timestep, set [dt_dots](#runtime_parameters--dt_dots) = *0.0*.
+
+      Time series data are output to the local netCDF file [DATA_1D_TS_NETCDF](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#DATA_1D_TS_NETCDF).
+
+      Instead of allowing to choose the time series output quantities, time-series output always contains a fixed list of quantities which depends on the modules used in the simulation. The list of output quantities of the timeseries output is available [here](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/runtime_parameters#dt_dots).
+
+      Additionally, the user can add own time-series quantities to the file by using the [user interface](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/userint/output#a2.Outputofuser-definedtimeseries).
+
+      By default, time-series data refer to the total domain. Data can also be output for user-defined subdomains (see [statistic_regions](#initialization_parameters--statistic_regions)). However, quantities `umax`, `vmax`, `wmax`, `div_old`, and `div_new` always present the values of the total model domain (even in the output of subdomains).
+
+
+dt_do2d_xy:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which horizontal (xy) cross section data shall be output.
+    long: |
+      If output of horizontal cross sections is switched on (see [data_output](#runtime_parameters--data_output), [section_xy](#runtime_parameters--section_xy), and [section_xy_m](#runtime_parameters--section_xy_m)), this parameter can be used to assign the temporal interval at which cross section data shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). Output can be skipped at the beginning of a simulation using parameter [skip_time_do2d_xy](#runtime_parameters--skip_time_do2d_xy).
+
+      Parameter [do2d_at_begin](#runtime_parameters--do2d_at_begin) has to be used if an additional output is wanted at the start of a run (thus at time t = 0 or at the respective starting times of restart runs).
+
+
+dt_do2d_xz:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which vertical (xz) cross section data shall be output.
+    long: |
+      If output of vertical (xz) cross sections is switched on (see [data_output](#runtime_parameters--data_output), [section_xz](#runtime_parameters--section_xz), and [section_xz_m](#runtime_parameters--section_xz_m)), this parameter can be used to assign the temporal interval at which cross section data shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). Output can be skipped at the beginning of a simulation using parameter [skip_time_do2d_xz](#runtime_parameters--skip_time_do2d_xz).
+
+      Parameter [do2d_at_begin](#runtime_parameters--do2d_at_begin) has to be used if an additional output is wanted at the start of a run (thus at time t = 0 or at the respective starting times of restart runs).
+
+
+dt_do2d_yz:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which vertical (yz) cross section data shall be output.
+    long: |
+      If output of vertical (yz) cross sections is switched on (see [data_output](#runtime_parameters--data_output), [section_yz](#runtime_parameters--section_yz), and [section_yz_m](#runtime_parameters--section_yz_m)), this parameter can be used to assign the temporal interval at which cross section data shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). Output can be skipped at the beginning of a simulation using parameter [skip_time_do2d_yz](#runtime_parameters--skip_time_do2d_yz).
+
+      Parameter [do2d_at_begin](#runtime_parameters--do2d_at_begin) has to be used if an additional output is wanted at the start of a run (thus at time t = 0 or at the respective starting times of restart runs).
+
+
+dt_do3d:
+  category: Data output
+  type: R
+  default:
+    value_of: '[dt_data_output](#runtime_parameters--dt_data_output)'
+  si-unit: s
+  description:
+    short: Temporal interval at which 3d volume data shall be output.
+    long: |
+      If output of 3d-volume data is switched on (see [data_output](#runtime_parameters--data_output)), this parameter can be used to assign the temporal interval at which 3d-data shall be output (see [dt_dopr](#runtime_parameters--dt_dopr) for calculation of actual output times). Output can be skipped at the beginning of a simulation using parameter [skip_time_do3d](#runtime_parameters--skip_time_do3d).
+
+      Parameter [do3d_at_begin](#runtime_parameters--do3d_at_begin) has to be used if an additional output is wanted at the start of a run (thus at time t = 0 or at the respective starting times of restart runs).
+
+      **Warning:** <br>
+      In case of parallel netCDF I/O (netcdf_data_format >= *5*), setting small values for dt_do3d may result in HDF errors during model initialization, since internal netCDF thresholds may be exceeded. This especially can happen if large 3d arrays are output.
+
+
+dt_max:
+  category: Numerics
+  type: R
+  default:
+    value: 20.0
+  si-unit: s
+  description:
+    short: Maximum allowed value of the time step.
+    long: |
+      By default, the time step that is internally calculated from the different time step criteria is restricted to have a maximum value of 20 s. This might be fine for simulations of any kind of atmospheric flow but may have to be changed for other setups.
+
+      **Attention:** <br>
+      Since the simulation is automatically aborted if the internally calculated timestep is less than 10^-5^ * [dt_max](#runtime_parameters--dt_max), [dt_max](#runtime_parameters--dt_max) generally needs adjustment e.g. in case of very small grid spacings (for example in wind tunnel setups that use the spatial scales of the wind tunnel), because in such setups time steps are usually very small, too.
+
+
+dt_restart:
+  category: run steering
+  type: R
+  default: ~
+  si-unit: s
+  description:
+    short: Temporal interval at which a new restart run is to be carried out.
+    long: |
+      For a description how to assign restart times manually see runtime parameter [restart_time](#runtime_parameters--restart_time). [dt_restart](#runtime_parameters--dt_restart) does not show any effect, if [restart_time](#runtime_parameters--restart_time) has not been set.
+
+      If a job chain is automatically finished (i.e. [end_time](#runtime_parameters--end_time) is reached), and the run shall be continued via another chain by increasing [end_time](#runtime_parameters--end_time), the restart mechanism has to be activated again by setting (e.g.) [restart_time](#runtime_parameters--restart_time) = (end time of first chain) + [dt_restart](#runtime_parameters--dt_restart). Setting [dt_restart](#runtime_parameters--dt_restart) only will have no effect.
+
+      For coupled atmosphere/ocean runs this parameter must be equal in both parameter files [PARIN](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARIN) and [PARIN_O](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARIN_O).
+
+
+dt_run_control:
+  category: Data output
+  type: R
+  default:
+    value: 60.0
+  si-unit: s
+  description:
+    short: Temporal interval at which run control output is to be made.
+    long: |
+      Run control information is output to the local ASCII-file [RUN_CONTROL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#RUN_CONTROL). At each output time, one line with information about the size of the time step, maximum speeds, total kinetic energy etc. is written to this file. The reference time is the beginning of the simulation, i.e. output takes place at times t = [dt_run_control](#runtime_parameters--dt_run_control), 2*[dt_run_control](#runtime_parameters--dt_run_control), 3*[dt_run_control](#runtime_parameters--dt_run_control), etc., and always at the beginning of a model run (thus at the time t = 0 or at the respective starting times of restart runs). The actual output times can deviate from these theoretical values (see [dt_dopr](#runtime_parameters--dt_dopr)).
+
+      Output after each time step can be achieved via [dt_run_control](#runtime_parameters--dt_run_control) = *0.0*.
+
+
+interpolate_to_grid_center:
+  category: Data Output Settings
+  type: L
+  default: .F.
+  description:
+    short: Flag for interpolation of 2D/3D output on grid center.
+    long: If interpolate_to_grid_center = .T., all 2D- and 3D-output of non-centered output variables (*u, v, w, wu, wv, wv, wtheta, wq, ws*) is interpolated onto the center of the Arakawa-C grid, where scalars are defined. The wall-neighbouring grid points are interpolated with zero. Due to the changed grid in x-, y- or z-direction, buildings appear to be smaller in the output than they are in the prognostic equations. Please note, in case of a precursor run where the *yz* output data shall be further processed with the preprocessor tool *palm_cti*, [interpolate_to_grid_center](#runtime_parameters--interpolate_to_grid_center) = *.T.* is not allowed.
+
+
+end_time:
+  category: run steering
+  type: R
+  default:
+    value: 100.0
+  si-unit: s
+  description:
+    short: End of simulated time.
+    long: |
+      The time to be simulated is starting from the beginning of the initialization run (t = 0), not starting from the beginning of the respective restart run.
+
+      For coupled atmosphere/ocean runs this parameter must be equal in both parameter files [PARIN](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARIN) and [PARIN_O](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PARIN_O).
+
+
+force_print_header:
+  category: Data output
+  type: L
+  default: .F.
+  description:
+    short: Steering of header output to the local file [RUN_CONTROL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#RUN_CONTROL).
+    long: |
+      By default, informations about the model parameters in use are output to the beginning of file [RUN_CONTROL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#RUN_CONTROL) for initial runs only (these informations are identical to that which are output to the local file [HEADER](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#HEADER)). With [force_print_header](#runtime_parameters--force_print_header) = *.T.*, these informations are also output to [RUN_CONTROL](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#RUN_CONTROL) for each restart run.
+
+
+homogenize_surface_temperature:
+  category: Boundary Conditions
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the homogenization of surface temperature at the beginning of a run.
+    long:  |
+      See [initialization parameter homogenize_surface_temperature](#initialization_parameters--homogenize_surface_temperature) for further explanations.
+
+
+mask_k_over_surface:
+  category: Data output
+  type: I
+  shape: (300,100)
+  default:
+    value: ~
+  description:
+    short: List of heights above terrain (as grid level index offset) for the terrain-following masked output.
+    long: |
+      Output is created for the given grid level index offset above terrain height. This creates a terrain-following output. [mask_k_over_surface](#runtime_parameters--mask_k_over_surface) must be $\geq$ *1*.
+
+      A list of multiple grid level index offsets can be given. Each masked output can be given a different list.
+
+      If [mask_k_over_surface](#runtime_parameters--mask_k_over_surface) is specified for a mask, [mask_z](#runtime_parameters--mask_z) and [mask_z_loop](#runtime_parameters--mask_z_loop) are ignored for this mask. Also, [mask_scale_z](#runtime_parameters--mask_scale_z) has no effect on values given by [mask_k_over_surface](#runtime_parameters--mask_k_over_surface).
+
+      **Example:**
+
+          mask_k_over_surface(1,:) = 2, 5,
+
+      creates a terrain-following output for mask 1 and outputs values at the 2^nd^ and 5^th^ grid level above the terrain.
+
+
+mask_scale_x:
+  category: Data output
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Scaling factor for masked data output along x-direction.
+    long: |
+      Positions given in [mask_x](#runtime_parameters--mask_x) are scaled (multiplied) by [mask_scale_x](#runtime_parameters--mask_scale_x).
+
+      For scaling the masked data along y- and z-direction, use [mask_scale_y](#runtime_parameters--mask_scale_y) and [mask_scale_z](#runtime_parameters--mask_scale_z), respectively.
+
+      **Example:** <br>
+      Setting [mask_scale_x](#runtime_parameters--mask_scale_x) = *10* and [mask_x](#runtime_parameters--mask_x)(1,:) = *50.0*, *100.0*, will result in masked output at x = 500.0 m and x = 1000.0 m.
+
+
+mask_scale_y:
+  category: Data output
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Scaling factor for masked data output along y-direction.
+    long: |
+      Positions given in [mask_y](#runtime_parameters--mask_y) are scaled (multiplied) by [mask_scale_y](#runtime_parameters--mask_scale_y).
+
+      For scaling the masked data along x- and z-direction, use [mask_scale_x](#runtime_parameters--mask_scale_x) and [mask_scale_z](#runtime_parameters--mask_scale_z), respectively.
+
+      **Example:** <br>
+      Setting [mask_scale_y](#runtime_parameters--mask_scale_y) = *10* and [mask_y](#runtime_parameters--mask_y)(1,:) = *50.0*, *100.0*, will result in masked output at y = 500.0 m and y = 1000.0 m.
+
+
+mask_scale_z:
+  category: Data output
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Scaling factor for masked data output along z-direction.
+    long: |
+      Positions given in [mask_z](#runtime_parameters--mask_z) are scaled (multiplied) by [mask_scale_z](#runtime_parameters--mask_scale_z).
+
+      For scaling the masked data along x- and y-direction, use [mask_scale_x](#runtime_parameters--mask_scale_x) and [mask_scale_y](#runtime_parameters--mask_scale_y), respectively.
+
+      **Example:** <br>
+      Setting [mask_scale_z](#runtime_parameters--mask_scale_z) = *10* and [mask_z](#runtime_parameters--mask_z)(1,:) = *50.0*, *100.0*, will result in masked output at z = 500.0 m and z = 1000.0 m.
+
+
+mask_x:
+  category: Data output
+  type: R
+  shape: (300,100)
+  default: ~
+  si-unit: m
+  description:
+    short: List of x-coordinates of mask positions.
+    long: |
+      This parameter defines all positions along x-direction where quantities for masked data are to be output (see [data_output_mask](#runtime_parameters--data_output_mask)). For each mask, a separate list must be assigned.
+
+      Per default, data is output at every grid point along x-direction.
+
+      The given coordinates are scaled using [mask_scale_x](#runtime_parameters--mask_scale_x).
+
+      Instead of assigning individual positions, [mask_x_loop](#runtime_parameters--mask_x_loop) allows to define multiple positions equally spaced along x-direction.
+
+      For output positions along y- and z-direction, see [mask_y](#runtime_parameters--mask_y) and [mask_z](#runtime_parameters--mask_z), respectively.
+
+      **Example:**
+
+          mask_x(1,:) = 50.0, 100.0, 500.0, 550.0, 600.0
+          mask_x(2,:) = 1000.0
+
+      This example will create outputs at x = 50 m and x = 100 m, etc. for mask 1 and at x = 1000 m for mask 2.
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+mask_x_loop:
+  category: Data output
+  type: R
+  shape: (300,3)
+  default: ~
+  si-unit: m
+  description:
+    short: Loop begin, end, and stride for x-coordinates of mask locations.
+    long: |
+      This parameter allows to define multiple equally-spaced output positions along x-direction for masked data output.
+
+      [mask_x_loop](#runtime_parameters--mask_x_loop) contains of 3 values:
+
+      1. first output position,
+      2. last output position,
+      3. distance between output positions.
+
+      If the given last output position cannot be reached from the first output position by adding multiples of the distance, the last calculated position smaller than the given last output position is the actual last output position.
+
+      Per default, every grid point along x-direction is used in the masked output.
+
+      For each mask a separate [mask_x_loop](#runtime_parameters--mask_x_loop) must be assigned.
+
+      If [mask_x](#runtime_parameters--mask_x) is specified, [mask_x_loop](#runtime_parameters--mask_x_loop) will be ignored.
+
+      **Example:**
+
+          mask_x_loop(1,:) = 0.0, 2010.0, 100.0,
+
+      This example creates output positions every 100 m starting at x = 0 m until x = 2000 m for mask 1.
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+mask_y:
+  category: Data output
+  type: R
+  shape: (300,100)
+  default: ~
+  si-unit: m
+  description:
+    short: List of y-coordinates of mask positions.
+    long: |
+      This parameter defines all positions along y-direction where quantities for masked data are to be output (see [data_output_mask](#runtime_parameters--data_output_mask)). For each mask, a separate list must be assigned.
+
+      Per default, data is output at every grid point along y-direction.
+
+      The given coordinates are scaled using [mask_scale_y](#runtime_parameters--mask_scale_y).
+
+      Instead of assigning individual positions, [mask_y_loop](#runtime_parameters--mask_y_loop) allows to define multiple positions equally spaced along y-direction.
+
+      For output positions along x- and z-direction, see [mask_x](#runtime_parameters--mask_x) and [mask_z](#runtime_parameters--mask_z), respectively.
+
+      **Example:**
+
+          mask_y(1,:) = 50.0, 100.0,
+          mask_y(2,:) = 1000.0,
+
+      This example will create outputs at y = 50 m and y = 100 m for mask 1 and at y = 1000 m for mask 2.
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+mask_y_loop:
+  category: Data output
+  type: R
+  shape: (300,3)
+  default: ~
+  si-unit: m
+  description:
+    short: Loop begin, end, and stride for y-coordinates of mask locations.
+    long: |
+      This parameter allows to define multiple equally-spaced output positions along y-direction for masked data output.
+
+      [mask_y_loop](#runtime_parameters--mask_y_loop) contains of 3 values:
+
+      1. first output position,
+      2. last output position,
+      3. distance between output positions.
+
+      If the given last output position cannot be reached from the first output position by adding multiples of the distance, the last calculated position smaller than the given last output position is the actual last output position.
+
+      Per default, every grid point along y-direction is used in the masked output.
+
+      For each mask a separate [mask_y_loop](#runtime_parameters--mask_y_loop) must be assigned.
+
+      If [mask_y](#runtime_parameters--mask_y) is specified, [mask_y_loop](#runtime_parameters--mask_y_loop) will be ignored.
+
+      **Example:**
+
+          mask_y_loop(1,:) = 0.0, 2010.0, 100.0,
+
+      This example creates output positions every 100 m starting at y = 0 m until y = 2000 m for mask 1.
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+mask_z:
+  category: Data output
+  type: R
+  shape: (300,100)
+  default: ~
+  si-unit: m
+  description:
+    short: List of z-coordinates of mask positions.
+    long: |
+      This parameter defines all positions along z-direction where quantities for masked data are to be output (see [data_output_mask](#runtime_parameters--data_output_mask)). For each mask, a separate list must be assigned.
+
+      Per default, data is output at every grid point along z-direction.
+
+      The given coordinates are scaled using [mask_scale_z](#runtime_parameters--mask_scale_z).
+
+      Instead of assigning individual positions, [mask_z_loop](#runtime_parameters--mask_z_loop) allows to define multiple positions equally spaced along z-direction.
+
+      For output positions along x- and y-direction, see [mask_x](#runtime_parameters--mask_x) and [mask_y](#runtime_parameters--mask_y), respectively.
+
+      **Example:**
+
+          mask_z(1,:) = 50.0, 100.0, 500.0, 550.0, 600.0
+          mask_z(2,:) = 1000.0
+
+      This example will create outputs at the specified points for masks 1 and 2. Given height levels refer to the zu-grid. Height levels of quantities defined on the zw-grid are shifted by half a grid spacing (e.g. z = 75.0, 125.0, 525.0, 575.0, 625.0, if `dz` = *50.0*)).
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+mask_z_loop:
+  category: Data output
+  type: R
+  shape: (300,3)
+  default: ~
+  si-unit: m
+  description:
+    short: Loop begin, end, and stride for z-coordinates of mask locations.
+    long: |
+      This parameter allows to define multiple equally-spaced output positions along z-direction for masked data output.
+
+      [mask_z_loop](#runtime_parameters--mask_z_loop) contains of 3 values:
+
+      1. first output position,
+      2. last output position,
+      3. distance between output positions.
+
+      If the given last output position cannot be reached from the first output position by adding multiples of the distance, the last calculated position smaller than the given last output position is the actual last output position.
+
+      Per default, every grid point along z-direction is used in the masked output.
+
+      For each mask a separate [mask_z_loop](#runtime_parameters--mask_z_loop) must be assigned.
+
+      If [mask_z](#runtime_parameters--mask_z) is specified, [mask_z_loop](#runtime_parameters--mask_z_loop) will be ignored.
+
+      **Example:**
+
+          mask_z_loop(1,:) = 0.0, 2010.0, 100.0,
+
+      This example creates output positions every 100 m starting at z = 0 m until z = 2000 m for mask 1.
+
+      See [the masked data-output documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/maskedoutput#Examples) for further examples.
+
+
+netcdf_data_format:
+  category: Data output
+  type: I
+  default:
+    value: 2
+  description:
+    short: Data format of netCDF output files.
+    long: |
+      **Important:** <br>
+      Setting [netcdf_data_format](#runtime_parameters--netcdf_data_format) > *2* requires a netCDF4 library and the preprocessor switch `-D__netcdf4` must be set (see options `%cpp_options`, `%compiler_options`, and `%linker_options` in the [configuration file](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/palm_config)).
+
+      Files with netCDF4 format cannot be read with netCDF3 libraries.
+
+      Parallel file support ([netcdf_data_format](#runtime_parameters--netcdf_data_format) > *4*) additionally requires to set the preprocessor switch `-D__netcdf4_parallel`.
+
+      **Warning:** <br>
+      In case of parallel I/O ([netcdf_data_format](#runtime_parameters--netcdf_data_format) $\geq$ *5*), setting small values for [dt_data_output](#runtime_parameters--dt_data_output) or [dt_do3d](#runtime_parameters--dt_do3d) may result in HDF errors during model initialization, since internal netCDF thresholds may be execeeded. This is likely to happen if large 3d arrays are output.
+  allowed_values:
+    - value: 1
+      description: netCDF classic format (filesize is limited to 2GB).
+    - value: 2
+      description: netCDF 64-bit-offset format (large file support, but single variables are still limited to 2GB).
+    - value: 3
+      description: netCDF-4 (HDF5) format (files can be as large as thr file system supports; unlimited variable size), without parallel I/O support.
+    - value: 4
+      description: netCDF-4 format, but with `NF90_CLASSIC_MODEL` bit set (some new features of netCDF4 are not available), without parallel I/O support.
+    - value: 5
+      description: same as 3, but with parallel I/O support.
+    - value: 6
+      description: same as 4, but with parallel I/O support.
+
+
+netcdf_deflate:
+  category: Data output
+  type: I
+  default:
+    value: 0
+  description:
+    short: Data compression level for netCDF4/HDF5 output files.
+    long: |
+      The data compression must be given in the range *0* - *9*, where *0* means no compression, and *9* highest compression. Typically, compression level *1* should be sufficient. Higher data compression rates require additional time. The compression only works for the netCDF4/HDF5 format in non-parallel mode (see [netcdf_data_format](#runtime_parameters--netcdf_data_format)).
+
+
+normalizing_region:
+  category: Data output
+  type: I
+  default:
+    value: 0
+  description:
+    short: Determines the statistic region from which the normalization quantities are calculated.
+    long: |
+      If output data of the horizontally averaged vertical profiles (see [data_output_pr](#runtime_parameters--data_output_pr)) is to be normalized, the respective normalization quantities are by default calculated from the averaged data of the total model domain ([normalizing_region](#runtime_parameters--normalizing_region) = *0*) and are thus representative for the total domain. Instead of that, normalization quantities can also be calculated for a statistic region by assigning the respective statistic region ID to [normalizing_region](#runtime_parameters--normalizing_region) (see also [statistic_regions](#initialization_parameters--statistic_regions)). These quantities are then used for normalizing of all profiles (even for that of the total domain).
+
+      $0 \leq$ [normalizing_region](#runtime_parameters--normalizing_region) $\leq 9$ is required.
+
+
+npex:
+  category: parallelization
+  type: I
+  default:
+    depends_on: '[nx](#initialization_parameters--nx), [ny](#initialization_parameters--ny), [nz](#initialization_parameters--nz), and total number of cores of a run'
+  description:
+    short: Number of cores along x-direction of the virtual PE grid.
+    long: |
+      For parallel runs, the total number of cores (processor elements, PEs) to be used is given by the palmrun-option `-X`. By default, the model tries to generate a 2d PE grid (domain decomposition along x and y), of more or less square-shape. If, for example, 16 cores are assigned (`-X 16`), a 4 $\times$ 4 PE grid is generated ([npex](#runtime_parameters--npex) = [npey](#runtime_parameters--npey) = *4*). This choice is optimal for square total domains ([nx](#initialization_parameters--nx) = [ny](#initialization_parameters--ny)) because it minimizes the number of ghost points at the lateral boundaries of the subdomains. If [nx](#initialization_parameters--nx) and [ny](#initialization_parameters--ny) differ extremely, the PE grid should be manually adjusted using adequate values for [npex](#runtime_parameters--npex) and [npey](#runtime_parameters--npey).
+
+      **Important:** <br>
+      The value of [npex](#runtime_parameters--npex) $\times$ [npey](#runtime_parameters--npey) must exactly match the value assigned by the palmrun-option `-X`. Otherwise the run aborts with a corresponding error message.
+
+      Explicit setting of [npex](#runtime_parameters--npex) is not allowed for [psolver](#initialization_parameters--psolver) = *'poisfft_sm'*.
+
+
+npey:
+  category: General Settings
+  type: I
+  default:
+    depends_on: '[nx](#initialization_parameters--nx), [ny](#initialization_parameters--ny), [nz](#initialization_parameters--nz), and total number of cores of a run'
+  description:
+    short: Number of cores along y-direction of the virtual PE grid.
+    long: |
+      See [npex](#runtime_parameters--npex) for further explanations.
+
+      Explicit setting of [npey](#runtime_parameters--npey) is not allowed for [psolver](#initialization_parameters--psolver) = *'poisfft_sm'*.
+
+
+nz_do3d:
+  category: Data Output
+  type: I
+  default:
+    value_of: '[nz](#initialization_parameters--nz) + 1'
+  description:
+    short: Limits the output of 3d volume data along the vertical direction (grid level index k).
+    long: |
+      By default, data for all grid points along z are output. Using [nz_do3d](#runtime_parameters--nz_do3d) limits the output up to the given vertical grid level index. This can be used to reduce the amount of output data. It affects all output of 3d volume data specified via [data_output](#runtime_parameters--data_output).
+
+
+open_debug_files:
+  category: Data Output
+  type: L
+  default:
+    value: .T.
+  description:
+    short:  Flag for opening debug files.
+    long: |
+      By default, debug files with local filenames `DEBUG_<PE-id>` (internal Fortran unit 9, PE-id` is a six digit integer) will be opened for each core in the temporary working directory at the beginning of a run. In order to avoid the opening of very large number of files in case of runs on many cores, set [open_debug_files](#runtime_parameters--open_debug_files) = *.F.*. However, debug files are opened in any case, if [debug_output](#runtime_parameters--debug_output) has been switched on.
+
+
+profile_columns:
+  category: palmplot
+  type: I
+  default:
+    value: 3
+  description:
+    short: Number of coordinate systems to be plotted in one row by plot software `palmplot` (see also [postprocessing with ncl](http://palm.muk.uni-hannover.de/wiki/doc/app/ncl)).
+    long: |
+      It determines the layout of plots of horizontally averaged profiles ([data_output_pr](#runtime_parameters--data_output_pr)) when plotted with the plot software `palmplot`. Generally, the number and sequence of coordinate systems (panels) to be plotted on one page are determined by [cross_profiles](#runtime_parameters--cross_profiles). [profile_columns](#runtime_parameters--profile_columns) determines how many panels are to be arranged next to each other in one row (number of columns). The respective number of rows on a page is assigned by [profile_rows](#runtime_parameters--profile_rows). According to their order given by [data_output_pr](#runtime_parameters--data_output_pr), the panels are arranged beginning in the top row from left to right and then continued in the following row.
+
+
+profile_rows:
+  category: palmplot
+  type: I
+  default:
+    value: 3
+  description:
+    short:  Number of rows of coordinate systems to be plotted on one page by plot software `palmplot` (see also [postprocessing with ncl](http://palm.muk.uni-hannover.de/wiki/doc/app/ncl)).
+    long: |
+      It determines the layout of plots of horizontally averaged profiles. See [profile_columns](#runtime_parameters--profile_columns) for further explanations.
+
+
+pt_surface_heating_rate:
+  category: Boundary Conditions
+  type: R
+  default:
+    value: 0.0
+  si-unit: K h^-1^
+  description:
+    short: Linear rate of surface temperature increase.
+    long: |
+      See [initialization parameter pt_surface_heating_rate](#initialization_parameters--pt_surface_heating_rate) for further explanations.
+
+
+pt_surface_initial_change:
+  category: Initial Conditions
+  type: R
+  default:
+    value: 0.0
+  si-unit: K
+  description:
+    short: Change in surface temperature to be applied at the beginning of a 3d run.
+    long: |
+      See [initialization parameter pt_surface_initial_change](#initialization_parameters--pt_surface_initial_change) for further explanations.
+
+
+restart_data_format:
+  category: Data Output
+  type: C*20
+  default:
+    value: 'mpi_shared_memory'
+  description:
+    short:  Binary format of the input and output restart files.
+    long: |
+      For details see decription of [restart_data_format](#initialization_parameters--restart_data_format) in the initialization parameters namelist.
+
+
+restart_data_format_input:
+  category: Data Output
+  type: C*20
+  default:
+    value_of: '[restart_data_format](#runtime_parameters--restart_data_format)'
+  description:
+    short:  Binary format of the input restart file.
+    long: |
+      See [restart_data_format](#initialization_parameters--restart_data_format) for allowed values.
+
+      This parameter can also be used in the initialization parameters namelist.
+
+
+restart_data_format_output:
+  category: Data Output
+  type: C*20
+  default:
+    value_of: '[restart_data_format](#runtime_parameters--restart_data_format)'
+  description:
+    short:  Binary format of the output restart file.
+    long: |
+      See [restart_data_format](#initialization_parameters--restart_data_format) for allowed values.
+
+      This parameter can also be used in the initialization parameters namelist.
+
+
+restart_time:
+  category: Data Output
+  type: R
+  default:
+    value: ~
+  si-unit: s
+  description:
+    short:  Simulated time after which a restart run is to be carried out.
+    long: |
+      The simulated time refers to the beginning of the initial run (t = 0), not to the beginning of the respective restart run. Restart runs can additionally be forced to be carried out in regular intervals using the runtime parameter [dt_restart](#runtime_parameters--dt_restart).
+
+      **Note:** <br>
+      A successful operation of this parameter requires to set option `-a " ... restart ..."` in the palmrun-call of the respective run (see also [Initialization and restart runs](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/runs)).
+
+      The choice of [restart_time](#runtime_parameters--restart_time) or [dt_restart](#runtime_parameters--dt_restart) does not override the automatic start of restart runs in case that the job runs out of CPU time.
+
+      For nesting and coupled atmosphere/ocean runs, the parameter value must be the same in all respective namelist files. If this is not the case, the value given for the root/atmosphere model will be used.
+
+
+section_xy:
+  category: Data Output
+  type: I
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) (grid level index k) of 2d horizontal cross section(s).
+    long: |
+      If output of horizontal cross sections is selected (see [data_output](#runtime_parameters--data_output)), [section_xy](#runtime_parameters--section_xy) can be used to define the position(s) of the cross section(s). Up to 100 positions can be selected by assigning [section_xy](#runtime_parameters--section_xy) the corresponding vertical grid level index/indices `k` of the requested cross section(s). The exact location (height level) of the cross section depends on the variable for which the output is requested: `zu(k)` for scalars and horizontal velocities, `zw(k)` for the vertical velocity. Information about the exact location of the cross section in m is contained in the netCDF output file. Parameter [section_xy_m](#runtime_parameters--section_xy_m) can be used instead or in addition to [section_xy](#initialization_runtime--section_xy), to give locations in cartesian coordinates (m) instead of grid indices.
+
+      Assigning [section_xy](#runtime_parameters--section_xy) = *-1* creates the output of horizontal cross sections averaged along `z`. In the netCDF output file these (averaged) cross sections are given the z-coordinate *-1.0*.
+
+      Assignments to [section_xy](#runtime_parameters--section_xy) do not effect the output of horizontal cross sections of variables `us*` and `theta*` and the liquid water path `lwp*`. For these quantities always only one cross section (for `z = zu(1)`) is output.
+
+
+section_xy_m:
+  category: Data Output
+  type: R
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) of 2d horizontal cross section(s) in m.
+    long: |
+      See [section_xy](#runtime_parameters--section_xy) for a description of output of horizontal cross sections.
+
+      In the output file, sections given by [section_xy_m](#runtime_parameters--section_xy_m) are appended to those given by [section_xy](#runtime_parameters--section_xy).
+
+
+section_xz:
+  category: Data Output
+  type: I
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) (grid index j) of 2d (xz) vertical cross section(s).
+    long: |
+      If output of `xz` cross sections is selected (see [data_output](#runtime_parameters--data_output)), this parameter can be used to define the position(s) of the cross section(s). Up to 100 positions of cross sections can be selected by assigning [section_xz](#runtime_parameters--section_xz) the corresponding grid index/indices `j` of the requested cross section(s). The exact location (in y-direction) of the cross section is given by `j*dy` or `(j-0.5)*dy`, depending on which grid the output quantity is defined. However, in the netCDF output file, no distinction is made between the quantities and `j*dy` is used for all positions. Parameter [section_xz_m](#runtime_parameters--section_xz_m) can be used instead or in addition to [section_xz](#runtime_parameters--section_xz), to give locations in cartesian coordinates (m) instead of grid indices.
+
+      Assigning [section_xz](#runtime_parameters--section_xz) = *-1* creates the output of vertical cross sections averaged along `y`. In the netCDF output file these (averaged) cross sections are given the y-coordinate *-1.0*.
+
+
+section_xz_m:
+  category: Data Output
+  type: R
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) of 2d (xz) vertical cross section(s) in m.
+    long: |
+      See [section_xz](#runtime_parameters--section_xz) for a description of output of vertical cross sections.
+
+
+      In the output file, sections given by [section_xz_m](#runtime_parameters--section_xz_m) are appended to those given by [section_xz](#runtime_parameters--section_xz).
+
+      **Note:** <br>
+      For nested domains positions have to be given in the coordinate framework of the root domain.
+
+
+section_yz:
+  category: Data Output
+  type: I
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) (grid index i) of 2d (yz) vertical cross section(s).
+    long: |
+      If output of `yz` cross sections is selected (see [data_output](#runtime_parameters--data_output)), this parameter can be used to define the position(s) of the cross section(s). Up to 100 positions of cross sections can be selected by assigning [section_yz](#runtime_parameters--section_yz) the corresponding grid index/indices `i` of the requested cross section(s). The exact location (in x-direction) of the cross section is given by `i*dx` or `(i-0.5)*dx`, depending on which grid the output quantity is defined. However, in the netCDF output file, no distinction is made between the quantities and `i*dx` is used for all positions.  Parameter [section_yz_m](#runtime_parameters--section_yz_m) can be used instead or in addition to [section_yz](#runtime_parameters--section_yz), to give locations in cartesian coordinates (m) instead of grid indices.
+
+      Assigning [section_yz](#runtime_parameters--section_yz) = *-1* creates the output of vertical cross sections averaged along `x`. In the netCDF output file these (averaged) cross sections are given the x-coordinate *-1.0*.
+
+
+section_yz_m:
+  category: Data Output
+  type: R
+  shape: (100)
+  default:
+    value: ~
+  description:
+    short:  Position(s) of 2d (yz) vertical cross section(s) in m.
+    long: |
+      See [section_yz](#runtime_parameters--section_yz) for a description of output of vertical cross sections.
+
+      In the output file, sections given by [section_yz_m](#runtime_parameters--section_yz_m) are appended to those given by [section_yz](#runtime_parameters--section_yz).
+
+      **Note:** <br>
+      For nested domains positions have to be given in the coordinate framework of the root domain.
+
+
+skip_time_data_output:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short:  No data output before this interval has passed.
+    long: |
+      Data output activities are starting not before the simulated time has reached the value given by [skip_time_data_output](#runtime_parameters--skip_time_data_output) (counting from the beginning of the simulation, t = 0). By default, this applies for output of instantaneous 3d volume data, cross section data, spectra and vertical profile data as well as for temporally averaged 2d and 3d data. Individual times can be assigned using parameters [skip_time_do3d](#runtime_parameters--skip_time_do3d), [skip_time_do2d_xy](#runtime_parameters--skip_time_do2d_xy), [skip_time_do2d_xz](#runtime_parameters--skip_time_do2d_xz), [skip_time_do2d_yz](#runtime_parameters--skip_time_do2d_yz), [skip_time_dosp](#runtime_parameters--skip_time_dosp), [skip_time_dopr](#runtime_parameters--skip_time_dopr) and [skip_time_data_output_av](#runtime_parameters--skip_time_data_output_av).
+
+      **Example**: <br>
+      For [dt_data_output](#runtime_parameters--dt_data_output) = *3600.0* and [skip_time_data_output](#runtime_parameters--skip_time_data_output) = *1800.0*, the first output will be done at t = 5400 s.
+
+
+skip_time_data_output_av:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short: No output of temporally averaged 2d/3d data before this interval has passed.
+    long: ''
+
+
+skip_time_domask:
+  category: Data Output
+  type: R
+  shape: (300)
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short: No output of masked data before this interval has passed.
+    long: ''
+
+
+skip_time_dopr:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short:   No output of vertical profile data before this interval has passed.
+    long: ''
+
+
+skip_time_do2d_xy:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short:  No output of instantaneous horizontal cross section data before this interval has passed.
+    long: ''
+
+
+skip_time_do2d_xz:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short:  No output of instantaneous vertical (xz) cross section data before this interval has passed.
+    long: ''
+
+
+skip_time_do2d_yz:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short:  No output of instantaneous vertical (yz) cross section data before this interval has passed.
+    long: ''
+
+
+skip_time_do3d:
+  category: Data Output
+  type: R
+  default:
+    value_of: '[skip_time_data_output](#runtime_parameters--skip_time_data_output)'
+  si-unit: s
+  description:
+    short: No output of instantaneous 3d volume data before this interval has passed.
+    long: ''
+
+
+surface_heatflux:
+  category: Boundary Conditions
+  type: R
+  si-unit: depends on '[flux_input_mode](#initialization_parameters--flux_input_mode)'
+  default:
+    value: ~
+    depends_on: ~
+    value_of: ~
+  description:
+    short: Sensible heat flux at the bottom surface.
+    long: |
+      See [initialization parameter surface_heatflux](#initialization_parameters--surface_heatflux) for further explanations.
+
+
+synchronous_exchange:
+  category: parallelization
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Defines how MPI handles the exchange of ghost points.
+    long: |
+      By default, asynchronous transfer via `MPI_ISEND` and `MPI_IRECV` is used. In case of [synchronous_exchange](#runtime_parameters--synchronous_exchange) = *.T.*, `MPI_SENDRECV` is used instead. On most networks the asynchronous method will give better performance.
+
+
+termination_time_needed:
+  category: run steering
+  type: R
+  default:
+    value: 35.0
+    si-unit: s
+  description:
+    short: CPU time needed for terminal actions at the end of a run in batch mode.
+    long: |
+      If the string *"restart"* is given via `palmrun` option `-a` (see [Initialization and restart runs](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/runs)), the remaining CPU time of the job is checked after each time step. Time stepping is stopped if the remaining CPU time is less than the value given by [termination_time_needed](#runtime_parameters--termination_time_needed).
+
+      The integration of the prognostic equations must not consume the CPU time completely, since several actions still have to be carried out after the integration has been finished (e.g. writing of binary data for the restart run, carrying out output commands, copying of local files to their permanent destinations, etc.), which also takes some time. Furthermore, the parameter has also to account for the CPU time consumed by the job *before* the model has started (e.g. required for providing input data, or for compiling the user-interface code, etc.). The maximum possible time needed for these activities plus a reserve has to be given with the parameter [termination_time_needed](#runtime_parameters--termination_time_needed). Among other things, this time depends on the number of grid points used. If its value is selected too small, then the respective job will be prematurely aborted by the batch system, which may result in a data loss, and which will possibly interrupt the job chain.
+
+      The model aborts anyway, if the string *"restart"* is not given via `palmrun` option `-a`, and if the job has been assigned an insufficient CPU time via `palmrun` option `-t`.
+
+
+wall_heatflux:
+  category: Topography
+  shape: (6)
+  type: R
+  si-unit: K m s^-1^
+  default:
+    value: 0.0
+  description:
+    short: Prescribed kinematic sensible heat flux at the six topography faces.
+    long: |
+      See [initialization parameter wall_heatflux](#initialization_parameters--wall_heatflux) for further explanations.

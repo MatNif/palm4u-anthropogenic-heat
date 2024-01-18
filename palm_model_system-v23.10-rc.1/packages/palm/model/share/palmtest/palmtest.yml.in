@@ -1,0 +1,22 @@
+---
+# this is a palmtest environments file
+
+palm_config_template:
+
+environments:
+
+  @CMAKE_Fortran_COMPILER_ID@:
+    c_executable: @CMAKE_C_COMPILER@
+    executable: @CMAKE_Fortran_COMPILER@
+    mpi_wrapper: @MPI_Fortran_COMPILER@
+    include:
+      @PALMTEST_NETCDF_INCLUDES@
+      @PALMTEST_FFTW_INCLUDES@
+      @PALMTEST_RRTMG_INCLUDES@
+      @PALMTEST_TENSTREAM_INCLUDES@
+    lib:
+      @PALMTEST_NETCDF_LIBRARIES@
+      @PALMTEST_FFTW_LIBRARIES@
+      @PALMTEST_RRTMG_LIBRARIES@
+      @PALMTEST_TENSTREAM_LIBRARIES@
+

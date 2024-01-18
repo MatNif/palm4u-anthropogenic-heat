@@ -1,0 +1,13 @@
+{salsagas.eqn
+Former revisions
+----------------
+ $Id$
+}
+#EQUATIONS
+
+{ passive: does nothing }
+  { 1.}  H2SO4 = H2SO4 :                 1.0_dp  ;
+  { 2.}   HNO3 = HNO3 :                  1.0_dp  ;
+  { 3.}    NH3 = NH3 :                   1.0_dp  ;
+  { 4.}  OCNV = OCNV :                   1.0_dp  ;
+  { 5.}  OCSV = OCSV :                   1.0_dp  ;

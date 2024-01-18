@@ -1,0 +1,89 @@
+OCM0001:
+  loglevel: ERROR
+  message: |
+    ocean mode does not allow vertically shifted childs
+  description: |
+    Nesting in ocean mode (see [ocean parameters namelist](../Namelists/#ocean-parameters)) always requires the child top to match the sea surface. The last entry in [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) must be set to *0.0* for all childs.  
+
+OCM0002:
+  loglevel: ERROR
+  message: |
+    ocean mode does not allow cyclic-fill initialization
+  description: |
+    Main runs with [initializing_actions](../Namelists/#initialization_parameters--initializing_actions) = *'cyclic_fill'* cannot use ocean mode so far.
+
+OCM0003:
+  loglevel: ERROR
+  message: |
+    ocean mode does not allow coupling_char = ... set by palmrun-option "-y"
+  description: |
+    The `palmrun` option `-y` must not be used for atmosphere runs. The option is only required for ocean precursor runs, which are followed by coupled atmosphere-ocean] restart runs.
+
+OCM0004:
+  loglevel: ERROR
+  message: |
+    use_top_fluxes must be .TRUE. in ocean mode
+  description: |
+    In ocean mode (see [ocean parameters namelist](../Namelists/#ocean-parameters)), fluxes at the water surface must be prescribed as driving boundary conditions. In atmosphere-ocean coupled runs, these fluxes are provided by the atmosphere run.
+
+OCM0005:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: bc_sa_t = "..."
+  description: |
+    See [bc_sa_t](../Namelists/#ocean_parameters--bc_sa_t) for allowed values.
+
+OCM0006:
+  loglevel: ERROR
+  message: |
+    salinityflux must not be set for ocean run without salinity
+  description: |
+    You have set [top_salinityflux](../Namelists/#ocean_parameters--top_salinityflux) or/and [bottom_salinityflux](../Namelists/#ocean_parameters--bottom_salinityflux) to a non-zero value, and simultaneously switched off the salinity equation. Remove either the flux settings from your namelist file, or set [salinity](../Namelists/#ocean_parameters--salinity) = *.TRUE.*.
+
+OCM0007:
+  loglevel: ERROR
+  message: |
+    boundary condition: bc_sa_t = "..." requires to set top_salinityflux
+  description: |
+    You have chosen a Neumann boundary condition for salinity at the top (by setting [bc_sa_t](../Namelists/#ocean_parameters--bc_sa_t) = *'neumann'*), but you did not provide a salinity flux at the top. Please provide [top_salinityflux](../Namelists/#ocean_parameters--top_salinityflux) in the namelist file.
+
+OCM0008:
+  loglevel: ERROR
+  message: |
+    boundary condition: bc_sa_t = "..." is not allowed with top_salinityflux /= 0.0
+  description: |
+    You have tried to set both, a Dirichlet boundary condition for salinity at the top (by setting [bc_sa_t](../Namelists/#ocean_parameters--bc_sa_t) = *'dirichlet'*), and a salinity flux at the top (with [top_salinityflux](../Namelists/#ocean_parameters--top_salinityflux) /= *0.0*). Please decide, if you like to give either the salinity or the salinity flux as top boundary condition, and omit one of the two parameters in the parameter file.
+
+OCM0009:
+  loglevel: ERROR
+  message: |
+    wrong settings for stokes_wavelength and/or stokes_waveheight
+  description: |
+    If you set parameters stokes_wavelength and stokes_waveheight to switch on the Stokes force in ocean mode, they must '''both''' be set > 0.0. Values < 0.0 are not allowed.
+
+OCM0010:
+  loglevel: ERROR
+  message: |
+    wrong component of Stokes force: ...
+  description: |
+    Only the two Cartesian components 2 and 3 are allowed for the Stokes force in ocean mode.
+
+OCM0011:
+  loglevel: ERROR
+  message: |
+    wrong component of wave breaking: ...
+  description: |
+    Only the two Cartesian components 1 and 2 are allowed for adding wave breaking effects in ocean mode.
+
+OMC0012:
+  loglevel: ERROR
+  message: |
+    ocean mode does not allow [homogeneous_initialization_child](../Namelists/#nesting_parameters--homogeneous_initialization_child) = *.T.*
+  description: ''
+
+OMC0013:
+  loglevel: ERROR
+  message: |
+    ocean mode does not allow [particle_coupling](../Namelists/#nesting_parameters--particle_coupling) = *.T.*
+  description: ''
+

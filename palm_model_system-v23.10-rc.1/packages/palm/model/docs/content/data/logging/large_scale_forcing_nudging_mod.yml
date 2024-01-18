@@ -1,0 +1,146 @@
+LSF0001:
+  loglevel: ERROR
+  message: |
+    nudging requires large_scale_forcing = .T.
+  description: |
+    Nudging requires to set [large_scale_forcing](../Namelists/#initialization_parameters--large_scale_forcing) = *.T.*, too. Surface fluxes and geostrophic wind should be prescribed in file [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA). The surface values and profiles needed [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) should correspond to the data provided in [NUDGING_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA).
+
+LSF0002:
+  loglevel: ERROR
+  message: |
+    non-cyclic lateral boundaries do not allow the usage of large scale forcing from external file
+  description: |
+    [Large scale forcing](../Namelists/#initialization_parameters--large_scale_forcing) as well as nudging are not implemented/tested for non-cyclic boundary conditions so far.
+
+LSF0003:
+  loglevel: ERROR
+  message: |
+    usage of large scale forcing from external file LSF_DATA requires humidity = .T.
+  description: |
+    [Large scale forcing](../Namelists/#initialization_parameters--large_scale_forcing) as well as nudging by data from external file [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) requires setting of [humidity](../Namelists/#initialization_parameters--humidity) = *.T.*.
+
+LSF0004:
+  loglevel: ERROR
+  message: |
+    usage of large scale forcing from external file LSF_DATA is not implemented for passive scalars
+  description: |
+    So far, large-scale forcing for passive scalars is not implemented.
+
+LSF0005:
+  loglevel: ERROR
+  message: |
+    usage of large scale forcing from external file LSF_DATA is not implemented for non-flat topography
+  description: |
+    Please set [topography](../Namelists/#initialization_parameters--topography) = *'flat'* or refrain from using [large scale forcing](../Namelists/#initialization_parameters--large_scale_forcing).
+
+LSF0006:
+  loglevel: ERROR
+  message: |
+    large scale forcing from external file LSF_DATA is not implemented for ocean mode
+  description: |
+    Please do not use the [ocean mode](../Namelists/#ocean-parameters) or refrain from using [large scale forcing](../Namelists/#initialization_parameters--large_scale_forcing).
+
+LSF0007:
+  loglevel: ERROR
+  message: |
+    data_output_pr = "..." is not implemented for large_scale_forcing = .FALSE.
+  description: |
+    The listed entries are only avialable for [large_scale_forcing](../Namelists/#initialization_parameters--large_scale_forcing) = *.T.*.
+
+LSF0008:
+  loglevel: ERROR
+  message: |
+    data_output_pr = "..." is not implemented for nudging = .FALSE.
+  description: |
+    The listed entries are only avialable for [nudging](../Namelists/#initialization_parameters--nudging) = *.T.*.
+
+LSF0009:
+  loglevel: ERROR
+  message: |
+    file LSF_DATA does not exist
+  description: |
+    Make sure that file `<run-id>_lsf` containing surface fluxes, surface temperature, humidity and pressure as well as profiles of the geostrophic wind components and large scale subsidence (see  [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) for a description) is provided in the INPUT folder.
+
+LSF0010:
+  loglevel: ERROR
+  message: |
+    errors in file LSF_DATA
+  description: |
+    A possible reason is that the INPUT folder file `<run-id>_lsf` does not follow the format described in [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA). The error appeared within the first three lines of the file, which should contain the file header.
+
+LSF0011:
+  loglevel: ERROR
+  message: |
+    no time dependent surface variables in LSF_DATA for end of run found
+  description: |
+    An end-of-file condition appears while reading the surface values from [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA). A possible reason may be that no or too less time dependent surface variables are provided in the large scale forcing file.
+
+LSF0012:
+  loglevel: WARNING
+  message: |
+    time dependent surface variables in LSF_DATA set in after end of simulation - lsf_surf is set to FALSE
+  description: |
+    This messages appears in the case that the first time step of the surface values read in from [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) is larger than the [end time](../Namelists/#runtime_parameters--end_time) of the simulation. In this case the surface heat and water fluxes prescribed in [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) cannot be used.
+
+LSF0013:
+  loglevel: ERROR
+  message: |
+    no time dependent vertical profiles in LSF_DATA for end of run found
+  description: |
+    An end-of-file condition appears while reading profile data from [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA). A possible reason may be that no time dependent profile data is provided in the large scale forcing file.
+
+LSF0014:
+  loglevel: ERROR
+  message: |
+    errors in file LSF_DATA
+  description: |
+    A possible reason is that the INPUT folder file `<run-id>_lsf` does not follow the format described in [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA).
+
+LSF0015:
+  loglevel: ERROR
+  message: |
+    zu(...) = ... m is higher than the maximum height in LSF_DATA which is ...m. Interpolation on PALM grid is not possible.
+  description: |
+     [LSF data](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) has a maximum vertical height that is smaller than the vertical extent of the grid used in PALM. Hence, interpolation of the LSF data onto the PALM grid is not possible. Reduce either the vertical extent of the model domain or enlarge the data given in file [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) correspondingly. Note: it is also possible that file [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) is not formatted correctly.
+
+LSF0016:
+  loglevel: ERROR
+  message: |
+    time dependent large scale profile forcing from LSF_DATA sets in after end of simulation - lsf_vert is set to FALSE
+  description: |
+    This messages appears in the case that the first time step of the profile data read from [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) is larger than the end time of the simulation. In this case the profiles of the geostrophic wind and large scale subsidence prescribed in [LSF_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#LSF_DATA) cannot be used.
+
+LSF0017:
+  loglevel: ERROR
+  message: |
+    file NUDGING_DATA does not exist
+  description: |
+    Make sure that file `<run-id>_nudge` containing the nudging profiles (see [NUDGING_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA) for a description) is provided in the INPUT folder.
+
+LSF0018:
+  loglevel: ERROR
+  message: |
+    errors in file NUDGING_DATA
+  description: |
+    A possible reason is that the INPUT folder file `<run-id>_nudge` does not follow the format described in [NUDGING_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA).
+
+LSF0019:
+  loglevel: ERROR
+  message: |
+    zu(k) = ... m is higher than the maximum height in NUDING_DATA which is ...m. Interpolation on PALM grid is not possible.
+  description: |
+    [NUDGING data](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA) has a maximum vertical height that is smaller than the vertical extent of the grid used in PALM. Hence, interpolation of the NUDGING data onto the PALM grid is not possible. Reduce either the vertical extent of the model domain or enlarge the data given in file [NUDGING_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA) correspondingly. Note: it is also possible that file [NUDGING_DATA](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#NUDGING_DATA) is not formatted correctly.
+
+LSF0020:
+  loglevel: INFO
+  message: |
+    initial profiles of u, v, pt and q from NUDGING_DATA are used
+  description: ''
+
+LSF0021:
+  loglevel: ERROR
+  message: |
+    unknown prognostic variable "..."
+  description: |
+    The tendency due to nudging can only be applied to prognostic variables `u`, `v`, `pt` and `q`. Make sure that nudging is applied in the PALM code to these variables only. If you did not modify the PALM code, please contact the PALM developers, e.g. by submitting a trouble ticket.
+

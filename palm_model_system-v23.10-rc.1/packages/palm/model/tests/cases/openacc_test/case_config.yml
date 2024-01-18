@@ -1,0 +1,23 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds:
+  - nvidia_mpi_only
+  - nvidia_mpi_openacc
+  - nvidia_mpi_openacc_cudaawarempi
+  - nvidia_mpi_openacc_cufft
+  - nvidia_mpi_openacc_cufft_cudaawarempi
+
+allowed_number_of_cores:
+  - 1
+  - 2
+  - 4
+  - 8
+
+activation_strings:
+  - "d3#"
+
+significant_digits_for_netcdf_checks:
+  timeseries: 8
+  profiles: 8
+  other: 8

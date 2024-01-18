@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+# project install script
+#--------------------------------------------------------------------------------#
+
+# on macOS, use GNU readlink instead of the system BSD version, can be installed
+# via Homebrew: 'brew install coreutils'
+READLINK_CMD="readlink"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+   READLINK_CMD="greadlink"
+fi
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+   SOURCE="$(${READLINK_CMD} "$SOURCE")"
+   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_LOCATION="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+project_root_dir=$(${READLINK_CMD} -f "${SCRIPT_LOCATION}/")
+project_bin_dir=$(${READLINK_CMD} -f "${project_root_dir}/bin/")
+project_build_dir=$(${READLINK_CMD} -f "${project_root_dir}/build/")
+project_src_dir=$(${READLINK_CMD} -f "${project_root_dir}/src/")
+project_src_dir_tmp=$(${READLINK_CMD} -f "${project_root_dir}/build/src")
+
+install_prefix="${project_build_dir}"
+
+prog="surface_output_to_vtk"
+makefile_name="Makefile"
+namelist_name="namelist"
+
+if command -v nf-config &> /dev/null
+then
+    fortran_compiler="$(nf-config --fc)"
+elif command -v nc-config &> /dev/null
+then
+    fortran_compiler="$(nc-config --fc)"
+fi
+
+install_function() {
+   printf "### %s\n" "Installing ${prog} ..."
+
+#  Create build directory
+   if [ "${do_clean}" == "true" ]; then
+      rm -r ${project_build_dir}
+   fi
+   mkdir -p ${project_build_dir}
+
+#  Go into build directory and copy src-directory into it
+   cd ${project_build_dir}
+   cp -r -p ${project_src_dir}  ${project_build_dir}/
+
+#  Copy Makefile and namelist.
+#  Build the programm.
+   cp -p ${project_root_dir}/${makefile_name} ${project_build_dir}/
+   cp -p ${project_root_dir}/${namelist_name} ${project_build_dir}/
+   cd ${project_build_dir}
+   make
+   make clean
+
+#  Create the install bin directory and move executable there.
+   install_bin_dir=${install_prefix}/bin
+   mkdir -p ${install_bin_dir}
+
+#  Clean-up build directory.
+   rm -r ${project_src_dir_tmp}
+   rm ${project_build_dir}/${makefile_name}
+   mv ${project_build_dir}/${prog} ${install_bin_dir}
+   mkdir -p ${install_prefix}
+   cd ${install_prefix}
+   printf "### %s\n" "Installing ${prog} finished."
+}
+
+show_usage() {
+   echo "Usage: $0 [-h] [-p <install_prefix>] [-c <compiler>] [-s <path>] [-t <path>] [-x]"
+}
+
+show_help() {
+   show_usage
+   echo "      -h                     show this help message"
+   echo "      -p <install_prefix>    set installation directory"
+   echo "      -c <compiler>          set desired compiler"
+   echo "      -s <path>              set existing netCDF-C library installation prefix (helps to find library)"
+   echo "      -t <path>              set existing netCDF-Fortran library installation prefix (helps to find library)"
+   echo "      -x                     clean already existing build files"
+}
+
+while getopts ":p:c:s:t:hx" o; do
+   case "${o}" in
+      p)
+         install_prefix="$(${READLINK_CMD} -m "${OPTARG}")"
+         ;;
+      c)
+         fortran_compiler="${OPTARG}"
+         ;;
+      s)
+         netcdf_c_prefix="$(${READLINK_CMD} -e "${OPTARG}")"
+         ;;
+      t)
+         netcdf_fortran_prefix="$(${READLINK_CMD} -e "${OPTARG}")"
+         ;;
+      x)
+         do_clean="true"
+         ;;
+      h)
+         show_help
+         exit 0
+         ;;
+      *)
+         show_usage
+         exit 1
+         ;;
+   esac
+done
+# strip all parsed options from the options list
+shift $((OPTIND-1))
+
+install_function

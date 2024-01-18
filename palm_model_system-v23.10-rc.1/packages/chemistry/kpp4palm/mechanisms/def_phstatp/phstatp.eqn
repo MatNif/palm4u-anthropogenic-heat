@@ -1,0 +1,10 @@
+{phstatp.eqn
+Current revision
+----------------
+ 20180319 Photostationary O3-NO-NO2-equilibrium forkel
+}
+#EQUATIONS
+
+  { 1.}  NO2 + hv = NO + O3 :                   phot(j_no2)  ;
+  { 2.}  NO + O3 = NO2 :                     arr2(1.8E-12_dp, 1370.0_dp, temp) ;
+  { 3.}  PM10 = PM10 :                           1.0_dp ;

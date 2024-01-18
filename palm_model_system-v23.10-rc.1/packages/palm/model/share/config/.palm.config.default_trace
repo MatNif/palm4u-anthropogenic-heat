@@ -1,0 +1,174 @@
+#$Id$
+#column 1          column 2
+#name of variable  value of variable (~ must not be used except for base_data)
+#-----------------------------------------------------------------------------
+# working directory from where palmrun or palmbuild are called
+%base_directory      $HOME/palm/current_version
+
+# directory where PALM I/O is stored (used in .palm.iofiles)
+%base_data           ~/palm/current_version/JOBS
+
+# path to PALM's FORTRAN sources (installation folder)
+%source_path         $base_directory/trunk/SOURCE
+
+# path to user interface routines
+%user_source_path    $base_data/$run_identifier/USER_CODE
+
+# path to temporary working directory. This folder contains the files
+# temporarily created by PALM during execution.
+# WARNING:
+# Large I/O files are generated during execution! It is recommended to direct
+# this path to a file system with fast discs (if available). This folder must
+# be accessible from all compute nodes, i.e. it must reside in a global file
+# system.
+%fast_io_catalog     $base_directory/tmp
+
+# directory where PALM restart files are stored. It is recommended to set this
+# path to the same file system as the temporary directory (fast_io_catalog) to
+# allow internal linking of the restart files instead of copying (increases
+# post-processing performance of palmrun).
+%restart_data_path   $fast_io_catalog
+
+# directory where PALM output files are stored (see also .palm.iofiles)
+%output_data_path    $base_data
+
+# folder for job protocols
+%local_jobcatalog    $base_data/$run_identifier/LOG_FILES
+
+# folder for job protocols to be used on the remote host
+#%remote_jobcatalog   $local_jobcatalog
+
+# local ip of your computer. Use 127.0.0.0 if you are running PALM
+# in interactive mode on your local computer
+%local_ip            <replace by your computers IP address>
+
+# your local UNIX username
+%local_username      <replace by your unix username>
+
+# ip address of the remote host
+#%remote_ip           <ip>
+
+# username on the remote host
+#%remote_username     <username>
+
+# ssh-key to be used for ssh/scp calls to the remote host
+#%ssh_key             ~/.ssh/id_rsa
+
+# name of login-node on the remote machine
+#%remote_loginnode    <loginnode>
+
+# default queue to be used if palmrun-option -q is omitted
+#%defaultqueue        <queue>
+
+# default project account to be used if palmrun-option -A is omitted. For this
+# setting to be active, the batch directive must also be activated (see BD and
+# BDT settings below).
+#%project_account     <project-account>
+
+# command to submit batch jobs
+#%submit_command      /opt/moab/default/bin/msub -E
+
+# compilername to generate MPI executables
+%compiler_name       mpif90
+
+# compilername to generate non-MPI executables running on one core
+%compiler_name_ser   ifort
+
+# preprocessor directives to be used for compiling the PALM code
+%cpp_options         -cpp -D__parallel -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__fftw -D__netcdf
+
+# used for parallel compilation
+%make_options        -j 4
+
+# options to be used to compile PALM
+%compiler_options    -fpe0 -O0 -check -check nooutput_conversion-ffree-line-length-none  -traceback -g -I /path/to/fftw/include -I /path/to/netcdf/include
+
+# options to be used to link the PALM executable
+%linker_options      -L/path/to/fftw/lib -lfftw3 -L/path/to/netcdf/lib -lnetcdf -lnetcdff
+
+# name of hostfile to be used (see online documentation for more details)
+#%hostfile            auto
+
+# command to start the PALM executable
+%execute_command     mpirun -n {{mpi_tasks}}  ./palm
+
+# memory request per core
+#%memory              2300
+
+# module commands to load required libraries
+#%module_commands     module switch env-ivybridge env-haswell && module load fftw netcdf
+
+# special commands to be carried out at login and start of batch jobs on the remote host
+#%login_init_cmd      .execute_special_profile
+
+#-------------------------------------------------------------------------------
+# Directives to be used for batch jobs
+# Lines must start with "BD:". If $-characters are required, hide them with \
+# Internal variables can be used as {{variable_name}}. Please see documentation.
+#-------------------------------------------------------------------------------
+# Example using PBS:
+BD:#!/bin/bash
+#BD:#PBS -A {{project_account}}
+BD:#PBS -N {{run_id}}
+BD:#PBS -l walltime={{cpu_hours}}:{{cpu_minutes}}:{{cpu_seconds}}
+BD:#PBS -l nodes={{nodes}}:ppn={{tasks_per_node}}
+BD:#PBS -o {{job_protocol_file}}
+BD:#PBS -j oe
+BD:#PBS -q {{queue}}
+#
+# Example using SLURM:
+#BD:#!/bin/bash
+##BD:#SBATCH --dependency=afterany:{{previous_job}}
+#BD:#SBATCH -A {{project_account}}
+#BD:#SBATCH --job-name={{run_id}}
+#BD:#SBATCH --time={{cpu_hours}}:{{cpu_minutes}}:{{cpu_seconds}}
+#BD:#SBATCH --ntasks={{mpi_tasks}}
+#BD:#SBATCH --nodes={{nodes}}
+#BD:#SBATCH --ntasks-per-node={{tasks_per_node}}
+#BD:#SBATCH --partition={{queue}}
+#BD:#SBATCH --output={{job_protocol_file}}
+#BD:#SBATCH --error={{job_protocol_file}}
+#BD:#SBATCH --mail-type=ALL
+#BD:#SBATCH --mail-user=user@somewhere
+
+#-------------------------------------------------------------------------------
+# Directives for batch jobs used to send back the jobfiles from a remote to a local host
+# Lines must start with "BDT:". If $-characters are required, excape them with triple backslash
+# Internal variables can be used as {{variable_name}}. Please see documentation.
+#-------------------------------------------------------------------------------
+# Example using PBS:
+BDT:#!/bin/bash
+#BDT:#PBS -A {{project_account}}
+BDT:#PBS -N job_protocol_transfer
+BDT:#PBS -l walltime=00:30:00
+BDT:#PBS -l nodes=1:ppn=1
+BDT:#PBS -o {{job_transfer_protocol_file}}
+BDT:#PBS -j oe
+BDT:#PBS -q dataq
+#
+# Example using SLURM:
+#BDT:#!/bin/bash
+#BDT:#SBATCH -A {{project_account}}
+#BDT:#SBATCH --job-name=job_transfer
+#BDT:#SBATCH --time=00:30:00
+#BDT:#SBATCH --ntasks=1
+#BDT:#SBATCH --nodes=1
+#BDT:#SBATCH --ntasks-per-node=1
+#BDT:#SBATCH --partition={{queue}}
+#BDT:#SBATCH --output={{job_transfer_protocol_file}}
+#BDT:#SBATCH --error={{job_transfer_protocol_file}}
+
+#----------------------------------------------------------------------------
+# INPUT-commands, executed before running PALM - lines must start with "IC:"
+#----------------------------------------------------------------------------
+#IC:ulimit -s unlimited
+#
+#----------------------------------------------------------------------------
+# ERROR-commands - executed when program terminates abnormally
+#----------------------------------------------------------------------------
+#EC:[[ \$locat = execution ]]  &&  cat  RUN_CONTROL
+#
+#----------------------------------------------------------------------------
+# OUTPUT-commands - executed when program terminates normally
+#----------------------------------------------------------------------------
+#OC:echo \\\"PALM job finished\\\" | mailx user@somewhere

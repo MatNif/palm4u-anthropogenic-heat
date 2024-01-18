@@ -1,0 +1,132 @@
+TUI0001:
+  loglevel: ERROR
+  message: |
+    unknown turbulent inflow method: ...
+  description: |
+    See [turbulent_inflow_method](../Namelists/#turbulent_inflow_parameters--turbulent_inflow_method) for allowed values.
+
+TUI0002:
+  loglevel: ERROR
+  message: |
+    turbulent inflow is not allowed in combination with mesoscale nesting
+  description: |
+    Turbulent inflow does not allow to give a [&offline_nesting_parameters namelist](../Namelists/#offline-nesting-parameters) in the namelist file.
+
+TUI0003:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." is not allowed in nested child domains
+  description: |
+    The listed turbulent inflow method is not allowed to be used in a nested child domain.
+
+TUI0004:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." requires a Dirichlet condition at the inflow boundary
+  description: |
+    In case of turbulent inflow the turbulence signal is added to a time-constant horizontal mean wind profile at the left inflow boundary at each timestep. The use of a time-constant mean wind profile requires a Dirichlet boundary condition at the left inflow boundary. For see [non-cyclic boundary conditions](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/noncyclic) as well as [turbulent inflow](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/turbinf) for further information.
+
+TUI0005:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." is not allowed in combination with the synthetic turbulence generator.
+  description: ''
+
+TUI0006:
+  loglevel: ERROR
+  message: |
+    turbulence recycling requires initializing_actions = 'cyclic_fill' or initializing_actions = 'read_restart_data'
+  description: |
+    Using a turbulent inflow requires that the 3d arrays have to be initialized by cyclically mapped data from a prerun or by restart data. Set [initializing_actions](../Namelists/#initialization_parameters--initializing_actions) appropriately and follow the [turbulent inflow instructions](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/turbinf).
+
+TUI0007:
+  loglevel: ERROR
+  message: |
+    illegal value for recycling_width: ...
+  description: |
+    See [recycling_width](../Namelists/#turbulent_inflow_parameters--recycling_width) for allowed values.
+
+TUI0008:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." requires a dynamic input file
+  description: |
+    In this case, inflow boundary data is read from the dynamic input file, but this file is missing. The inflow boundary data can be inferred from a precursor simulation and processed to a dynamic input file using the pyhton tool `palm_cti`.
+
+TUI0009:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "read_from_file" not allowed in combination with turbulent_outflow = .T.
+  description: |
+    [turbulent_inflow_method](../Namelists/#turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'* requires a mass-flux correction method applied to the outflow boundary, which conflicts with [turbulent_outflow](../Namelists/#initialization_parameters--turbulent_outflow) = *.T.*. Set [turbulent_outflow](../Namelists/#initialization_parameters--turbulent_outflow) = *.F.*.
+
+TUI0010:
+  loglevel: ERROR
+  message: |
+    inflow_damping_height must be explicitly specified because the inversion height calculated by the prerun is zero
+  description: |
+    See [inflow_damping_height](../Namelists/#initialization_parameters--inflow_damping_height).
+
+TUI0011:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." - dimension(s): "..." not found in dynamic driver'
+  description: |
+    The expected dimensions in the dynamic driver are not defined properly. Please use the pre-processor tool `palm_cti` to create the dynamic driver.
+
+TUI0012:
+  loglevel: ERROR
+  message: |
+    turbulent_inflow_method = "..." - variable(s): "..." not found in dynamic driver'
+  description: |
+    The expected variables in the dynamic driver are not defined properly. Please use the pre-processor tool `palm_cti` to create the dynamic driver.
+
+TUI0013:
+  loglevel: ERROR
+  message: |
+    number of y-grid points in dynamic driver does not match the number of numeric grid points
+  description: |
+    The y-dimension of the input variables for the read-from-file inflow method does not match the number of numeric grid points on the staggered grid.
+
+TUI0014:
+  loglevel: ERROR
+  message: |
+    number of zu-grid points in dynamic driver does not match the number of numeric grid points
+  description: |
+    The zu-dimension of the input varialbes for the read-from-file inflow method does not match the number of numeric grid points on the staggered grid.
+
+TUI0015:
+  loglevel: ERROR
+  message: |
+    number of zw-grid points in dynamic driver does not match the number of numeric grid points
+  description: |
+    The zw-dimension of the input varialbes for the read-from-file inflow method does not match the number of numeric grid points on the staggered grid.
+
+TUI0016:
+  loglevel: ERROR
+  message: |
+    dynamic driver provides too few time levels for turbulent inflow: ... is less than ...'
+  description: |
+    For the read-from-file inflow method, the covered time interval of the inflow boundary data in the dynamic input file needs to be larger/equal the simulation time ([end_time](../Namelists/#runtime_parameters--end_time) - [spinup_time](../Namelists/#initialization_parameters--spinup_time)).
+
+TUI0017:
+  loglevel: ERROR
+  message: |
+    dimension "time_inflow" in dynamic driver must start at 0.0s
+  description: |
+    For [turbulent_inflow_method](../Namelists/#turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'* the time dimension must start at *0.0*.
+
+TUI0018:
+  loglevel: ERROR
+  message: |
+    dimension "time_inflow" in dynamic driver contains _FillValues
+  description: |
+    Fill values are not allowed in the time dimension.
+
+TUI0019:
+  loglevel: ERROR
+  message: |
+    input_block_size must be smaller or equal than 2 x the subdomain size in x-direction, which is: nxr - nxl + 1, and larger or equal than 2'
+  description: |
+    For [turbulent_inflow_method](../Namelists/#turbulent_inflow_parameters--turbulent_inflow_method) = *'read_from_file'*, the input block size (see [input_block_size](../Namelists/#turbulent_inflow_parameters--input_block_size)) of the boundary data can be customized to allow input of multiple timesteps at once to avoid netCDF IO every timestep. In order to limit the input size to avoid any memory exceedance, the size of input boundary data is limited to a maximum of two three-dimensional arrays. Try to change the domain-decomposition along the x-dimension e.g. via [npex](../Namelists/#runtime_parameters--npex).
+

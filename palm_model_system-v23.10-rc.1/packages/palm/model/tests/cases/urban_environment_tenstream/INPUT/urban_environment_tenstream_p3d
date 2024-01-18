@@ -1,0 +1,177 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+ &initialization_parameters
+
+!
+!-- Grid
+!------------------------------------------------------------------------------
+    nx                   = 19,
+    ny                   = 19,
+    nz                   = 60,
+
+    dx                   = 2.0,
+    dy                   = 2.0,
+    dz                   = 2.0,
+
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+    fft_method           = 'fftw',
+
+!
+!-- Mode
+!------------------------------------------------------------------------------
+    humidity             = .T.,
+    q_surface            = 0.001,
+
+!
+!-- Initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'set_constant_profiles',
+
+    pt_surface           = 277.15,
+    ug_surface           = 1.0,
+    vg_surface           = 0.0,
+
+    origin_date_time     = '2019-03-06 10:00:00 +00'
+
+!
+!-- Wall/soil spinup
+!------------------------------------------------------------------------------
+    spinup_time         = 1200.0,
+    spinup_pt_mean      = 284.15,
+    spinup_pt_amplitude = 10.0,             ! give a dirunal cycle from 6 - 16 °C
+    dt_spinup           = 120.0,
+    data_output_during_spinup = .F.,
+
+!
+!-- Topography
+!------------------------------------------------------------------------------
+    topography           = 'read_from_file',
+
+!
+!-- Physics
+!------------------------------------------------------------------------------
+    longitude            = 13.4,
+    latitude             = 52.5,
+
+    bc_p_t               = 'dirichlet',  ! workaround to pass the tests
+ 
+ / ! end of inipar namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+
+!
+!-- Run steering
+!------------------------------------------------------------------------------
+    end_time              = 70.0,
+    create_disturbances   = .T.,
+
+!
+!-- Run-control/timeseries output settings
+!------------------------------------------------------------------------------
+    dt_run_control        =  0.0,
+    dt_dots               =  10.0,
+
+!
+!-- Profile output settings
+!------------------------------------------------------------------------------
+    skip_time_dopr        =  0.0,
+    dt_dopr               = 60.0,
+    averaging_interval_pr = 60.0,
+    dt_averaging_input_pr =  0.0,
+
+    data_output_pr        = '#u',  'u*2',  'wu',  'w*u*',  'w"u"',
+                            '#v',  'v*2',  'wv',  'w*v*',  'w"v"',
+!                            'w',   'w*2',
+                            '#theta', 'theta*2', 'wtheta', 'w*theta*', 'w"theta"',
+                            'rad_lw_in', 'rad_lw_out',
+!
+!-- 2D/3D output settings
+!------------------------------------------------------------------------------
+    do3d_at_begin      = .T.,
+    do2d_at_begin      = .T.,
+
+    dt_data_output     = 60.0,
+    dt_data_output_av  = 60.0,
+    averaging_interval = 60.0,
+    dt_averaging_input =  0.0,
+
+    section_xy         = 0,
+
+    data_output = 'u',  'u_av',
+                  'v',  'v_av',
+                  'w',  'w_av',
+                  'theta', 'theta_av',
+                  'shf*_xy', 'shf*_xy_av',
+                  'ghf*_xy', 'ghf*_xy_av',
+                  'rad_net*_xy', 'rad_lw_in*_xy', 'rad_lw_out*_xy', 'rad_sw_in*_xy', 'rad_sw_out*_xy',
+                  'tsurf*_xy', 'tsurf*_xy_av',
+
+ / ! end of d3par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RADIATION MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+  &radiation_parameters
+
+     radiation_scheme =  'tenstream',    !'clear-sky' or 'rrtmg',
+     albedo_type = 5,
+     constant_albedo = .T.,
+     dt_radiation = 30.0,
+     use_broadband_albedo = .T.,
+ 
+  /
+
+
+!-------------------------------------------------------------------------------
+!-- LAND SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!-------------------------------------------------------------------------------
+ &land_surface_parameters
+
+    constant_roughness     = .T.,
+    aero_resist_kray       = .T.,
+
+    vegetation_type        = 2,
+    soil_type              = 3,
+    conserve_water_content = .T.,
+
+    root_fraction          = 0.49, 0.26, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+    soil_temperature       = 277.15, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0,
+    soil_moisture          = 0.30,   0.30,  0.30,  0.30,  0.30, 0.30,  0.30,  0.30,
+    deep_soil_temperature  = 277.0,
+
+ / ! end of lsm_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- URBAN SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/usmpar
+!-------------------------------------------------------------------------------
+ &urban_surface_parameters
+
+    usm_wall_mod = .T.,
+
+ / ! end of urban_surface_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- PLANT CANOPY MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/canpar
+!-------------------------------------------------------------------------------
+ &plant_canopy_parameters
+
+    canopy_mode       = 'read_from_file',
+    canopy_drag_coeff = 0.3,
+
+ / ! end of canopy_par namelist

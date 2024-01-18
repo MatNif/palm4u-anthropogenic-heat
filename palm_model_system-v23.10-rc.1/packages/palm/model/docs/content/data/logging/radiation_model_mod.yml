@@ -1,0 +1,421 @@
+RAD0001:
+  loglevel: ERROR
+  message: |
+    output of "..." requires radiation = .TRUE.
+  description: |
+    #The requested output quantity is only available when the [radiation module](../Namelists/#radiation-parameters) is switched on.
+
+RAD0002:
+  loglevel: ERROR
+  message: |
+    output of ... requires radiation = .TRUE. and radiation_scheme = "rrtmg"
+  description: |
+    The requested output quantity is only available with [radiation scheme](../Namelists/#radiation_parameters--radiation_scheme) = *'rrtmg'*.
+
+RAD0003:
+  loglevel: ERROR
+  message: |
+    output of ... requires radiation = .TRUE. and radiation_scheme = "rrtmg" or radiation_scheme = "tenstream"
+  description: |
+    The requested output quantity is only available with [radiation scheme](../Namelists/#radiation_parameters--radiation_scheme) = *'rrtmg'* or *'tenstream'*.
+
+RAD0004:
+  loglevel: ERROR
+  message: |
+    illegal value for data_output: "..." only 2d-horizontal cross sections are allowed for this value
+  description: |
+    The listed quantities are pure two-dimensional xy-cross-sections. They are not available as 3d data or xz/yz cross-sections. Note that these quantities are always marked by an asterisk as last character. See also [data_output](../Namelists/#runtime_parameters--data_output).
+
+RAD0005:
+  loglevel: ERROR
+  message: |
+    Output of surface radiation cross sections of: "..." is not allowed in radiation-only mode.
+  description: |
+    The listed quantities are pure two-dimensional xy-cross-sections and not available in radiation-only mode.
+
+RAD0006:
+  loglevel: ERROR
+  message: |
+    output of "..." requires mrt_nlevels > 0
+  description: ''
+
+RAD0007:
+  loglevel: ERROR
+  message: |
+    output of "..." requires rtm_mrt_sw = .TRUE.
+  description: ''
+
+RAD0008:
+  loglevel: ERROR
+  message: |
+    data_output_pr = ... is not available for radiation = .FALSE. or radiation_scheme = ...
+  description: |
+    The desired output is not available for [radiation_scheme](../Namelists/#radiation_parameters--radiation_scheme) = *'clear-sky'* or *'rrtmg'*.
+
+RAD0009:
+  loglevel: ERROR
+  message: |
+    data_output_pr = "..." is not avalable for radiation = .FALSE. or radiation_scheme /= "rrtmg"
+  description: |
+    Radiative heating rates are only available when using the full RRTMG radiation scheme.
+
+RAD0010:
+  loglevel: ERROR
+  message: |
+    time averaging of a static quantity "..." is not provided
+  description: |
+    Remove this quantity from the list of output quantities as given by [data_output](../Namelists/#runtime_parameters--data_output), or just remove the *'_av'* from the respective string. Time averaging of static quantities is not provided, because these quantities do not change in time.
+
+RAD0011:
+  loglevel: ERROR
+  message: |
+    Usage of radiation module is only allowed if land-surface and/or urban-surface model is applied or if "radiation_only = .T.".
+  description: |
+    Either the namelist `&land_surface_parameters` has to be set in the `<run-id>_p3d` file or &urban_surface_parameters (or both) to avoid this error. Alternatively, set [radiation_only](../Namelists/#radiation_parameters--radiation_only) = *.T.*.
+
+RAD0012:
+  loglevel: ERROR
+  message: |
+    Usage of radiation model in radiation-only mode in combination with an energy-balance model (LSM/USM) is not allowed.
+  description: |
+    Either deactivate LSM and USM or set [radiation_only](../Namelists/#radiation_parameters--radiation_only) = *.F.*.
+
+RAD0013:
+  loglevel: ERROR
+  message: |
+    Usage of radiation model in radiation-only mode in combination with "radiation_interactions_on = .T." is not allowed.
+  description: |
+    Set one of the parameters [radiation_interactions_on](../Namelists/#radiation_parameters--radiation_interactions_on) or [radiation_only](../Namelists/#radiation_parameters--radiation_only) to *.F.*.
+
+RAD0014:
+  loglevel: ERROR
+  message: |
+    Usage of radiation model in radiation-only mode is only allowed in combination with "radiation_scheme = rrtmg."
+  description: |
+    Either set [radiation_only](../Namelists/#radiation_parameters--radiation_only) = *.F.* or set [radiation_scheme](../Namelists/#radiation_parameters--radiation_scheme) = *'rrtmg'*.
+
+RAD0015:
+  loglevel: ERROR
+  message: |
+    unknown radiation_scheme = ...
+  description: |
+    See [radiation_scheme](../Namelists/#radiation_parameters--radiation_scheme) for allowed values.
+
+RAD0016:
+  loglevel: ERROR
+  message: |
+    radiation_scheme = "rrtmg" requires compilation of PALM with pre-processor directive -D_rrtmg
+  description: |
+    In order to use the RRTMG scheme, the radiation code must be installed as external (shared or static) library and PALM must be compiled with preprocessor option `-D__rrtmg` in the `%cpp_options` line of the configuration file (`.palm.config`).
+
+RAD0017:
+  loglevel: ERROR
+  message: |
+    radiation_scheme = "rrtmg" requires the use of NetCDF (preprocessor directive -D_netcdf'
+  description: |
+    The RRTMG library reads atmospheric profiles unsing NetCDF by default. Therefore NetCDf must be activated with `-D__netcdf` listed in the `%cpp_options` line of the configuration file (`.palm.config`) when using RRTMG.
+
+RAD0018:
+  loglevel: ERROR
+  message: |
+    radiation_scheme = "tenstream" requires compilation of PALM with pre-processor directive -D__tenstream
+  description: |
+    The tenstream radiation scheme requires `-D__tenstream` listed in the `%cpp_options` line of the configuration file (`.palm.config`).
+
+RAD0019:
+  loglevel: ERROR
+  message: |
+    radiation_scheme = "clear-sky" in combination with albedo_type = 0 requires setting of albedo /= 9999999.9
+  description: |
+    The choice of a user-defined albedo requires manual setting of the albedo as there is no default value set. See [radiation_scheme](../Namelists/#radiation_parameters--radiation_scheme).
+
+RAD0020:
+  loglevel: ERROR
+  message: |
+    radiation_scheme = "rrtmg" in combination with albedo_type = 0 requires setting of albedo_lw_dif /= 9999999.9, albedo_lw_dir /= 9999999.9, albedo_sw_dif /= 9999999.9 and albedo_sw_dir /= 9999999.9
+  description: |
+    The choice of a user-defined albedo requires manual setting of all four albedos for direct/diffuse longwave/shortwave radiation as there is no default value set. See [radiation_scheme](../Namelists/#radiation_parameters--radiation_scheme).
+
+RAD0021:
+  loglevel: ERROR
+  message: |
+    Dimension size of static input variable albedo_pars is ... . Dimension size of ... is required.
+  description: |
+    Please see the [PALM input data standard](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids) for requirements.
+
+RAD0022:
+  loglevel: ERROR
+  message: |
+    surface reflections can only be used together with raytrace_mpi_rma or when no parallelization is applied.
+  description: |
+    You try to use the angular discretization without setting [raytrace_mpi_rma](../Namelists/#radiation_parameters--raytrace_mpi_rma) = *.T.* or without running in parallel mode (using more than one core. Please set [raytrace_mpi_rma](../Namelists/#radiation_parameters--raytrace_mpi_rma) = *.T.* and make sure that you run the model in parallel mode.
+
+RAD0023:
+  loglevel: ERROR
+  message: |
+    raytrace_mpi_rma = .T. not allowed in serial mode
+  description: |
+    You have compiled the PALM code for serial mode, i.e. without setting the preprocessor switch `-D __parallel` in the configuration file. Radiation calculations for the urban environment with ray tracing using one-sided MPI communication only works for the parallel mode. Either set the switch `-D __parallel` in your config file, or set [raytrace_mpi_rma](../Namelists/#radiation_parameters--raytrace_mpi_rma) = *.F.*.
+
+RAD0024:
+  loglevel: ERROR
+  message: |
+    average_radiation = .T. with radiation_scheme = "rrtmg"/"tenstream" in combination with cloud_droplets = .T. is not implemented
+  description: ''
+
+RAD0025:
+  loglevel: ERROR
+  message: |
+    dt_radiation must be > 0.0
+  description: ''
+
+RAD0026:
+  loglevel: ERROR
+  message: |
+    Too coarse angular discretization settings: raytrace_discrete_elevs < 4 and/or raytrace_discrete_elevs < 8
+  description: |
+    You have used coarse angular discretization settings which will result in inaccurate radiation fluxes.
+
+RAD0027:
+  loglevel: WARNING
+  message: |
+    Relatively coarse angular discretization settings are set: raytrace_discrete_elevs < 9 and/or raytrace_discrete_elevs < 18
+  description: |
+    You have used coarse angular discretization settings which will result in inaccurate radiation fluxes.
+
+RAD0028:
+  loglevel: ERROR
+  message: |
+    Invalid ts_icollapse value. ts_icollapse should be either -1 (collapse atmosphere above the dynamic domain) or 1 (no collapse)
+  description: ''
+
+RAD0029:
+  loglevel: ERROR
+  message: |
+    The tenstream radiation scheme does not support the biometeorology, which requires RTM. Please use different radiation scheme, e.g. RRTMG.
+  description: ''
+
+RAD0030:
+  loglevel: WARNING
+  message: |
+    radiation_interactions_on is set to .FALSE. although vertical surfaces and/or trees exist. The model will run without RTM (no shadows, no radiation reflections)
+  description: |
+    Set [radiation_interactions_on](../Namelists/#radiation_parameters--radiation_interactions_on) = *.T.* to get more realistic results.
+
+RAD0031:
+  loglevel: ERROR
+  message: |
+    The current raytracing algorithm in the Radiative Transfer Model does NOT support explicitly cyclic boundary conditions. Surface radiation fluxes near the boundaries should be evaluated in this view point.
+  description: |
+     Be careful near the lateral boundaries with respect to the surface energy balance terms.
+
+RAD0032:
+  loglevel: ERROR
+  message: |
+    Input file RRTMG_LW for rrtmg model missing. Please provide ..._rlw file in the INPUT directory.
+  description: |
+    You have switched on the RRTMG radiation model, but missed to provide the respective input file in your input folder.
+
+RAD0033:
+  loglevel: ERROR
+  message: |
+    Input file RRTMG_SW for rrtmg model missing. Please provide ..._rsw file in the INPUT directory.
+  description: |
+    You have switched on the RRTMG radiation model, but missed to provide the respective input file in your input folder.
+
+RAD0034:
+  loglevel: ERROR
+  message: |
+    In case of external radiation forcing a dynamic input file for the root domain is needed.
+  description: ''
+
+RAD0035:
+  loglevel: ERROR
+  message: |
+    "..." has no valid lod attribute
+  description: ''
+
+RAD0036:
+  loglevel: ERROR
+  message: |
+    In case of external radiation forcing both, rad_sw_in and rad_lw_in are required.
+  description: ''
+
+RAD0037:
+  loglevel: ERROR
+  message: |
+    In case of external radiation forcing dimension time_rad is required.
+  description: ''
+
+RAD0039:
+  loglevel: ERROR
+  message: |
+    External radiation forcing does not cover the entire simulation time.
+  description: ''
+
+RAD0040:
+  loglevel: ERROR
+  message: |
+    External radiation forcing: rad_sw_in must not contain any fill values.
+  description: ''
+
+RAD0041:
+  loglevel: ERROR
+  message: |
+    External radiation forcing: rad_lw_in must not contain any fill values.
+  description: ''
+
+RAD0042:
+  loglevel: ERROR
+  message: |
+    External radiation forcing: rad_sw_in_dif must not contain any fill values.
+  description: ''
+
+RAD0043:
+  loglevel: ERROR
+  message: |
+    External radiation with lod = 2 is currently not possible with average_radiation = .T..
+  description: ''
+
+RAD0044:
+  loglevel: ERROR
+  message: |
+    External radiation input should have the same lod.
+  description: ''
+
+RAD0045:
+  loglevel: ERROR
+  message: |
+    Surface albedo for diffuse/direct long-/shortwave are different. To continue using the broadband albedo please set use_broadband_albedo to TRUE.
+  description: ''
+
+RAD0046:
+  loglevel: ERROR
+  message: |
+    variable albedo is not implemented for tenstream
+  description: ''
+
+RAD0047:
+  loglevel: ERROR
+  message: |
+    undefined ... surface, not urban/land
+  description: ''
+
+RAD0048:
+  loglevel: ERROR
+  message: |
+    Finding boarder surface id at i,j,k= ... ... ... for surface type ... failed.
+  description: ''
+
+RAD0049:
+  loglevel: ERROR
+  message: |
+    Finding boarder surface id at i,j,k= ... ... ... failed.
+  description: ''
+
+RAD0050:
+  loglevel: ERROR
+  message: |
+    tenstream is not supported yet when humidity is false
+  description: ''
+
+RAD0051:
+  loglevel: ERROR
+  message: |
+    The lowest level where vertical stretching is applied have to be greater than ...
+  description: |
+    The radiation model does not consider a stretched grid. The assumption of a uniform grid is necessary in parts below the top layer of urban surface (index height nzut). Please adjust [dz_stretch_level_start](../Namelists/#initialization_parameters--dz_stretch_level_start) accordingly.
+
+RAD0052:
+  loglevel: ERROR
+  message: |
+    the surface type ... is not supported for calculating SVF
+  description: |
+    Internal error. Allowed surface types are 0, 2, 3, 4, 5, 6, 7, 8, 9, 10. Their meaning can be identified in `radiation_model_mod.f90`. Please contact the PALM developers, e.g. by the trouble-ticket system.
+
+RAD0053:
+  loglevel: ERROR
+  message: |
+    A different number of processors between the run that has written the svf data and the one that will read it is not allowed.
+  description: ''
+
+RAD0054:
+  loglevel: ERROR
+  message: |
+    Version of binary SVF file "..." does not match the version of model "..."
+  description: |
+    This error occurs when radiation data from the file SVFIN is read and the precursor run was carried out with a different svf binary version than the main run. Repeat the precurser with the current version or carry out the main run with the same version as the precursor. The svf binary version number which is required for the main run can be checked in file `radiation_model_mod.f90`.
+
+RAD0055:
+  loglevel: ERROR
+  message: |
+    wrong number of SVF or CSF
+  description: |
+    This error can happen if svf data is read from file SVFIN (e.g. during manual restarts). The local number of sky view factors and canopy sink factors for calculating surface reflection of radiation has to be the same between the precursor run and the main run. Be sure that you create the svf binary data with the same version as the version of the main run.
+
+RAD0056:
+  loglevel: ERROR
+  message: |
+    nsurfl from SVF file does not match calculated nsurfl from radiation_interaction_init
+  description: |
+    Number of all local surface elements in sky-view factor file (SVFIN) does not match the calculated number of local surface elements. Be sure that you created the svf binary data with the same version as the version of the main run and that you did not introduce further surfaces in the meantime. Otherwise, contact the PALM developers, e.g. via the trouble-ticket system.
+
+RAD0057:
+  loglevel: ERROR
+  message: |
+    npcbl from SVF file does not match calculated npcbl from radiation_interaction_init
+  description: |
+    The number of the local plant canopy gridboxes in SVFIN does not match the one which is calculated during model initialization. Be sure that you created the svf binary data with the same version as the version of the main run. Otherwise, contact the PALM developers, e.g. via the trouble-ticket system.
+
+
+RAD0058:
+  loglevel: ERROR
+  message: |
+    ndsidir from SVF file does not match calculated ndsidir from radiation_presimulate_solar_pos
+  description: |
+    The number of apparent solar directions in SVFIN does not match the one which is calculated during model initialization. Be sure that you created the svf binary data with the same version as the version of the main run. Otherwise, contact the PALM developers, e.g. via the trouble-ticket system.
+
+
+RAD0059:
+  loglevel: ERROR
+  message: |
+    nmrtbl from SVF file does not match calculated nmrtbl from radiation_interaction_init
+  description: |
+    The number of apparent solar directions in SVFIN does not match the one which is calculated during model initialization. Be sure that you created the svf binary data with the same version as the version of the main run. Otherwise, contact the PALM developers, e.g. via the trouble-ticket system.
+
+
+RAD0060:
+  loglevel: ERROR
+  message: |
+    virtual PE grid has changed between previous and current run. npex_prev = ..., npey_prev = ...,  npex_new = ..., npey_new = ..., svf will be re-calculated'
+  description: |
+    Reading sky view factors from file (created by a previous run) is only possible if the previous run has used the same virtual PE grid as the current run. This is not the case here, and so the sky view factors are re-calculated (which requires some computational resources).
+
+RAD0061:
+  loglevel: ERROR
+  message: |
+    total number of grid points along x and y in file SVFIN do not match current run. nx_on_file = ..., ny_on_file = ..., nx = ..., ny = ...
+  description: |
+    Your sky view factor input file (SVFIN) contains data for a computational grid with gridpoint numbers nx and/or ny different from your current run. This is not allowed.
+
+RAD0062:
+  loglevel: ERROR
+  message: |
+    number of sky view factor values for .... = .... > 2^^*^^*31-1
+  description: |
+    The number of sky view factor values for the given variable exceeds the mentioned upper limit. This may happen in case of a computation grid with extrem number of gridpoints and/or very complex 3D-topography. Please contact the PALM developers, e.g. via the trouble-ticket system.
+
+RAD0063:
+  loglevel: ERROR
+  message: |
+    issue in sorting canopy sink factors: ... does not match its pre-calculated number ...
+  description: |
+    The number of plant-canopy sink factors after sorting does not match its pre-calculated number, indicating a bug within the code. Please contact the PALM developers, e.g. via the trouble-ticket system.
+
+RAD0064:
+  loglevel: ERROR
+  message: |
+    [radiation_only](../Namelists/#radiation_parameters--radiation_only) = .T. requires explicit setting of [albedo_type](../Namelists/#radiation_parameters--albedo_type)
+  description: ''
+
+

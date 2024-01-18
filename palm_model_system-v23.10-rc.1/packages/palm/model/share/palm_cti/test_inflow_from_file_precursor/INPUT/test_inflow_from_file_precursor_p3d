@@ -1,0 +1,83 @@
+
+&initialization_parameters
+
+
+    nx = 63,
+    ny = 63,
+    nz = 64,
+
+    dx = 32.0,
+    dy = 32.0,
+    dz = 32.0,
+
+    roughness_length = 0.1,
+
+    ug_surface   = 9.5782,
+    vg_surface   = -2.8737,
+
+    neutral       = .F.,
+    humidity      = .T.,
+
+    surface_heatflux = 0.0,
+    surface_waterflux = 0.0,
+
+    bc_q_b  = 'neumann',
+    bc_pt_b = 'neumann',
+
+
+    initializing_actions= 'set_1d-model_profiles',
+    end_time_1d = 86400.0,
+
+
+    bc_uv_t = 'neumann',
+
+
+    psolver        = 'poisfft',
+    fft_method     = 'fftw',
+
+
+    damp_level_1d = 1500.0,
+    dz_stretch_factor = 1.0745622117140738,
+    dz_stretch_level = 1500.0,
+    rayleigh_damping_factor = 0.01,
+    rayleigh_damping_height = 1500.0,
+
+    restart_data_format = 'mpi_shared_memory',
+
+/
+
+
+&runtime_parameters
+
+
+    dt_run_control          = 0.0,
+
+    end_time                = 18000.0,
+
+    averaging_interval      = 3600.0,
+
+    dt_data_output          = 3600.0,
+
+
+    create_disturbances      = .T.,
+    dt_disturb               = 150.0,
+    disturbance_energy_limit = 0.01,
+
+    dt_do2d_yz                 = 0.0,  ! output interval for general data
+    section_yz                 = 20, 30, ! grid index for 2D XZ cross sections
+
+    skip_time_data_output      = 14400.0,
+
+    data_output                = 'u_yz',
+                                 'v_yz',
+                                 'w_yz',
+                                 'e_yz',
+                                 'theta_yz',
+                                 'q_yz',
+
+    netcdf_data_format         = 2,
+    data_output_2d_on_each_pe  = .F.,
+
+    data_output_pr              = 'u', 'v', 'w', 'u*2', 'v*2', 'w*2', 'e',
+
+/

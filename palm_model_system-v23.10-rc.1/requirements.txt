@@ -1,0 +1,5 @@
+-r docs/requirements.txt
+-r packages/dynamic_driver/inifor/requirements.txt
+-r packages/gui/palmrungui/requirements.txt
+-r packages/palm/model/requirements.txt
+-r packages/static_driver/palm_csd/requirements.txt

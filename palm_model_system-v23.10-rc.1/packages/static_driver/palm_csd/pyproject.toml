@@ -1,0 +1,2 @@
+[tool.pytest.ini_options]
+addopts = "-n auto --cov=palm_csd --cov-report=term --cov-report=xml --cov-report=html:coverage"

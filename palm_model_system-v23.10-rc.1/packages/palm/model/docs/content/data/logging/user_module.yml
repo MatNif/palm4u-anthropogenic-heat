@@ -1,0 +1,55 @@
+USR0001:
+  loglevel: ERROR
+  message: |
+    current user-interface revision "..." does not match the required revision "..."
+  description: |
+    You are using a user-interface which does not match the installed PALM release. One reason might be that the default user-interface of the newest PALM release has changed (e.g. because some parameters have been added to parameter-lists of subroutine calls). Please carefully check the PALM release information, where these kind of changes are announced, and where also hints will be given for how to adjust existing user-interfaces.
+
+USR0002:
+  loglevel: ERROR
+  message: |
+    topography "..." not available yet
+  description: |
+    There was no usable user-defined topography found.
+
+USR0003:
+  loglevel: ERROR
+  message: |
+    unknown topography "..."
+  description: |
+    This error message appears if [topography](../Namelists/#initialization_parameters--topography) is set to an illegal value. This can happen if the string assigned to [topography](../Namelists/#initialization_parameters--topography) contains a typo and is neither recognized in `init_grid` nor in `user_init_grid`.
+
+USR0004:
+  loglevel: ERROR
+  message: |
+    canopy_mode "..." not available yet
+  description: |
+    There was no valid user-defined plant canopy mode found.
+
+USR0005:
+  loglevel: ERROR
+  message: |
+    unknown canopy_mode "..."
+  description: |
+    The requested identifier for the canopy mode was not found in the user interface (`user_init_plant_canopy.f90`). Check if the spelling in the namelist file matches the canopy mode defined in `user_init_plant_canopy.f90`.
+
+USR0006:
+  loglevel: ERROR
+  message: |
+    spectra of "..." can not be calculated
+  description: |
+    No CASE statement defined for '...' in `user_spectra.f90` (preprocess mode).
+
+USR0007:
+  loglevel: ERROR
+  message: |
+    spectra of "..." are not defined
+  description: |
+    No CASE statement defined for '...' in `user_spectra.f90` (data output mode).
+
+USR0008:
+  loglevel: ERROR
+  message: |
+    the number of user-defined profiles given in data_output_pr (...) does not match the one found in the restart file (...)
+  description: |
+    This will only happen in case that the number of user profiles defined via [data_output_pr_user](../Namelists/#user_parameters--data_output_pr_user) was changed from precursor to main run. See the [turbulent inflow documentation](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/turbinf) for detailed information on the use of restart data for precursor runs.

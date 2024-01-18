@@ -1,0 +1,319 @@
+CHM0001:
+  loglevel: ERROR
+  message: |
+    data_output_pr = "..." not implemented for air_chemistry = .FALSE.
+  description: ''
+
+CHM0002:
+  loglevel: ERROR
+  message: |
+    data_output_pr = "..." currently not implemented.
+  description: |
+    Please output resolved- and subgrid-scale fluxes individually to obtain the total flux.
+
+CHM0003:
+  loglevel: ERROR
+  message: |
+    photolyis shading requires 3D volumetric radiation flux set to true
+  description: ''
+
+CHM0004:
+  loglevel: WARNING
+  message: |
+    call_chem_at_all_substeps should only be used for test purposes
+  description: ''
+
+CHM0005:
+  loglevel: ERROR
+  message: |
+    unknown photolysis scheme = "..."
+  description: |
+    Please check spelling.
+
+CHM0006:
+  loglevel: ERROR
+  message: |
+    unknown chem_mechanism = "..."
+  description: |
+    Check spelling in namelist and/or chem_gasphase_mod.
+
+CHM0007:
+  loglevel: ERROR
+  message: |
+    unknown boundary condition: ... = "..."
+  description: |
+    See the respective parameter in the [chemistry module namelist](../Namelists/#chemistry-parameters) for allowed values, and appropriately correct your parameter file.
+
+CHM0008:
+  loglevel: ERROR
+  message: |
+    boundary conditions ... and ... must both be cyclic or non-cyclic
+  description: |
+    Set the named parameters to the same value.
+
+CHM0009:
+  loglevel: ERROR
+  message: |
+    unused/incorrect input for initial surface value = "..."
+  description: ''
+
+CHM0010:
+  loglevel: ERROR
+  message: |
+    unused/incorrect input of chemical species for surface emission fluxes = "..."
+  description: ''
+
+CHM0011:
+  loglevel: ERROR
+  message: |
+    illegal cs_heights(1,1) = ...
+  description: |
+    The surface value of [cs_heights](../Namelists/#chemistry_parameters--cs_heights) must be 0.0.
+
+CHM0012:
+  loglevel: ERROR
+  message: |
+    number of chem spcs exceeding the limit
+  description: |
+    No more than 99 chem spcs are allowed.
+
+CHM0013:
+  loglevel: ERROR
+  message: |
+    unknown mode_emiss = "..."
+  description: |
+    Please check spelling.
+
+CHM0014:
+  loglevel: ERROR
+  message: |
+    illegal emiss_lod = ...
+  description: |
+    Only LODs of 0, 1, and 2 are allowed.
+
+CHM0015:
+  loglevel: WARNING
+  message: |
+    emiss_lod undefined. Using existing mod_emiss setting. NOTE - mode_emis will be deprecated in future releases. Please use emiss_lod to define emission mode.
+  description: ''
+
+CHM0016:
+  loglevel: INFO
+  message: |
+    New emission read mode currently unavailable for LODs 0 and 1. Reverting to legacy emission read mode.
+  description: ''
+
+CHM0017:
+  loglevel: INFO
+  message: |
+    New emission read mode activated. LOD 2 emissions will be updated on-demand according to indicated timestamps.
+  description: ''
+
+CHM0018:
+  loglevel: ERROR
+  message: |
+    illegal Rosenbrock-solver type inctrl(3) = ...
+  description: |
+    See chemistry parameter [icntrl](../Namelists/#chemistry_parameters--icntrl). The value of `icntrl(3)` must be in range *0* < `inctrl(3)` < *7*. Please correct your parameter file appropriately.
+
+CHM0019:
+  loglevel: ERROR
+  message: |
+    no ... type defined
+  description: |
+    Please define ... type to enable deposition calculation.
+
+CHM0020:
+  loglevel: ERROR
+  message: |
+    component "..." not supported
+  description: ''
+
+CHM0021:
+  loglevel: ERROR
+  message: |
+    illegal nwet = ...
+  description: |
+    Allowed values for `nwet` are *0* or *1*.
+
+CHM0022:
+  loglevel: ERROR
+  message: |
+    illegal lod = ...
+  description: |
+    Only LODs of *0*, *1*, and *2* are allowed.
+
+CHM0023:
+  loglevel: WARNING
+  message: |
+    The biogenic emission module time-step is smaller than the model time-step. Reverting to the models time-step.
+  description: ''
+
+CHM0024:
+  loglevel: ERROR
+  message: |
+    biogenic emission module ... has not been implemented yet
+  description: ''
+
+CHM0025:
+  loglevel: ERROR
+  message: |
+    no biogenic species defined
+  description: |
+    Biogenic species not defined in the namelist or incorrect spelling.
+
+CHM0026:
+  loglevel: ERROR
+  message: |
+    unknown cs_mech = "..."
+  description: |
+    Please check spelling.
+
+CHM0027:
+  loglevel: ERROR
+  message: |
+    ... radiation method has not been implemented
+  description: |
+    Please use the default (0) faces-average method.
+
+CHM0028:
+  loglevel: ERROR
+  message: |
+    illegal radiation method ebio_rad_method = ...
+  description: |
+    See [ebio_rad_method](../Namelists/#chemistry_parameters--ebio_rad_method) for allowed values.
+
+CHM0029:
+  loglevel: ERROR
+  message: |
+    unknown draught stress method ebio_soilm_method = "..."
+  description: |
+    See [ebio_soilm_method](../Namelists/#chemistry_parameters--ebio_soilm_method) for allowed values.
+
+CHM0030:
+  loglevel: INFO
+  message: |
+    Soil is saturated. Draught stress factor is set to 1.0.
+  description: ''
+
+CHM0031:
+  loglevel: WARNING
+  message: |
+    Soil moisture is below wilting point. Draught stress factor is set to 0.0.
+  description: ''
+
+CHM0032:
+  loglevel: WARNING
+  message: |
+    There are more Soil moisture levels (...) than model soil layers (...). Biogenic model defaults to model layers.
+  description: ''
+
+CHM0033:
+  loglevel: WARNING
+  message: |
+    There are less soil moisture levels (...) than model soil layers (...). Biogenic model will use soil moisture layers.
+  description: ''
+
+CHM0034:
+  loglevel: WARNING
+  message: |
+    Invalid pollen emission model selected. Reverting to the default Zink pollen model.
+  description: ''
+
+CHM0035:
+  loglevel: ERROR
+  message: |
+    unknown epol_tke_scheme = "..."
+  description: ''
+
+CHM0036:
+  loglevel: ERROR
+  message: |
+    no valid pollen species defined
+  description: |
+    None of the pollen species names match with currently implemented tree pollens. Please check spelling.
+
+CHM0037:
+  loglevel: WARNING
+  message: |
+    seasonal factor = ... reset to the default value 0.9
+  description: |
+    Seasonal factor can have values only between 0 and 1. The default value of 0.9 is used instead.
+
+CHM0038:
+  loglevel: ERROR
+  message: |
+    emission does not match surface type
+  description: |
+    The parameterized emissions mode has been selected. Then, emissions are possible only on street surfaces but values of scaling factors for street types emiss_factor_main and emiss_factor_sidehave not been provided for each of the emissions species or not provided at all. Please set a finite value for the named parameters in the chemistry namelist.
+
+CHM0039:
+  loglevel: INFO
+  message: |
+    Non of given emission species matches model chemical species. Emission routine is not called.
+  description: ''
+
+CHM0040:
+  loglevel: ERROR
+  message: |
+    no array(s) for emission species allocated
+  description: |
+    Either no emission species are provided as input or no chemical species are used by PALM.
+
+CHM0041:
+  loglevel: ERROR
+  message: |
+    no valid emission mode
+  description: |
+    Emission module switched on, but either no emission mode specified or incorrectly given. Pass the correct value to the namelist parameter [mode_emis](../Namelists/#chemistry_parameters--mode_emis).
+
+CHM0042:
+  loglevel: ERROR
+  message: |
+    illegal unit for emission input = "..."
+  description: |
+    The listed unit of the provided emission input is not valid. Check the emission module documentation.
+
+CHM0043:
+  loglevel: ERROR
+  message: |
+    "HOUR" time-factors in the default mode are not provided for each hour of the total simulation time
+  description: ''
+
+CHM0044:
+  loglevel: ERROR
+  message: |
+    "MDH" time-factors in the default mode are not provided for each hour/day/month  of the total simulation time
+  description: ''
+
+CHM0045:
+  loglevel: ERROR
+  message: ''
+  description: |
+    In the default mode the time factor has to be defined in the namelist.
+
+CHM0046:
+  loglevel: ERROR
+  message: |
+    LOD mismatch between namelist (emiss_lod=...) and chemistry input file (att_lod=...)
+  description: ''
+
+CHM0047:
+  loglevel: ERROR
+  message: |
+    input timestamps not in chronological order for ... index ...:... and ... index ...:...
+  description: ''
+
+CHM0048:
+  loglevel: ERROR
+  message: |
+    specified emission unit "..." not recognized
+  description: ''
+
+CHM0049:
+  loglevel: ERROR
+  message: |
+    missing emission input file "..." for moving emission sources
+  description: |
+    Moving emissions switched-on and require a corresponding emission input file PIDS_EMIS_NONSTAT.
+

@@ -1,0 +1,190 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+ &initialization_parameters
+
+!
+!-- Grid
+!------------------------------------------------------------------------------
+    nx               = 63,
+    ny               = 63,
+    nz               = 64,
+
+    dx               = 250.0,
+    dy               = 250.0,
+    dz               = 12.5,
+
+    dz_stretch_level = 600.0,
+    dz_max           = 250.0,
+
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+    fft_method       = 'fftw',
+
+!
+!-- Mode
+!------------------------------------------------------------------------------
+    humidity         = .T.,
+    q_surface        = 0.001,
+
+!
+!-- Initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'set_constant_profiles',
+
+    pt_surface           = 277.15,
+    ug_surface           = 1.0,
+    vg_surface           = 0.0,
+
+    origin_date_time     = '2019-03-06 10:00:00 +00'
+!
+!-- Physics
+!------------------------------------------------------------------------------
+    longitude            = 13.4,
+    latitude             = 52.5,
+
+!
+!-- Turbulence model
+!------------------------------------------------------------------------------
+!   turbulence_closure = 'tke-e',
+!   e_init = 0.1,
+!   e_min = 0.001,
+
+    bc_p_t             = 'dirichlet',  ! workaround to pass the tests
+
+   / ! end of inipar namelist
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+
+!
+!-- Run steering
+!------------------------------------------------------------------------------
+    end_time              = 50.0,
+    create_disturbances   = .T.,
+
+!
+!-- Run-control/timeseries output settings
+!------------------------------------------------------------------------------
+    dt_run_control        =  0.0,
+    dt_dots               =  10.0,
+
+!
+!-- Profile output settings
+!------------------------------------------------------------------------------
+    skip_time_dopr        =  0.0,
+    dt_dopr               = 50.0,
+    averaging_interval_pr = 50.0,
+    dt_averaging_input_pr =  0.0,
+
+    data_output_pr        = '#u',  'u*2',  'wu', 
+                            '#v',  'v*2',  'wv',
+                            '#theta', 'theta*2', 'wtheta', 
+                            '#t_soil', '#m_soil', 'rad_lw_in', 'rad_lw_out',
+!
+!-- 2D/3D output settings
+!------------------------------------------------------------------------------
+    do3d_at_begin      = .T.,
+    do2d_at_begin      = .T.,
+
+    dt_data_output     = 50.0,
+    dt_data_output_av  = 50.0,
+    averaging_interval = 50.0,
+    dt_averaging_input =  0.0,
+
+    section_xy         = 0,
+
+    data_output = 'u',  'u_av',
+                  'v',  'v_av',
+                  'w',  'w_av',
+                  'theta', 'theta_av',
+                  'q',  'q_av',
+                  'e',  'e_av',
+                  'p',  'p_av',
+                  'm_soil', 'm_soil_av',
+                  't_soil', 't_soil_av',
+                  'shf*_xy', 'shf*_xy_av',
+                  'ghf*_xy', 'ghf*_xy_av',
+                  'us*_xy', 'z0*_xy',
+                  't*_xy', 'ol*_xy',
+                  'm_liq*_xy',
+                  'r_s*_xy', 'r_a*_xy',
+                  'rad_net*_xy', 'rad_lw_in*_xy', 'rad_lw_out*_xy', 'rad_sw_in*_xy', 'rad_sw_out*_xy',
+                  'qsws*_xy', 'qsws*_xy_av',
+                  'tsurf*_xy', 'tsurf*_xy_av',
+                  'dcep_shfl_roof','dcep_t_g_urb*_xy', 'dcep_shfl_urb*_xy', 'dcep_albedo_urb*_xy',
+                  'dcep_albedop_urb*_xy', 'dcep_emiss_urb*_xy', 'dcep_t_grad_urb*_xy',
+                  'dcep_rl_roof', 'dcep_sw_roof','dcep_strfl_urb*_xy', 'dcep_rl_wallw','dcep_rl_walle',
+                  'dcep_t_roof1', 'dcep_t_walle', 'dcep_t_wallw',
+
+ / ! end of d3par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RADIATION MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+  &radiation_parameters
+
+     radiation_scheme =  'rrtmg',
+     albedo_type = 5,
+     constant_albedo = .F.,
+     dt_radiation = 50.0,
+
+  /
+
+
+!-------------------------------------------------------------------------------
+!-- LAND SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!-------------------------------------------------------------------------------
+ &land_surface_parameters
+
+    constant_roughness     = .T.,
+    aero_resist_kray       = .T.,
+
+    surface_type = 'vegetation',
+    vegetation_type        = 2,
+    soil_type              = 3,
+    conserve_water_content = .T.,
+
+    root_fraction          = 0.49, 0.26, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+    soil_temperature       = 277.15, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0,
+    soil_moisture          = 0.30,   0.30,  0.30,  0.30,  0.30, 0.30,  0.30,  0.30,
+    deep_soil_temperature  = 277.0,
+
+ / ! end of lsm_par namelist
+
+!-------------------------------------------------------------------------------
+!-- DCEP MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/dcep
+!-------------------------------------------------------------------------------
+ &dcep_parameters
+
+    ke_uhl        = 13,
+    ke_ground     = 10,
+    ke_roof       = 10,
+    ke_wall       = 10,
+
+    limpufl       = .TRUE., 
+    lrroofs       = .TRUE.,
+    ltintfix      = .FALSE., 
+    lurbvel       = .F.,
+
+    n_uclass      = 1,
+    n_udir        = 2,
+    z_uhl         = 0., 5., 10., 15., 20., 25., 30., 35., 40., 50., 60., 80., 100., 140., 150.,
+
+    albedo_ground = 0.25,
+    albedo_roof   = 0.25,
+    albedo_wall   = 0.25,
+
+    dcep_average_radiation = .T., 
+    
+ / ! end of dcep_parameters namelist
+

@@ -1,0 +1,57 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "stg_par"
+
+boundary_layer_depth:
+  category: general Settings
+  type: R
+  default:
+    value: 1000.0
+  si-uni: m
+  description:
+    short: Prescribed boundary-layer depth.
+
+compute_velocity_seeds_local:
+  category: Numerics
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to decide whether velocity seeds are computed locally or distributed over several processes.
+    long: |
+      If *.F.*, the computation of the velocity seeds is done in parallel by multiple processes.
+      This requires additional MPI communication to gather the calculated seeds on the respective processes responsible for the boundaries.
+      This option is especially useful for large length scales where the computational effort can become huge (when computation of velocity seeds requires more time than MPI communication).
+      If *.T.*, velocity seeds are computed only locally and no MPI communication is necessary. This performs better when the turbulent length scales are small (when MPI communication requires more time than computation).
+
+dt_stg_adjust:
+  category: General Settings
+  type: R
+  default:
+    value: 1800.0
+  si-unit: s
+  description:
+    short: Time interval for adjusting turbulence statistics.
+    long: |
+      The turbulence statistics define the amplitude and sign of imposed correlations and are parametrized based on boundary-layer depth inferred from the inflow profiles as well as domain-averaged values of roughness, friction velocity and surface sensible heat flux.
+      [dt_stg_adjust](#stg_par--dt_stg_adjust) only comes into effective if turbulence statistics are parametrized, i.e. if they are not read from the ASCII input file [STG_PROFILES](https://palm.muk.uni-hannover.de/trac/attachment/wiki/doc/app/iofiles/STG_PROFILES).  [dt_stg_adjust](#stg_par--dt_stg_adjust) is mainly relevant in the case of a daily cycle, where the strength of turbulence, its integral length scales and boundary-layer depth change in time. Furthermore, [dt_stg_adjust](#stg_par--dt_stg_adjust) is also a useful parameter in case of more idealized setups with time-constant inflow profiles and desired parametrized turbulence statistics, i.e. the absence of the [STG_PROFILES](https://palm.muk.uni-hannover.de/trac/attachment/wiki/doc/app/iofiles/STG_PROFILES) file. This case, [dt_stg_adjust](#stg_par--dt_stg_adjust) should be set to a small value in the order of a few hundreds of seconds. This is because at the beginning of the simulation domain averaged parameters are rapidly developing, meaning that the parametrized turbulence statistics change over time, too. If the turbulence statistics are regularly updated during this model spinup process, the imposed perturbations at the boundaries faster approach their final state compared to the case when [dt_stg_adjust](#stg_par--dt_stg_adjust) is set to a large value so that the imposed turbulence statistics are time-lagged to the actual domain-averaged surface conditions.
+
+dt_stg_call:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Time interval for calling synthetic turbulence generator.
+    long: |
+      Per default, the turbulence generator is called every time step (called every 0.0 seconds). Increasing [dt_stg_call](#stg_par--dt_stg_call) may help to reduce computational time.
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn on/off the module.
+    long: |
+      If *.T.*, the synthetic turbulence generator is not activated even if the namelist is present in the parameter file.

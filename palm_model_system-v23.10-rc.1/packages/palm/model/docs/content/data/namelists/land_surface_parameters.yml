@@ -1,0 +1,690 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "land_surface_parameters"
+
+aero_resist_kray:
+  category: General Settings
+  type: L
+  default: 
+    value: .T.
+  description:
+    short: Flag for switching on the parameterization of the aerodynamic resistance after Krayenhoff & Voogt (2007).
+    long: |
+      For homogeneous surface elements, Monin-Obukhov theory is used to calculate the aerodynamic resistance. As the involved stability correction does not apply for vertically-oriented surfaces, the aerodynamic resistance parameterization after Krayenhoff & Voogt (2007) is employed if this parameter is set to *.T.*. 
+      
+alpha_vangenuchten:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  description: 
+    short: Coefficient *alpha* in the soil hydraulic conductivity parametrization
+    long: |
+      Value of the coefficient *alpha* for the calculation of the hydraulic conductivity of soil in the parametrization after Van Genuchten (1980). This parameter is considered to be equal for all soil layers.
+
+c_surface:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: J m$^{-2}$ K$^{-1}$
+  description:
+    short: Heat capacity of the surface (or skin layer)
+    long: |
+      Heat capacity of the surface (or skin layer) per unit of area in case of vegetated surfaces. Note that this parameter does not apply in case of [water_type](#land_surface_parameters--water_type) and [water_type](#land_surface_parameters--water_type) surfaces. 
+
+canopy_resistance_coefficient:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: hPa$^{-1}$
+  description:
+    short: Coefficient for calculating the canopy water vapor pressure deficit
+    long: |
+      Only relevant for high vegetation. A coefficient for the dependence of the canopy resistance on water vapor pressure deficit. 
+      
+ 
+conserve_water_content:
+  category: General Settings
+  type: L
+  default: 
+    value: .T.
+  description:
+    short: Flag parameter for setting the bottom boundary condition of the soil model.
+    long: |
+      This flag parameter sets the bottom boundary condition for the soil model. The user can choose between the following options:
+        
+        - *.T.*: Closed bottom, considering bedrock below the soil model. No drainage is possible from the lowest soil model so that conservation of water in the model is guaranteed. Note that this conservation might be compromized by the numerical schemes used in the atmosphere.
+        
+        - *.F.*: Open bottom, considering free drainage. Water can leave the soil model via drainage. There is no conservation of water in the model.
+
+constant_roughness:
+  category: General Settings
+  type: L
+  default: 
+    value: .T.
+  description:
+    short: Flag parameter for switching on a Charnock parameterization to account for sea surface waves.
+    long: |
+      This parameter only applied to [water_surfaces](#land_surface_parameters--water_surfaces). If set to *.F.*, the aerodynamic roughness length is allowed to vary in space and time in order to account for increasing surface roughness due to sea surface waves. The roughness length then depends on the near-surface wind speed, following the parameterizations after Charnock (1955) and Beljaars (1994). Note that this parameterization assumes a infinite sea surface that allows for the build-up of significant waves. This option should only be used with special care and only if the waves height is much below the vertical grid spacing (i.e. the waves should be a sub-grid scale feature).
+
+deep_soil_temperature:
+  category: General Settings
+  type: R
+  default: 
+    value: ~
+    depends_on: dynamic driver file
+  si-unit: K
+  description:
+    short: Bottom boundary condition temperature for the soil model.
+    long: |
+      The deep soil temperature is used as bottom boundary condition for the heat diffusion in the soil model. Note, in case that the soil temperature is provided by the dynamic driver file, the deep soil temperature will be taken from the deepest level therein.
+
+dz_soil:
+  category: General Settings
+  type: R
+  shape: (20)
+  default: 
+    value: [0.01, 0.02, 0.04, 0.06, 0.14, 0.26, 0.54, 1.86]
+    depends_on: dynamic driver file
+  si-unit: m
+  description:
+    short: Thickness of the individual soil layers.
+    long: |
+      Thickness of the individual soil layers. The default configuration considers 8 soil layers. The user can specify up to 20 layers, though. Note that the model operates with negative values in the vertical direction downwards, which will then appear in the output files. The default soil layer configuration is given below.   
+
+      | Layer # | [dz_soil](#land_surface_parameters--dz_soil) | Depth       |
+      |:--------|---------------------------------------------:|------------:|
+      |         | (m)                                          | (m)         |    
+      | Layer 1 | 0.01                                         | 0.00 - 0.01 |
+      | Layer 2 | 0.02                                         | 0.01 - 0.03 |
+      | Layer 3 | 0.04                                         | 0.03 - 0.07 |
+      | Layer 4 | 0.06                                         | 0.07 - 0.13 |
+      | Layer 5 | 0.14                                         | 0.13 - 0.27 |
+      | Layer 6 | 0.26                                         | 0.27 - 0.51 |
+      | Layer 7 | 0.54                                         | 0.51 - 1.05 |
+      | Layer 8 | 1.86                                         | 1.05 - 2.91 |
+    
+      The setting of [dz_soil](#land_surface_parameters--dz_soil) can be overwritten if respective data is provided by the dynamic driver file.
+
+field_capacity:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  si-unit: m$^3$ m$^{-3}$
+  description:
+    short: Soil moisture at field capacity
+    long: |
+      Soil moisture at field capacity. This parameter is considered to be equal for all soil layers.
+
+f_shortwave_incoming:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  description:
+    short: Fraction of the net shortwave radiation that is transmitted directly to the top soil layer.
+    long: |
+      Fraction of the net shortwave radiation that is transmitted directly to the top soil layer (range of 0-1). The remaining fraction of the shortwave radiation is absorbed by the surface (or skin layer). This parameter has not been fully implemented yet and is fixed to 0. 
+      
+hydraulic_conductivity:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  si-unit: m s$^{-1}$
+  description:
+    short: Hydraulic conductivity of the soil at saturation.
+    long: |
+      Hydraulic conductivity of the soil at saturation. This parameter is considered to be equal for all soil layers.
+    
+lambda_surface_stable:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: W m$^{-2}$ K$^{-1}$ 
+  description:
+    short: Heat conductivity between atmosphere and soil (stable stratification).
+    long: ''
+   
+lambda_surface_unstable:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: W m$^{-2}$ K$^{-1}$ 
+  description:
+    short: Heat conductivity between atmosphere and soil (unstable stratification).
+    long: ''
+
+leaf_area_index:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type), static driver file'
+  si-unit: m$^2$ m$^{-2}$
+  description:
+    short: Leaf area index of the vegetation canopy.
+    long: |
+      Leaf area index of the vegetation canopy. The setting of [leaf_area_index](#land_surface_parameters--leaf_area_index) can be overwritten if respective data is provided by the static driver file.
+      
+l_vangenuchten:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  description:
+    short: Coefficient `l` in the soil hydraulic conductivity parametrization.
+    long: |
+      Coefficient `l` in the soil hydraulic conductivity of the soil in the parameterization after Van Genuchten (1980).   
+
+min_canopy_resistance:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: s m$^{-1}$
+  description:
+    short: Minimum canopy (i.e. the stomatal) resistance to evaporation.
+    long: ''
+
+min_soil_resistance:
+  category: General Settings
+  type: R
+  default: 
+    value: 50.0
+  si-unit: s m$^{-1}$
+  description:
+    short: Minimum soil resistance of the uppermost soil layer to evaporation.
+    long: ''
+      
+n_vangenuchten:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  description:
+    short: Coefficient `n` in the soil hydraulic conductivity of the soil in the parameterization after Van Genuchten (1980).
+    long: ''
+
+pavement_depth_level:
+  category: General Settings
+  type: I
+  default: 
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+  description:
+    short: Number of pavement levels.
+    long: |
+      Extent of the pavement layer in grid levels below the surface. Each layer can only be 100% pavement or 100% soil.
+      
+pavement_heat_capacity:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+  si-unit: J K$^{-1}$ m$^{-3}$
+  description:
+    short: Heat capacity of the pavement layer. 
+    long: |
+      If this parameter is set, the value is assumed for all pavement layers.
+
+pavement_heat_conduct:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+  si-unit: W m$^{-1}$ K$^{-1}$
+  description:
+    short: Thermal conductivity of the pavement layer. 
+    long: |
+      If this parameter is set, the value is assumed for all pavement layers.
+
+pavement_type:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+    depends_on: static driver file
+  description:
+    short: Pavement type according to internal classification
+    long: |
+       Pavement type according to PALM's internal classification (see list below) and which loosely follows the OpenStreetMap classification. Note that the default pavement types (i.e. [pavement_type](#land_surface_parameters--pavement_type) /= *0*) is only allowed in combination with the default soil layer depth configuration (see [dz_soil](#land_surface_parameters--dz_soil)). The setting of [pavement_type](#land_surface_parameters--pavement_type) can be overwritten if respective data is provided by the static driver file.
+
+       | pavement_type   | Description                  | Notes                                             |
+       |----------------:|:-----------------------------|:--------------------------------------------------|
+       | 0               | User defined                 | All parameters must be explicitly set by the user |
+       | 1               | Asphalt/concrete mix         |
+       | 2               | Asphalt (asphalt concrete)   |
+       | 3               | Concrete (Portland concrete) |
+       | 4               | Sett                         |
+       | 5               | Paving stones                |
+       | 6               | Cobblestone                  |
+       | 7               | Metal                        |
+       | 8               | Wood                         |
+       | 9               | Gravel                       |
+       |10               | Fine gravel                  |
+       |11               | Pebblestone                  |
+       |12               | Woodchips                    |
+       |13               | Tartan (sports)              |
+       |14               | Artifical turf (sports)      | 
+       |15               | Clay (sports)                |
+
+       Setting of the pavement type implies the setting of the following parameters:
+       
+       | pavement_type   | [z0_pavement](#land_surface_parameters--z0_pavement) | [z0h_pavement](#land_surface_parameters--z0h_pavement) | [albedo_type](#radiation_parameters--albedo_type) | [emissivity](#radiation_parameters--emissivity) | [pavement_depth_level](#land_surface_parameters--pavement_depth_level) |
+       |----------------:|----------------:|-----------------:|------------:|-----------:|---------------------:|
+       |                 | (m)             | (m)              |             |            |                      |       
+       | 1               | 5.0E-2          | 5.0E-4           | 18          | 0.93       | 7                    | 
+       | 2               | 5.0E-2          | 5.0E-4           | 19          | 0.95       | 7                    |
+       | 3               | 5.0E-2          | 5.0E-4           | 20          | 0.90       | 7                    | 
+       | 4               | 5.0E-2          | 5.0E-4           | 21          | 0.95       | 7                    |
+       | 5               | 5.0E-2          | 5.0E-4           | 22          | 0.93       | 7                    | 
+       | 6               | 5.0E-2          | 5.0E-4           | 23          | 0.94       | 7                    | 
+       | 7               | 5.0E-2          | 5.0E-4           | 24          | 0.70       | 5                    | 
+       | 8               | 5.0E-2          | 5.0E-4           | 25          | 0.90       | 5                    | 
+       | 9               | 5.0E-2          | 5.0E-4           | 26          | 0.92       | 5                    | 
+       |10               | 5.0E-2          | 5.0E-4           | 27          | 0.92       | 5                    | 
+       |11               | 5.0E-2          | 5.0E-4           | 28          | 0.95       | 5                    | 
+       |12               | 5.0E-2          | 5.0E-4           | 29          | 0.88       | 3                    | 
+       |13               | 5.0E-2          | 5.0E-4           | 30          | 0.91       | 4                    | 
+       |14               | 5.0E-2          | 5.0E-4           | 31          | 0.95       | 4                    | 
+       |15               | 5.0E-2          | 5.0E-4           | 32          | 0.91       | 4                    |    
+ 
+       Thermal conductivity (W m$^{-1}$ K$^{-1}$):
+       
+       | [pavement_type](#land_surface_parameters--pavement_type)   | layer 1 | layer 2 | layer 3 | layer 4 | layer 5 | layer 6 | layer 7 | layer 8 |
+       |----------------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|
+       | 1               | 1.00    | 1.00    | 1.00    | 2.10    | 2.10    | 0.40    | 0.40    | -       |  
+       | 2               | 0.82    | 0.82    | 0.82    | 2.10    | 2.10    | 0.40    | 0.40    | -       |  
+       | 3               | 1.51    | 1.51    | 1.51    | 2.10    | 2.10    | 0.40    | 0.40    | -       |  
+       | 4               | 2.19    | 2.19    | 2.19    | 2.19    | 2.10    | 0.40    | 0.40    | -       |  
+       | 5               | 2.19    | 2.19    | 2.19    | 2.19    | 2.10    | 0.40    | 0.40    | -       |  
+       | 6               | 2.19    | 2.19    | 2.19    | 2.19    | 2.10    | 0.40    | 0.40    | -       |  
+       | 7               | 53.3    | 53.3    | 53.3    | 53.3    | 53.3    | -       | -       | -       |  
+       | 8               | 0.12    | 0.12    | 0.12    | 0.12    | 0.12    | -       | -       | -       | 
+       | 9               | 1.40    | 1.40    | 1.40    | 1.40    | 1.40    | -       | -       | -       | 
+       |10               | 1.40    | 1.40    | 1.40    | 1.40    | 1.40    | -       | -       | -       | 
+       |11               | 1.40    | 1.40    | 1.40    | 1.40    | 1.40    | -       | -       | -       | 
+       |12               | 0.20    | 0.20    | 0.20    | -       | -       | -       | -       | -       |  
+       |13               | 0.12    | 0.12    | 0.12    | 0.12    | -       | -       | -       | -       | 
+       |14               | 0.42    | 0.42    | 0.42    | 0.42    | -       | -       | -       | -       |  
+       |15               | 0.84    | 0.84    | 0.84    | 0.84    | -       | -       | -       | -       | 
+       
+       Heat capacity (J K$^{-1}$ m$^{-3}$):
+    
+       | [pavement_type](#land_surface_parameters--pavement_type)   | layer 1 | layer 2 | layer 3 | layer 4 | layer 5 | layer 6 | layer 7 | layer 8 |
+       |----------------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|--------:|
+       | 1               | 2.00E6  | 2.00E6  | 2.00E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 2               | 1.94E6  | 1.94E6  | 1.94E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 3               | 2.11E6  | 2.11E6  | 2.11E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 4               | 2.25E6  | 2.25E6  | 2.25E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 5               | 2.25E6  | 2.25E6  | 2.25E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 6               | 2.25E6  | 2.25E6  | 2.25E6  | 2.00E6  | 2.00E6  | 1.40E6  | 1.40E6  | -       |  
+       | 7               | 3.93E6  | 3.93E6  | 3.93E6  | 3.93E6  | 3.93E6  | -       | -       | -       |  
+       | 8               | 0.66E6  | 0.66E6  | 0.66E6  | 0.66E6  | 0.66E6  | -       | -       | -       | 
+       | 9               | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | -       | -       | -       | 
+       |10               | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | -       | -       | -       | 
+       |11               | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | 1.76E6  | -       | -       | -       | 
+       |12               | 0.50E6  | 0.50E6  | 0.50E6  | -       | -       | -       | -       | -       |  
+       |13               | 2.12E6  | 2.12E6  | 2.12E6  | 2.12E6  | -       | -       | -       | -       | 
+       |14               | 0.63E6  | 0.63E6  | 0.63E6  | 0.63E6  | -       | -       | -       | -       |  
+       |15               | 1.77E6  | 1.77E6  | 1.77E6  | 1.77E6  | -       | -       | -       | -       | 
+       
+
+residual_moisture:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  si-unit: m$^3$ m$^{-3}$
+  description:
+    short: Residual moisture content in the soil model.
+    long: ''
+      
+root_fraction:
+  category: General Settings
+  type: R
+  shape: (21)
+  default:
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  description:
+    short: Root distribution ($R$) in the soil in terms of a root fraction. 
+    long: |
+      A value must be assigned to each soil layer defined by [dz_soil](#land_surface_parameters--dz_soil). For *N* soil layers with index *k* it must hold that $\sum_{k=1}^{N} R_k  =1$. The root fraction it automatically set based on the setting of [vegetation_type](#land_surface_parameters--vegetation_type) using the following look-up table for a default four-layer soil configuration using linear interpolation:
+      
+      | [vegetation_type](#land_surface_parameters--vegetation_type) | Layer 1  | Layer 2 | Layer 3 | Layer 4 |
+      |----------------:|------------------------:|------------------------:|------------------------:|------------------------:|
+      |                 | (0.00 - 0.07 m)         | (0.07 - 0.28 m)         |(0.28 - 1.00 m)          | (1.00 - 2.89 m) |
+      | 1               | 0.00                    | 0.00                    | 0.00                    | 0.00                    |
+      | 2               | 0.24                    | 0.41                    | 0.31                    | 0.04                    |
+      | 3               | 0.35                    | 0.38                    | 0.23                    | 0.04                    |
+      | 4               | 0.26                    | 0.39                    | 0.29                    | 0.06                    |
+      | 5               | 0.26                    | 0.38                    | 0.29                    | 0.07                    |
+      | 6               | 0.24                    | 0.38                    | 0.31                    | 0.07                    |
+      | 7               | 0.25                    | 0.34                    | 0.27                    | 0.14                    |
+      | 8               | 0.27                    | 0.27                    | 0.27                    | 0.09                    |
+      | 9               | 1.00                    | 0.00                    | 0.00                    | 0.00                    |
+      |10               | 0.47                    | 0.45                    | 0.08                    | 0.00                    |
+      |11               | 0.24                    | 0.41                    | 0.31                    | 0.04                    |
+      |12               | 0.17                    | 0.31                    | 0.33                    | 0.19                    |
+      |13               | 0.00                    | 0.00                    | 0.00                    | 0.00                    |
+      |14               | 0.25                    | 0.34                    | 0.27                    | 0.11                    |
+      |15               | 0.23                    | 0.36                    | 0.30                    | 0.11                    |
+      |16               | 0.23                    | 0.36                    | 0.30                    | 0.11                    |
+      |17               | 0.19                    | 0.35                    | 0.36                    | 0.10                    |
+      |18               | 0.19                    | 0.35                    | 0.36                    | 0.10                    | 
+
+saturation_moisture:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  si-unit: m$^3$ m$^{-3}$
+  description:
+    short: Soil moisture at saturation in the soil model.
+    long: ''
+
+skip_time_do_lsm:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Time at which the land surface model is switched on.
+    long: |
+      This parameter can be used to run PALM for a period of time without the land surface model, e.g. for letting the model develop turbulence before it interacts with the land surface.
+
+soil_moisture:
+  category: General Settings
+  type: R
+  shape: (21)
+  default:
+    value: 0.0
+    depends_on: dynamic driver file
+  si-unit: m$^3$ m$^{-3}$
+  description:
+    short: Initial soil moisture content distribution.
+    long: |
+      Volumetric soil moisture content distribution over *N* soil layers as defined by [dz_soil](#land_surface_parameters--dz_soil). This parameter is only considered when [humidity](#initialization_parameters--humidity) = *.T.*. By default, the soil is completely dry. The soil moisture should be set smaller than [saturation_moisture](#land_surface_parameters--saturation_moisture). The setting of [soil_moisture](#land_surface_parameters--soil_moisture) can be overwritten if respective data is provided by the dynamic driver file.
+
+soil_temperature:
+  category: General Settings
+  type: R
+  shape: (21)
+  default:
+     value: ~
+     depends_on: dynamic driver file
+  si-unit: K
+  description:
+    short: Soil temperature distribution.
+    long: |
+      Soil temperature distribution over *N* soil layers. The soil temperatures are defined at the center of the layers as defined by [dz_soil](#land_surface_parameters--dz_soil). The setting of the soil temperature is mandatory unless it is provided by a dynamic driver file.
+
+soil_type:
+  category: General Settings
+  type: I
+  default:
+    value: 3
+    depends_on: static driver file
+  description:
+    short: Soil type used by the soil model according to internal classification.
+    long: |
+      The user can choose from six soil types according to the ECMWF-IFS classification (parameterization after Van Genuchten, 1980) based on soil porosity. The setting of [soil_type](#land_surface_parameters--soil_type) can be overwritten if respective data is provided by the static driver file.
+      
+      | [soil_type](#land_surface_parameters--soil_type) | Description  | Notes      |
+      |----------:|:-------------|:--------------------------------------------------|
+      | 0         | User-defined | All parameters must be explicitly set by the user |
+      | 1         | Coarse       |                                                   |    
+      | 2         | Medium       |                                                   |  
+      | 3         | Medium-fine  |                                                   |  
+      | 4         | Fine         |                                                   |  
+      | 5         | Very fine    |                                                   |  
+      | 6         | Organic      |                                                   |  
+  
+      By setting the soil type, the following parameters will automatically be set:
+      
+      | [soil_type](#land_surface_parameters--soil_type) | [alpha_vg](#land_surface_parameters--alpha_vangenuchten)     | [l_vg](#land_surface_parameters--l_vangenuchten) | [n_vg](#land_surface_parameters--n_vangenuchten) | [gamma<br>_w_sat](#land_surface_parameters--hydraulic_conductivity)| [m_sat](#land_surface_parameters--saturation_moisture)| [m_fc](#land_surface_parameters--field_capacity) | [m_wilt](#land_surface_parameters--wilting_point) | [m_res](#land_surface_parameters--residual_moisture) |
+      |----------:|-------:|--------:|-----:|-------------:|-----------------:|-----------------:|-----------------:|-----------------:|
+      |           |        |         |      | (m s$^{-1}$) | (m$^3$ m$^{-3}$) | (m$^3$ m$^{-3}$) | (m$^3$ m$^{-3}$) | (m$^3$ m$^{-3}$) |
+      |1          | 3.83   | 1.150   | 1.38 | 6.94E-6      | 0.403            | 0.244            | 0.059            | 0.025            |
+      |2          | 3.14   | -2.342  | 1.28 | 1.16E-6      | 0.439            | 0.347            | 0.151            | 0.010            |
+      |3          | 0.83   | -0.588  | 1.25 | 0.26E-6      | 0.430            | 0.383            | 0.133            | 0.010            |
+      |4          | 3.67   | -1.977  | 1.10 | 2.87E-6      | 0.520            | 0.448            | 0.279            | 0.010            |    
+      |5          | 2.65   | 2.500   | 1.10 | 1.74E-6      | 0.614            | 0.541            | 0.335            | 0.010            |
+      |6          | 1.30   | 0.400   | 1.20 | 1.20E-6      | 0.766            | 0.663            | 0.267            | 0.010            |
+      
+surface_type:
+  category: General Settings
+  type: C*10
+  default: 
+    value: 'read_from_file'
+  description:
+    short: Prescribed surface type in the land surface model based on internal classification.
+    long: |
+      Prescribed surface type in the land surface model. Allowed values are *'vegetation'*, *'pavement*', *'water'*, and *'read_from_file'* (deprecated setting *'netcdf'* is still working but will be removed in the future). Depending on the setting of [surface_type](#land_surface_parameters--surface_type), the required parameters are set via [vegetation_type](#land_surface_parameters--vegetation_type), [pavement_type](#land_surface_parameters--pavement_type), or [water_type](#land_surface_parameters--water_type). If the parameter is set to *'read_from_file'*, all required parameters are provided from a static driver file (e.g. for prescribing heterogeneous surface configurations).
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default: 
+    value: .F.
+  description:
+    short: Switch off land surface model, despite the Namelist is set.
+    long: ''
+
+vegetation_coverage:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  description:
+    short: Vegetation coverage on the surface.
+    long: |
+      This parameter can have values in the range of (0.0-1.0) and is treated per surface element. The residual fraction is considered to be bare soil. For small grid spacings, the vegetation coverage can usually be considered to be 1 (i.e. the surface element is 100% covered with vegetation).
+
+vegetation_type:
+  category: General Settings
+  type: I
+  default:
+    value: 2
+  description:
+    short: Vegetation type according to internal classification.
+    long: |
+      Vegetation type according to internal classification used in the land surface model. The user can choose from 19 pre-defined classes similar to the ECMWF-IFS model:
+      
+      | [vegetation_type](#land_surface_parameters--vegetation_type) | Description                | Notes                                             |
+      |:----------------|:---------------------------|:--------------------------------------------------|
+      | 0               | User defined               | All parameters must be explicitly set by the user. |
+      | 1               | bare soil                  |                                                   |
+      | 2               | crops, mixed farming       |                                                   | 
+      | 3               | short grass                |                                                   | 
+      | 4               | evergreen needleleaf trees |                                                   |
+      | 5               | deciduous needleleaf trees |                                                   |
+      | 6               | evergreen broadleaf trees  |                                                   | 
+      | 7               | deciduous broadleaf trees  |                                                   | 
+      | 8               | tall grass                 |                                                   | 
+      | 9               | desert                     |                                                   | 
+      | 10              | tundra                     |                                                   | 
+      | 11              | irrigated crops            |                                                   | 
+      | 12              | semidesert                 |                                                   | 
+      | 13              | ice caps and glaciers      | Not yet implemented                               |
+      | 14              | bogs and marshes           |                                                   | 
+      | 15              | evergreen shrubs           |                                                   | 
+      | 16              | deciduous shrubs           |                                                   | 
+      | 17              | mixed forest/woodland      |                                                   | 
+      | 18              | interrupted forest         |                                                   |
+
+      By setting vegetation_type, the following parameters are automatically set:
+
+      |[vegetation_type](#land_surface_parameters--vegetation_type) | [r_c_min](#land_surface_parameters--min_canopy_resistance) | [LAI](#land_surface_parameters--leaf_area_index)  | [c_veg](#land_surface_parameters--vegetation_coverage) | gD           | [z0_vegetation](#land_surface_parameters--z0_vegetation) | [z0h_vegetation](#land_surface_parameters--z0h_vegetation) | [lambda_s](#land_surface_parameters--lambda_surface_stable) | [lambda_u](#land_surface_parameters--lambda_surface_unstable) | [f_sw_in](#land_surface_parameters--f_shortwave_incoming) | [c_surface](#land_surface_parameters--c_surface) | [albedo_type](#radation_parameters--albedo_type) | [emissivity](#radation_parameters--emissivity) |
+      |---------------:|--------------:|------------------|------:|-------------:|--------------:|---------------:|----------------------:|----------------------:|--------:|----------------------:|------------:|-----------:|
+      |                | (s m$^{-1}$)  | (m$^2$ m$^{-2}$) |       | (hPa$^{-1}$) | (m)           | (m)            | (W m$^{-2}$ K$^{-1}$) | (W m$^{-2}$ K$^{-1}$) |         | (J m$^{-2}$ K$^{-1}$) |             |            |
+      | 1              |   0.0         | 0.00             | 0.00  | 0.00         | 0.005         | 0.5E-4         |  0.0                  |  0.0                  | 0.00    | 0.0                   | 17          | 0.94       | 
+      | 2              | 180.0         | 3.00             | 1.00  | 0.00         | 0.1           | 0.0001         | 10.0                  | 10.0                  | 0.05    | 0.0                   |  2          | 0.95       | 
+      | 3              | 110.0         | 2.00             | 1.00  | 0.00         | 0.03          | 0.3E-4         | 10.0                  | 10.0                  | 0.05    | 0.0                   |  5          | 0.95       | 
+      | 4              | 500.0         | 5.00             | 1.00  | 0.03         | 2.0           | 2.0            | 20.0                  | 15.0                  | 0.03    | 0.0                   |  6          | 0.97       | 
+      | 5              | 500.0         | 5.00             | 1.00  | 0.03         | 2.0           | 2.0            | 20.0                  | 15.0                  | 0.03    | 0.0                   |  8          | 0.97       | 
+      | 6              | 175.0         | 5.00             | 1.00  | 0.03         | 2.0           | 2.0            | 20.0                  | 15.0                  | 0.03    | 0.0                   |  9          | 0.97       | 
+      | 7              | 240.0         | 6.00             | 0.99  | 0.13         | 2.0           | 2.0            | 20.0                  | 15.0                  | 0.03    | 0.0                   |  7          | 0.97       | 
+      | 8              | 100.0         | 2.00             | 0.70  | 0.00         | 0.47          | 0.47E-2        | 10.0                  | 10.0                  | 0.05    | 0.0                   | 10          | 0.97       | 
+      | 9              | 250.0         | 0.05             | 0.00  | 0.00         | 0.013         | 0.013E-2       | 15.0                  | 15.0                  | 0.00    | 0.0                   | 11          | 0.94       | 
+      |10              | 80.0          | 1.00             | 0.50  | 0.00         | 0.034         | 0.034E-2       | 10.0                  | 10.0                  | 0.05    | 0.0                   | 13          | 0.97       | 
+      |11              | 180.0         | 3.00             | 1.00  | 0.00         | 0.5           | 0.5E-2         | 10.0                  | 10.0                  | 0.05    | 0.0                   |  2          | 0.97       | 
+      |12              | 150.0         | 0.50             | 0.10  | 0.00         | 0.17          | 0.17E-2        | 10.0                  | 10.0                  | 0.05    | 0.0                   | 11          | 0.97       | 
+      |13*             | 0.0           | 0.00             | 0.00  | 0.00         | 1.3E-3        | 1.3E-4         | 58.0                  | 58.0                  | 0.00    | 0.0                   | 14          | 0.97       | 
+      |14              | 240.0         | 4.00             | 0.60  | 0.00         | 0.83          | 0.83E-2        | 10.0                  | 10.0                  | 0.05    | 0.0                   |  3          | 0.97       | 
+      |15              | 225.0         | 3.00             | 0.50  | 0.00         | 0.1           | 0.1E-2         | 10.0                  | 10.0                  | 0.05    | 0.0                   |  4          | 0.97       | 
+      |16              | 225.0         | 1.50             | 0.50  | 0.00         | 0.25          | 0.25E-2        | 10.0                  | 10.0                  | 0.05    | 0.0                   |  5          | 0.97       | 
+      |17              | 250.0         | 5.00             | 1.00  | 0.03         | 2.0           | 2.0            | 20.0                  | 15.0                  | 0.03    | 0.0                   | 10          | 0.97       | 
+      |18              | 175.0         | 2.50             | 1.00  | 0.03         | 1.1           | 1.1            | 20.0                  | 15.0                  | 0.03    | 0.0                   |  7          | 0.97       | 
+      
+      *) dummy value for this class has not been implemented in PALM yet.
+
+water_temperature:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[water_type](#land_surface_parameters--water_type)'
+  si-unit: K
+  description:
+    short: Initial water temperature.
+    long: |
+      Initial water body temperature, as prescribed by [water_type](#land_surface_parameters--water_type). Note that water bodies are not interactive in PALM at the moment so that the water temperature remains constant during the simulation unless the user prescribes temporal changes in the water body temperature via the user interface.
+      
+water_type:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+    depends_on: static driver file
+  description:
+    short: Water body type based on internal classification.
+    long: |
+      Water body type based on PALM's classification. By setting [water_type](#land_surface_parameters--water_type), the following parameters are automatically set:
+      
+      | [water_type](#land_surface_parameters--water_type) | Description | [water_temperature](#land_surface_parameters--water_temperature) | [z0_water](#land_surface_parameters--z0_water) | [z0h_water](#land_surface_parameters--z0h_water) | [albedo_type](#radiation_parameters--albedo_type) | [emissivity](#radiation_parameters--emissivity) | Notes |
+      |-----------:|:-------------|-----------------:|---------:|----------:|------------:|----------:|:-------|
+      |            |              | (K)              | (m)      | (m)       |             |           |        |
+      | 0          | User defined |                - |        - |         - |          -  |         - | All parameters must be explicitly set by the user |
+      | 1          | Lake         | 283.0            | 0.01     | 0.001     | 1           | 0.99      |
+      | 2          | River        | 283.0            | 0.01     | 0.001     | 1           | 0.99      |
+      | 3          | Ocean        | 283.0            | 0.01     | 0.001     | 1           | 0.99      |
+      | 4          | Pond         | 283.0            | 0.01     | 0.001     | 1           | 0.99      |
+      | 5          | Fountain     | 283.0            | 0.01     | 0.001     | 1           | 0.99      |
+      
+      Note that currently there are no differences between the individual water types so that the setting of a [water_type](#land_surface_parameters--water_type) is of no relevance for the simulation.
+
+wilting_point:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[soil_type](#land_surface_parameters--soil_type)'
+  si-unit: m$^3$ m$^{-3}$
+  description:
+    short: Volumetric soil moisture content at permanent wilting point as used in the soil model.
+    long: ''
+      
+z0_pavement:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+  si-unit: m
+  description:
+    short: Roughness length for momentum for pavements.
+    long: |
+      Roughness length for momentum for a surface classified as pavement via the setting of [surface_type](#land_surface_parameters--surface_type) = *'pavement'*. The setting of this parameter overwrites the default setting via [pavement_type](#land_surface_parameters--pavement_type).
+      
+z0_vegetation:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: m
+  description:
+    short: Roughness length for momentum for vegetation.
+    long: |
+      Roughness length for momentum for a surface classified as vegetation via the setting of [surface_type](#land_surface_parameters--surface_type) = *'vegetation'*. The setting of this parameter overwrites the default setting via [vegetation_type](#land_surface_parameters--vegetation_type).
+      
+z0_water:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[water_type](#land_surface_parameters--water_type)'
+  si-unit: m
+  description:
+    short: Roughness length for momentum for water.
+    long: |
+      Roughness length for momentum for a surface classified as water via the setting of [surface_type](#land_surface_parameters--surface_type) = *'water'*. The setting of this parameter overwrites the default setting via [water_type](#land_surface_parameters--water_type).
+      
+z0h_pavement:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+  si-unit: m
+  description:
+    short: Roughness length for heat for pavements.
+    long: |
+      Roughness length for heat for a surface classified as pavement via the setting of [surface_type](#land_surface_parameters--surface_type) = *'pavement'*. The setting of this parameter overwrites the default setting via [pavement_type](#land_surface_parameters--pavement_type).
+      
+z0h_vegetation:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+  si-unit: m
+  description:
+    short: Roughness length for heat for vegetation.
+    long: |
+      Roughness length for heat for a surface classified as vegetation via the setting of [surface_type](#land_surface_parameters--surface_type) = *'vegetation'*. The setting of this parameter overwrites the default setting via [vegetation_type](#land_surface_parameters--vegetation_type).
+      
+z0h_water:
+  category: General Settings
+  type: R
+  default:
+    depends_on: '[water_type](#land_surface_parameters--water_type)'
+  si-unit: m
+  description:
+    short: Roughness length for heat for waters.
+    long: |
+      Roughness length for heat for a surface classified as water via the setting of [surface_type](#land_surface_parameters--surface_type) = *'water'*. The setting of this parameter overwrites the default setting via [water_type](#land_surface_parameters--water_type).
+
+z0q_pavement:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[pavement_type](#land_surface_parameters--pavement_type)'
+    value_of: '[z0h_pavement](#land_surface_parameters--z0h_pavement)'
+  si-unit: m
+  description:
+    short: Roughness length for moisture for pavements.
+    long: |
+      Roughness length for moisture for a surface classified as pavement via the setting of [surface_type](#land_surface_parameters--surface_type) = *'pavement'*. The setting of this parameter overwrites the default setting via [pavement_type](#land_surface_parameters--pavement_type). By default, [z0q_pavement](#land_surface_parameters--z0q_pavement) is set equal to the value of [z0h_pavement](#land_surface_parameters--z0h_pavement).
+      
+z0q_vegetation:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[vegetation_type](#land_surface_parameters--vegetation_type)'
+    value_of: '[z0h_vegetation](#land_surface_parameters--z0h_vegetation)'
+  si-unit: m
+  description:
+    short: Roughness length for moisture for pavements.
+    long: |
+      Roughness length for moisture for a surface classified as vegetation via the setting of [surface_type](#land_surface_parameters--surface_type) = *'vegetation'*. The setting of this parameter overwrites the default setting via [vegetation_type](#land_surface_parameters--vegetation_type). By default, [z0q_vegetation](#land_surface_parameters--z0q_vegetation) is set equal to the value of [z0h_vegetation](#land_surface_parameters--z0h_vegetation).
+      
+z0q_water:
+  category: General Settings
+  type: R
+  default: 
+    depends_on: '[water_type](#land_surface_parameters--water_type)'
+    value_of: '[z0h_water](#land_surface_parameters--z0h_water)'
+  si-unit: m
+  description:
+    short: Roughness length for moisture for water.
+    long: |
+      Roughness length for moisture for a surface classified as water via the setting of [surface_type](#land_surface_parameters--surface_type) = *'water'*. The setting of this parameter overwrites the default setting via [water_type](#land_surface_parameters--water_type). By default, [z0q_water](#land_surface_parameters--z0q_water) is set equal to the value of [z0h_water](#land_surface_parameters--z0h_water).

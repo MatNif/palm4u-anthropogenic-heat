@@ -1,0 +1,122 @@
+---
+attributes:
+  author: Sebastian Schubert, schubert.2@tu-berlin.de
+  contact_person: Sebastian Schubert, schubert.2@tu-berlin.de
+  acronym: TU
+  comment: created with palm_csd
+  data_content: static driver generation test
+  dependencies: None, fortunately
+  keywords: Berlin, Tiergarten, Test
+  source: DL-DE->BY-2.0 Berlin data processed by DLR
+  campaign: Automatic tests
+  location: Berlin-Mitte
+  site: Berlin Tiergarten
+  institution: Technische Universität Berlin
+  palm_version: 6.0
+
+settings:
+  rotation_angle: 0.0
+  lai_roof_intensive: 1.5
+  lai_roof_extensive: 3.0
+  lai_high_vegetation_default: 6.0
+  lai_low_vegetation_default: 3.0
+  lai_alpha: 5.0
+  lai_beta: 3.0
+  patch_height_default: 10.0
+  bridge_width: 3.0
+  debug_mode: False
+  season: summer
+
+input_01:
+  path: tests/99_full_application/input
+  pixel_size: 15.0
+  file_x_UTM: Berlin_CoordinatesUTM_x_15m_DLR.nc
+  file_y_UTM: Berlin_CoordinatesUTM_y_15m_DLR.nc
+  file_lon: Berlin_CoordinatesLatLon_x_15m_DLR.nc
+  file_lat: Berlin_CoordinatesLatLon_y_15m_DLR.nc
+  file_zt: Berlin_terrain_height_15m_DLR.nc
+  file_buildings_2d: Berlin_building_height_15m_DLR.nc
+  file_building_id: Berlin_building_id_15m_DLR.nc
+  file_building_type: Berlin_building_type_15m_DLR.nc
+  file_bridges_2d: Berlin_bridges_height_15m_DLR.nc
+  file_bridges_id: Berlin_bridges_id_15m_DLR.nc
+  file_lai:  Berlin_leaf_area_index_15m_DLR_WANG_summer.nc
+  file_vegetation_type: Berlin_vegetation_type_15m_DLR.nc
+  file_vegetation_height: Berlin_vegetation_patch_height_15m_DLR.nc
+  file_pavement_type: Berlin_pavement_type_15m_DLR.nc
+  file_water_type: Berlin_water_type_15m_DLR.nc
+  file_soil_type: Berlin_soil_type_15m_DLR.nc
+  file_street_type:  Berlin_street_type_15m_DLR.nc
+  file_street_crossings:  Berlin_street_crossings_15m_DLR.nc
+  file_tree_height:  Berlin_trees_height_clean_15m_DLR.nc
+  file_tree_crown_diameter:  Berlin_trees_crown_clean_15m_DLR.nc
+  file_tree_trunk_diameter:  Berlin_trees_trunk_clean_15m_DLR.nc
+  file_tree_type:  Berlin_trees_type_15m_DLR.nc
+  file_patch_height:  Berlin_vegetation_patch_height_15m_DLR.nc
+  file_vegetation_on_roofs:  Berlin_vegetation_on_roofs_15m_DLR.nc
+
+input_02:
+  path: tests/99_full_application/input
+  pixel_size: 3.0
+  file_x_UTM: Berlin_CoordinatesUTM_x_3m_DLR.nc
+  file_y_UTM: Berlin_CoordinatesUTM_y_3m_DLR.nc
+  file_lon: Berlin_CoordinatesLatLon_x_3m_DLR.nc
+  file_lat: Berlin_CoordinatesLatLon_y_3m_DLR.nc
+  file_zt: Berlin_terrain_height_3m_DLR.nc
+  file_buildings_2d: Berlin_building_height_3m_DLR.nc
+  file_building_id: Berlin_building_id_3m_DLR.nc
+  file_bridges_2d: Berlin_bridges_height_3m_DLR.nc
+  file_bridges_id: Berlin_bridges_id_3m_DLR.nc
+  file_building_type: Berlin_building_type_3m_DLR.nc
+  file_lai:  Berlin_leaf_area_index_3m_DLR_WANG_summer.nc
+  file_vegetation_type: Berlin_vegetation_type_3m_DLR.nc
+  file_vegetation_height: Berlin_vegetation_patch_height_3m_DLR.nc
+  file_pavement_type: Berlin_pavement_type_3m_DLR.nc
+  file_water_type: Berlin_water_type_3m_DLR.nc
+  file_soil_type: Berlin_soil_type_3m_DLR.nc
+  file_street_type:  Berlin_street_type_3m_DLR.nc
+  file_street_crossings:  Berlin_street_crossings_3m_DLR.nc
+  file_tree_height:  Berlin_trees_height_clean_3m_DLR.nc
+  file_tree_crown_diameter:  Berlin_trees_crown_clean_3m_DLR.nc
+  file_tree_trunk_diameter:  Berlin_trees_trunk_clean_3m_DLR.nc
+  file_tree_type:  Berlin_trees_type_3m_DLR.nc
+  file_patch_height:  Berlin_vegetation_patch_height_3m_DLR.nc
+  file_vegetation_on_roofs:  Berlin_vegetation_on_roofs_3m_DLR.nc
+
+output:
+  path: tests/99_full_application/
+  file_out: berlin_tiergarten
+  version: 1
+
+domain_root:
+  pixel_size: 15.0
+  input_lower_left_x: 150
+  input_lower_left_y: 150
+  nx: 229
+  ny: 129
+  buildings_3d: False
+  dz: 15.0
+  allow_high_vegetation: False
+  generate_vegetation_patches: True
+  use_palm_z_axis: False
+  interpolate_terrain: False
+  vegetation_on_roofs: False
+  street_trees: True
+  overhanging_trees: False
+
+domain_N02:
+  pixel_size: 3.0
+  input_lower_left_x: 15
+  input_lower_left_y: 24
+  nx: 289
+  ny: 239
+  buildings_3d: True
+  dz: 1.0
+  allow_high_vegetation: False
+  generate_vegetation_patches: True
+  use_palm_z_axis: True
+  interpolate_terrain: True
+  domain_parent: root
+  vegetation_on_roofs: True
+  street_trees: True
+  overhanging_trees: False

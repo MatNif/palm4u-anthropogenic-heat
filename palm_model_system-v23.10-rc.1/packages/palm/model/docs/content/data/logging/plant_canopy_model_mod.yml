@@ -1,0 +1,127 @@
+PCM0001:
+  loglevel: ERROR
+  message: |
+    output of "..." requires setting of parameter cthf /= 0.0
+  description: ''
+
+PCM0002:
+  loglevel: ERROR
+  message: |
+    time averaging of a static quantity ("...") is not provided
+  description: |
+    Remove this quantity from the list of output quantities given via [data_output](../Namelists/#runtime_parameters--data_output), or just remove the appendix *'_av'* from the respective string. Time averaging of static quantities is not provided, because these quantities do not change in time.
+
+PCM0003:
+  loglevel: ERROR
+  message: |
+    plant_canopy = .TRUE. is not allowed in the ocean
+  description: ''
+
+PCM0004:
+  loglevel: ERROR
+  message: |
+    plant_canopy = .TRUE. requires a non-zero drag coefficient, given value is canopy_drag_coeff = 0.0
+  description: |
+    When simulating a plant canopy, a non-zero [canopy_drag_coeff](../Namelists/#plant_canopy_parameters--canopy_drag_coeff). For a zero value, there would be no effect pf the plant canopy on the flow.
+
+PCM0005:
+  loglevel: ERROR
+  message: |
+    using the beta function for the construction of the leaf area density profile requires both alpha_lad and beta_lad to be /= 9999999.9
+  description: |
+    If the lad (leaf area density) profile of a vegetation canopy is to be constructed using a beta distribution, parameters [alpha_lad](../Namelists/#plant_canopy_parameters--alpha_lad) and [beta_lad](../Namelists/#plant_canopy_parameters--beta_lad) must be set, and [lai_beta](../Namelists/#plant_canopy_parameters--lai_beta) must be given a non-zero value.
+
+PCM0006:
+  loglevel: ERROR
+  message: |
+    using the beta function for the construction of the leaf area density profile requires a non-zero lai_beta, but given value is lai_beta = 0.0
+  description: |
+    If the lad (leaf area density) profile of a vegetation canopy is to be constructed using a beta distribution, parameters [alpha_lad](../Namelists/#plant_canopy_parameters--alpha_lad) and [beta_lad](../Namelists/#plant_canopy_parameters--beta_lad) must be set, and [lai_beta](../Namelists/#plant_canopy_parameters--lai_beta) must be given a non-zero value.
+
+PCM0007:
+  loglevel: ERROR
+  message: |
+    simultaneous setting of alpha_lad /= 9999999.9 combined with beta_lad /= 9999999.9 and lad_surface /= 0.0 is not possible, use either vertical gradients or the beta function for the construction of the leaf area density profile
+  description: |
+    The lad (leaf area density) profile of a vegetation canopy can be either constructed with a beta function by prescribing parameters [alpha_lad](../Namelists/#plant_canopy_parameters--alpha_lad), [beta_lad](../Namelists/#plant_canopy_parameters--beta_lad), and [lai_beta](../Namelists/#plant_canopy_parameters--lai_beta), or from piecewise linear segments by prescribing [lad_surface](../Namelists/#plant_canopy_parameters--lad_surface), [lad_vertical_gradient](../Namelists/#plant_canopy_parameters--lad_vertical_gradient), and [lad_vertical_gradient_level](../Namelists/#plant_canopy_parameters--lad_vertical_gradient_level).
+
+PCM0008:
+  loglevel: ERROR
+  message: |
+    plant_canopy = .TRUE. requires cloud_scheme /= seifert_beheng
+  description: |
+    The plant canopy model has been switched on. See [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) for alternative schemes.
+
+PCM0009:
+  loglevel: ERROR
+  message: |
+    Reading canopy data - too much data points along the vertical coordinate.
+  description: |
+    The size of the vertical canopy grid on the static input file exceeds the vertical model domain size.
+
+PCM0010:
+  loglevel: ERROR
+  message: |
+    Reading canopy data - vertical coordinate do not match numeric grid at zlad(k= ...).
+  description: |
+    The values of `zlad` differ from the vertical numeric grid.
+
+PCM0011:
+  loglevel: ERROR
+  message: |
+    Reading canopy data - vertical dimension "zlad" missing.
+  description: ''
+
+PCM0012:
+  loglevel: INFO
+  message: |
+    LAD/BAD profile is omitted at building grid points which have been artificially created by the topography filtering
+  description: |
+    Due to numerical reasons one-grid point cavities in a given topography are automatically filtered, i.e. replaced by a building with height based on the surrounding buildings. If resolved-scale vegetation has been defined for the original non-building point via LAD and/or BAD profile, these profiles are omitted.
+
+PCM0013:
+  loglevel: ERROR
+  message: |
+    Plant-canopy model is switched-on but no plant canopy is present in the model domain.
+  description: ''
+
+PCM0014:
+  loglevel: ERROR
+  message: |
+    Local vegetation height on top of topography exceeds height of model domain.
+  description: ''
+
+PCM0015:
+  loglevel: ERROR
+  message: |
+    Incorrect type of plant canopy. Allowed values 0 <= pctype <= 10, but pctype is ...
+  description: ''
+
+PCM0016:
+  loglevel: ERROR
+  message: |
+    Unknown record type in file PLANT_CANOPY_DATA_3D: "..."
+  description: |
+    Mis-configured ASCII file PLANT_CANOPY_DATA_3D.
+
+PCM0017:
+  loglevel: ERROR
+  message: |
+    error opening file PLANT_CANOPY_DATA_3D
+  description: |
+    ASCII file PLANT_CANOPY_DATA_3D is probably missing.
+
+PCM0018:
+  loglevel: ERROR
+  message: |
+    error reading file PLANT_CANOPY_DATA_3D
+  description: |
+    Mis-configured ASCII file PLANT_CANOPY_DATA_3D.
+
+PCM0019:
+  loglevel: ERROR
+  message: |
+    wrong component: ...
+  description: |
+    This message is generated by the procedure `pcm_tendency` of the plant canopy model, which calculates drag for velocity components and scalar quantities. The calculated components are: `u`, `v`, `w`, `pt`, `q`, `e`, `s` (1-7). The subroutine is only called for these 7 quantities. The error means that the routine is probably called from the user-interface for a non-defined component. Either adjust the user-interface, or routines `pcm_tendency` and `pcm_tendency_ij` in file `plant_canopy_model_mod.f90`. If no user-interface is used, contact the PALM devekopers, e.g. via the trouble-ticket system.
+

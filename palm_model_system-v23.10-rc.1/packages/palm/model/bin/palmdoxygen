@@ -1,0 +1,65 @@
+#!/bin/bash
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2021  Leibniz Universitaet Hannover
+#--------------------------------------------------------------------------------#
+# generate_documentation - script for generating the PALM code documentation
+#--------------------------------------------------------------------------------#
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_LOCATION="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+project_root_dir=$(readlink -f "${SCRIPT_LOCATION}/../")
+build_dir=$(readlink -f "${project_root_dir}/build/")
+
+doxygen_config_file=$(readlink -f "${project_root_dir}/share/doxygen/palm2doxygen.config")
+
+echo "Generating PALM source code documentation..."
+
+
+doxygen_dir=${build_dir}/doxygen
+
+# Checking for doxygen
+if type -t doxygen; then
+
+   # Removing old documentation
+   if [[ -d ${doxygen_dir} ]];then
+      echo "Remove old documentation"
+      rm -r ${doxygen_dir}
+   fi
+   # Generating HTML documentation
+   echo "found doxygen. Continuing..."
+   mkdir -p ${doxygen_dir}
+   cd ${doxygen_dir}
+   doxygen ${doxygen_config_file}
+   if [[ $? -ne 0 ]];then
+      echo "doxygen detected an error."
+      exit 1
+   fi
+   ln -s ${doxygen_dir}/html/index.html ${doxygen_dir}/PALM_doc.html
+   echo "HTML source code documentation generated."
+
+else
+   echo "ERROR: doxygen not found."
+   echo "Skipping PALM documentation generation. Terminating!"
+   exit 1
+fi
+
+echo "The PALM source code documentation is located in: ${doxygen_dir}"
+echo "Done."

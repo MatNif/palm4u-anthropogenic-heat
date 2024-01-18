@@ -1,0 +1,149 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "ocean_parameters"
+
+bc_sa_t:
+  category: Boundary Conditions
+  type: C*20
+  default: neumann
+  description:
+    short: Top boundary condition of the salinity.
+    long: |
+      When a constant salinity flux is used at the top boundary (see [top_salinityflux](#ocean_parameters--top_salinityflux)), [bc_sa_t](#ocean_parameters--bc_sa_t) = *'neumann'* must be used, because otherwise the resolved scale may contribute to the top flux so that a constant value of the flux cannot be guaranteed.
+  allowed_values:
+    - value: dirichlet
+      description: |
+        Salinity at the top (`sa(k=nz+1)`, i.e. sea surface) does not change during the run.
+    - value: neumann
+      description: |
+        Vertical gradient of the salinity at the top is zero ( `sa(k=nz+1) = sa(k=nz)` ).
+
+
+bottom_salinityflux:
+  category: Boundary Conditions
+  type: R
+  default: 0.0
+  si-unit: psu ms^-1^
+  description:
+    short: Kinematic salinity flux near the ocean bottom.
+    long: |
+      The respective salinity flux value is used as the bottom (horizontally homogeneous) boundary condition for the salinity equation. This additionally requires that a Neumann condition must be used for the salinity, which is currently the only available bottom boundary condition (so it does not need to be set).
+
+      See also [top_salinityflux](#ocean_parameters--top_salinityflux).
+
+
+salinity:
+  category: Mode
+  type: L
+  default: .T.
+  description:
+    short: Parameter to switch on/off calculation of the salinity equation.
+    long: |
+      You may set [salinity](#ocean_parameters--salinity) = *.F.* in ocean mixed layer studies (where the turbulent layer is shallow) to save CPU time. In that case, a constant salinity as given by [sa_surface](#ocean_parameters--sa_surface) is assumed when calculating the equation of state.
+
+      In the case of [salinity](#ocean_parameters--salinity) = *.F.*, non-zero values for parameters [bottom_salinityflux](#ocean_parameters--bottom_salinityflux) and [top_salinityflux](#ocean_parameters--top_salinityflux) are not allowed.
+
+sa_surface:
+  category: Initial Conditions
+  type: R
+  default: 35.0
+  si-unit: psu
+  description:
+    short: Ocean surface salinity.
+    long: |
+      This parameter is used to set the value of the salinity `sa` at the sea surface (vertical grid index k=nzt). Starting from this value, the initial vertical salinity profile is constructed from the sea surface down to the bottom of the sea (vertical grid index `k=0`) by using [sa_vertical_gradient](#ocean_parameters--sa_vertical_gradient) and [sa_vertical_gradient_level](#ocean_parameters--sa_vertical_gradient_level).
+
+sa_vertical_gradient:
+  category: Initial Conditions
+  type: R
+  shape: (10)
+  default: 0.0
+  si-unit: psu / 100 m
+  description:
+    short: Salinity gradient(s) of the initial salinity profile.
+    long: |
+      This salinity gradient holds starting from the height level defined by [sa_vertical_gradient_level](#ocean_parameters--sa_vertical_gradient_level) down to the bottom boundary or down to the next height level defined by [sa_vertical_gradient_level](#ocean_parameters--sa_vertical_gradient_level). More precisely, for all uv levels, k, where zu(k) < [sa_vertical_gradient_level](#ocean_parameters--sa_vertical_gradient_level), sa_init(k) is set: sa_init(k) = sa_init(k+1) - dzu(k+1) * [sa_vertical_gradient](#ocean_parameters--sa_vertical_gradient). A total of 10 different gradients for 11 height intervals (10 intervals if [sa_vertical_gradient_level](#ocean_parameters--sa_vertical_gradient_level)(1) = *0.0*) can be assigned. The surface salinity at k=nzt is assigned via [sa_surface](#ocean_parameters--sa_surface).
+
+      **Example:**
+
+          > sa_vertical_gradient = *1.0*, *0.5*,
+          > sa_vertical_gradient_level = *-500.0*, *-1000.0*,
+
+      The example defines the salinity to be constant down to z = -500.0 m with a salinity given by [sa_surface](#ocean_parameters--sa_surface). For -500.0 m < z <= -1000.0 m the salinity gradient is 1.0 psu / 100 m and for z < -1000.0 m down to the bottom boundary it is 0.5 psu / 100 m (it is assumed that the assigned height levels correspond with uv levels).
+
+sa_vertical_gradient_level:
+  category: Initial Conditions
+  type: R
+  shape: (10)
+  default: 0.0
+  si-unit: m
+  description:
+    short: Height level from which on the salinity gradient defined by [sa_vertical_gradient](#ocean_parameters--sa_vertical_gradient) is effective.
+    long: |
+      The height levels must be assigned in descending order. The default values result in a constant salinity profile regardless of the values of [sa_vertical_gradient](#ocean_parameters--sa_vertical_gradient) (unless the bottom boundary of the model is lower than -100000.0 m). For the piecewise construction of salinity profiles see [sa_vertical_gradient](#ocean_parameters--sa_vertical_gradient).
+
+stokes_waveheight:
+  category: Parameterization
+  type: R
+  default: 0.0
+  si-unit: m
+  description:
+    short: Parameter to switch on and set the effects of Langmuir circulation in the ocean mode (height of ocean waves).
+    long: |
+      The effects of Langmuir circulation are considered by the Craik-Leibovich vortex force and the Stokes drift velocity, as described in Noh et al. (2004), JPO. In order to switch these effects on, you need to set both parameters, [stokes_waveheight](#ocean_parameters--stokes_waveheight) and [stokes_wavelength](#ocean_parameters--stokes_wavelength) to a non-zero positive value. [stokes_waveheight](#ocean_parameters--stokes_waveheight) sets the height of the ocean surface waves to be used for calculating the vertical profile of the Stokes drift velocity. The direction of the Stokes drift velocity is derived from parameters [top_momentumflux_u](#initialization_parameters--top_momentumflux_u) and [top_momentumflux_v](#initialization_parameters--top_momentumflux_v), which define the wind stress at the ocean surface.
+
+stokes_wavelength:
+  category: Parameterization
+  type: R
+  default: 0.0
+  si-unit: m
+  description:
+    short: Parameter to switch on and set the effects of Langmuir circulation in the ocean mode (wavelength of ocean waves).
+    long: |
+      [stokes_wavelength](#ocean_parameters--stokes_wavelength) sets the wavelength of the ocean surface waves to be used for calculating the vertical profile of the Stokes drift velocity. See [stokes_waveheight](#ocean_parameters--stokes_waveheight) for more information about how the Stokes drift is determined.
+
+surface_cooling_spinup_time:
+  category: Boundary Conditions
+  type: R
+  default: ~
+  si-unit: s
+  description:
+    short: Time after which the surface heat flux is switched off.
+    long: |
+      Limits the duration of a surface heat flux forcing. If, for example, a surface cooling is required during an initial spin-up phase for only 15 minutes in order to trigger the development of a Langmuir circulation, the heat flux must be given via [top_heatflux](#initialization_parameters--top_heatflux) and [surface_cooling_spinup_time](#ocean_parameters--surface_cooling_spinup_time) = 900.0 must be set. The default value means that the surface flux is (probably) never switched off.
+
+      **Attention:** <br>
+      In nested runs [surface_cooling_spinup_time](#ocean_parameters--surface_cooling_spinup_time) should be given the same value in all domains (root domain as well as child domains).
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default: .F.
+  description:
+    short: Parameter to switch on/off the module in general.
+    long: |
+      [switch_off_module](#ocean_parameters--switch_off_module) = .T. can be used to switch off this module without removing (or commenting) the namelist from the namelist file.
+
+top_salinityflux:
+  category: Boundary Conditions
+  type: R
+  default: ~
+  si-unit: psu ms^-s^
+  description:
+    short: Kinematic salinity flux at the top boundary, i.e. the sea surface.
+    long: |
+      The respective salinity flux value is used as the top (horizontally homogeneous) boundary condition for the salinity equation. This additionally requires that a Neumann condition for the salinity (see [bc_sa_t](#ocean_parameters--bc_sa_t) has been set, because otherwise the resolved scale transport may contribute to the top flux so that a constant salinity flux cannot be guaranteed.
+
+      The application of a salinity flux at the model top additionally requires the setting of the initial parameter [use_top_fluxes](#initialization_parameters--use_top_fluxes) = *.T.*
+
+      See also [bottom_salinityflux](#ocean_parameters--bottom_salinityflux).
+
+wave_breaking:
+  category: Parameterization
+  type: L
+  default: .F.
+  description:
+    short: Switches on turbulence generation by wave breaking.
+    long: |
+      [wave_breaking](#ocean_parameters--wave_breaking) = *.T.* switches on turbulence generation by wave breaking at the ocean surface. This way, random perturbations are added to the horizontal velocity components at the top model layer (at grid index k = nzt). The parameterization is realized as described in Noh et al. (2004), JPO.
+
+      **WARNING: The implemented parameterization is designed for a vertical grid spacing of dz = 1.25 m and time steps of about 4 s. It will probably fail for other setups.**

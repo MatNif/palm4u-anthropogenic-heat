@@ -1,0 +1,342 @@
+LSM0001:
+  loglevel: ERROR
+  message: |
+    output of ... requires the land surface model to be switched on
+  description: |
+    The requested output quantity is only available when using the LSM.
+
+LSM0002:
+  loglevel: ERROR
+  message: |
+    illegal value for data_output: "..." only 2d-horizontal cross sections are allowed for this value
+  description: |
+    The listed quantities are pure two-dimensional xy-cross-sections. They are not available as 3d data or xz/yz cross-sections. Note that these quantities are always marked by an asterisk as last character. See also [data_output](../Namelists/#runtime_parameters--data_output).
+
+LSM0003:
+  loglevel: ERROR
+  message: |
+    output of "..." requires the land surface model to be switched on
+  description: |
+    To output the requested variable, the land surface model must be switched on via namelist `&land_surface_parameters`.
+
+LSM0004:
+  loglevel: ERROR
+  message: |
+    data_output_pr = ... is only implemented for the land surface model
+  description: |
+    The chosen quantity is related to the LSM, but the LSM was not activated.
+
+LSM0005:
+  loglevel: ERROR
+  message: |
+    unknown surface type: surface_type = "..."
+  description: |
+    See [surface_type](../Namelists/#land_surface_parameters--surface_type) for allowed values.
+
+LSM0006:
+  loglevel: ERROR
+  message: |
+    surface_type = "netcdf" is deprecated and will be removed. Please use "read_from_file" instead.
+  description: ''
+
+LSM0007:
+  loglevel: ERROR
+  message: |
+    lsm requires setting of bc_pt_b = "dirichlet" and bc_q_b = "dirichlet"
+  description: |
+    In case the land surface model (LSM) is used, the surface fluxes have to be calculated by means of surface values of potential temperature and humidity (that are provided by the LSM), which reflects setting dirichlet boundary conditions for [bc_pt_b](../Namelists/#initialization_parameters--bc_pt_b) and [bc_q_b](../Namelists/#initialization_parameters--bc_q_b).
+
+LSM0008:
+  loglevel: ERROR
+  message: |
+    lsm requires constant_flux_layer = .T.
+  description: |
+    When using the LSM it is required to use a constant flux layer (see [constant_flux_layer](../Namelists/#initialization_parameters--constant_flux_layer)).
+
+LSM0009:
+  loglevel: ERROR
+  message: |
+    lsm requires the radiation model to be switched on
+  description: |
+    When using the LSM it is required to use the radiation model, i.e. to include a [radiation parameters namelist](../Namelists/#radiation-parameters).
+
+LSM0010:
+  loglevel: ERROR
+  message: |
+    soil_type = ... is out of the valid range (surface type "vegetation" or "pavement")
+  description: |
+    See [soil_type](../Namelists/#land_surface_parameters--soil_type) for allowed values.
+
+LSM0011:
+  loglevel: ERROR
+  message: |
+    soil_type = ... is out of the valid range at (j,i) = ... (surface type "netcdf" or "read_from_file")
+  description: |
+    See [soil_type](../Namelists/#land_surface_parameters--soil_type) for allowed values.
+
+LSM0012:
+  loglevel: ERROR
+  message: |
+    vegetation_type = ... is out of the valid range (surface type "vegetation")
+  description: |
+    See [vegetation_type](../Namelists/#land_surface_parameters--vegetation_type) for allowed values.
+
+LSM0013:
+  loglevel: ERROR
+  message: |
+    vegetation_type = ... is out of the valid range at (j,i) = ... (surface type "netcdf" or "read_from_file")
+  description: |
+    See [vegetation_type](../Namelists/#land_surface_parameters--vegetation_type) for allowed values.
+
+LSM0014:
+  loglevel: ERROR
+  message: |
+    pavement_type = ... is out of the valid range (surface type "pavement")
+  description: |
+    See [pavement_type](../Namelists/#land_surface_parameters--pavement_type) for allowed values.
+
+LSM0015:
+  loglevel: ERROR
+  message: |
+    pavement_type = ... is out of the valid range at (j,i) = ... (surface type "netcdf" or "read_from_file")
+  description: |
+    See [pavement_type](../Namelists/#land_surface_parameters--pavement_type) for allowed values.
+
+LSM0016:
+  loglevel: ERROR
+  message: |
+    water_type = ... is out of the valid range (surface type "water")
+  description: |
+    See [water_type](../Namelists/#land_surface_parameters--water_type) for allowed values.
+
+LSM0017:
+  loglevel: ERROR
+  message: |
+    water_type = ... is out of the valid range at (j,i) = ... (surface type "netcdf" or "read_from_file")
+  description: |
+    See [water_type](../Namelists/#land_surface_parameters--water_type) for allowed values.
+
+LSM0018:
+  loglevel: ERROR
+  message: |
+    vegetation_type = 0 (user defined) requires setting of ...
+  description: |
+    In case a user-defined vegetation is used, all LSM parameters must be explicitly set by the user. See [vegetation_type](../Namelists/#land_surface_parameters--vegetation_type).
+
+LSM0019:
+  loglevel: ERROR
+  message: |
+    vegetation_type = 1 (bare soil) requires vegetation_coverage = 0
+  description: |
+    Change the value of [vegetation_type](../Namelists/#land_surface_parameters--vegetation_type) or [vegetation_coverage](../Namelists/#land_surface_parameters--vegetation_coverage).
+
+LSM0020:
+  loglevel: ERROR
+  message: |
+    water_type = 0 (user_defined) requires setting of z0_water /= 9999999.9
+  description: |
+    If [water_type](../Namelists/#land_surface_parameters--water_type) is set to be user-specific, a roughness length for momentum (in m) for water surface types must be set.
+
+LSM0021:
+  loglevel: ERROR
+  message: |
+    water_type = 0 (user_defined) requires setting of z0h_water /= 9999999.9
+  description: |
+    If [water_type](../Namelists/#land_surface_parameters--water_type) is set to be user-specific, a roughness length for heat (in m) for water surface types must be set.
+
+LSM0022:
+  loglevel: ERROR
+  message: |
+    water_type = 0 (user_defined) requires setting of water_temperature /= 9999999.9
+  description: |
+    When [water_type](../Namelists/#land_surface_parameters--water_type) is set to be user-defined, a water temperature must be set.
+
+LSM0023:
+  loglevel: ERROR
+  message: |
+    non-default setting of dz_soil does not allow to use pavement_type /= 0
+  description: |
+    Currently it is not possible to assign a user-defined number of soil layers when using [pavement_type](../Namelists/#land_surface_parameters--pavement_type) /= *0*, as the individual depths of the pavements are fixed values.
+
+LSM0024:
+  loglevel: ERROR
+  message: |
+    pavement_type = 0 (user_defined) requires setting of z0_pavement /= 9999999.9
+  description: |
+    When [pavement_type](../Namelists/#land_surface_parameters--pavement_type) is set to be user-defined, the roughness length for momentum must be set.
+
+LSM0025:
+  loglevel: ERROR
+  message: |
+    pavement_type = 0 (user_defined) requires setting of z0h_pavement /= 9999999.9
+  description: |
+    When [pavement_type](../Namelists/#land_surface_parameters--pavement_type) is set to be user-defined, the roughness length for heat must be set.
+
+LSM0026:
+  loglevel: ERROR
+  message: |
+    pavement_type = 0 (user_defined) requires setting of pavement_heat_conduct /= 9999999.9
+  description: |
+    When [pavement_type](../Namelists/#land_surface_parameters--pavement_type) is set to be user-defined, the heat conductivity of the pavement must be set.
+
+LSM0027:
+  loglevel: ERROR
+  message: |
+    pavement_type = 0 (user_defined) requires setting of pavement_heat_capacity /= 9999999.9
+  description: |
+    When [pavement_type](../Namelists/#land_surface_parameters--pavement_type) is set to be user-defined, the heat capacity of the pavement must be set.
+
+LSM0028:
+  loglevel: ERROR
+  message: |
+    pavement_type = 0 (user_defined) requires setting of pavement_depth_level /= 0
+  description: |
+    When [pavement_type](../Namelists/#land_surface_parameters--pavement_type) is set to be user-defined, a depth must be asigned that determines how deep the pavement extends into the ground. The [pavement heat capacity](../Namelists/#land_surface_parameters--pavement_heat_capacity) and  [pavement heat conductivty](../Namelists/#land_surface_parameters--pavement_heat_cond) are then assigned to all those levels.
+
+LSM0029:
+  loglevel: ERROR
+  message: |
+    pavement-surfaces are not allowed in combination with a non-default setting of dz_soil
+  description: ''
+
+LSM0030:
+  loglevel: ERROR
+  message: |
+    surface_type = "read_from_file" requires static input file
+  description: |
+    Either provide the file [PIDS_STATIC](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles#PIDS_STATIC) or change the value of [surface_type](../Namelists/#land_surface_parameters--surface_type) to a value different than *'netcdf'*.
+
+LSM0031:
+  loglevel: ERROR
+  message: |
+    soil_type = 0 (user_defined) requires setting of ...
+  description: |
+    In case a user-defined soil type is used, all soil parameters must be explicitly set by the user (see [soil_type](../Namelists/#land_surface_parameters--soil_type)).
+
+LSM0032:
+  loglevel: ERROR
+  message: |
+    number of soil layers (...) does not match to the number of layers specified in soil_temperature (...)
+  description: |
+    For each soil layer an initial soil temperature must be prescribed (see [soil_temperature](../Namelists/#land_surface_parameters--soil_temperature)). The number of soil layers is defined by [dz_soil](../Namelists/#land_surface_parameters--dz_soil).
+
+LSM0033:
+  loglevel: ERROR
+  message: |
+    deep_soil_temperature is not set but must be /= 9999999.9
+  description: |
+    The [deep soil temperature](../Namelists/#land_surface_parameters--deep_soil_temperature) serves as bottom boundary condition for heat diffusion in the soil model. Note that there is no analogous value for soil moisture as the bottom of the soil can either be set to bedrock (water accumulates) or free drainage (water is lost).
+
+LSM0034:
+  loglevel: ERROR
+  message: |
+    dimension size of static input variable pavement_pars is ..., but dimension size of ... is required
+  description: |
+    Please see the [input data standard](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static/tables) for the current requirements.
+
+LSM0035:
+  loglevel: ERROR
+  message: |
+    dimension size of static input variable pavement_subsurface_pars is ..., but dimension size of ... is required
+  description: |
+    Please see the [input data standard](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static/tables) for the current requirements.
+
+LSM0036:
+  loglevel: ERROR
+  message: |
+    dimension size of static input variable vegetation_pars is ..., but dimension size of ... is required
+  description: |
+    Please see the [input data standard](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static/tables) for the current requirements.
+
+LSM0037:
+  loglevel: ERROR
+  message: |
+    dimension size of static input variable water_pars is ..., but dimension size of ... is required
+  description: |
+    Please see the [input data standard](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static/tables) for the current requirements.
+
+LSM0038:
+  loglevel: ERROR
+  message: |
+    invalid soil layer configuration found (dz_soil_center(...) <= 0.0)
+  description: |
+    By setting zs (the center of the soil layers), the depths of the individual layers is calculated by PALM itself. This errors points towards a misconfiguration because a soil level is set within an already established soil layer. Check [dz_soil](../Namelists/#land_surface_parameters--dz_soil).
+
+LSM0039:
+  loglevel: ERROR
+  message: |
+    surface element at grid point (i,j) = (... ...) is neither a vegetation, pavement, nor a water surface
+  description: |
+    The respective surface element is not correctly initialized, indicating inconsistencies in the static input file.
+
+LSM0040:
+  loglevel: ERROR
+  message: |
+    surface fractions at grid point (i,j) = (... ...) are all zero
+  description: ''
+
+LSM0041:
+  loglevel: INFO
+  message: |
+    surface element at grid point (i,j) = (... ...) is not a vegetation surface, so that information given in vegetation_pars is neglected.
+  description: ''
+
+LSM0042:
+  loglevel: INFO
+  message: |
+    surface element at grid point (i,j) = (... ...) is not a water surface, so that information given in water_pars is neglected.
+  description: ''
+
+LSM0043:
+  loglevel: INFO
+  message: |
+    surface element at grid point (i,j) = (... ...) is not a pavement surface, so that information given in pavement_pars is neglected.
+  description: ''
+
+LSM0044:
+  loglevel: ERROR
+  message: |
+    number of grid points along ... in dynamic input file (=...) does not match the number grid points in this run (...=...)
+  description: |
+    Dimensions in dynamic input file must match the dimension of computational grid points of the respective run.
+
+LSM0045:
+  loglevel: WARNING
+  message: |
+    Soil moisture is higher than its saturation value at one or more locations. Soil moisture is limited to its saturation value to maintain stability.
+  description: |
+    This error can occur when the soil moisture is higher than the saturation moisture for the given vegetation type. Check and maybe adjust parameters [saturation_moisture](../Namelists/#land_surface_parameters--saturation_moisture) or [soil_moisture](../Namelists/#land_surface_parameters--soil_moisture).
+
+LSM0046:
+  loglevel: ERROR
+  message: |
+    initial values of soil moisture are < 0.0
+  description: |
+    The initial soil moisture must be set to values >= 0.0. Set soil moisture to reasonable values, either by setting the respective namelist parameter [soil_moisture](../Namelists/#land_surface_parameters--soil_moisture) or by providing initial soil moisture values via the dynamic input file.
+
+LSM0047:
+  loglevel: ERROR
+  message: |
+    for non-pavement surfaces the combination of lai = 0.0 and c_veg = 1.0 is not allowed
+  description: ''
+
+LSM0048:
+  loglevel: ERROR
+  message: |
+    ... exceeds 0.5 * surface-layer height at ... surface grid point (i,j) = (...,...)
+  description: |
+    Monin-Obukhov similarity is assumed between the surface and the first computational grid point normal to the surface. Because of the staggered grid, the distance between these two points is half of the grid spacing in the respective direction, i.e. $dz/2$ in vertical direction. The height $z = dz/2$ defines the top of the (analytical) logarithmic layer $z_{mo}$ (the surface layer height). Functions like $ln(z_{mo}/z_0)$, where $z_0$ is the roughness length, are used to calculate characteristic surface layer variables like $u_*$ or $\theta_*$. This mathematically requires that $z_{mo} > z_0$, or in other words, that $z_0 < dz/2$. In case you have run into this error, you either need to reduce the roughness length $z_0$ (via namelist parameter [roughness_length](../Namelists/#initialization_parameters--roughness_length) or in the static driver) or enlarge the grid spacing [dz](../Namelists/#initialization_parameters--dz). Same holds for roughness length $z_{0h}$ for temperature and $z_{0q}$ for moisture.
+
+    **Attention:** This message is given only once (for the first grid point where the exceedance has been detected). Be aware that there might be more grid points where $z_0$ exceeds the surface-layer height.
+
+    In case of water surfaces $z_0$ is automatically calculated each time step via the Charnock relation and respectively checked. No information about grid point location(s) is given for that case. More than one location may have been detected.
+
+    Set [allow_roughness_limitation](../Namelists/#initialization_parameters--allow_roughness_limitation) = *.TRUE.*  in order to allow for an automatical limitation of $z_0$ to a maximum value of $0.5 * z_{mo}$, which is equivalent to $0.25 * dz$.
+
+LSM0049:
+  loglevel: INFO
+  message: |
+    ... exceeds 0.5 * surface-layer height at ... surface(s) and is limited to that height
+  description: |
+    See error [LSM0048](#land_surface_model_mod--LSM0048) for detailed explanation.
+

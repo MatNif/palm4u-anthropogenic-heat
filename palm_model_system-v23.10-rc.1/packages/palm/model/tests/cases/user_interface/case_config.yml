@@ -1,0 +1,22 @@
+---
+# this is a palmtest job configuration file
+
+allowed_builds:
+  - gfortran_default
+
+allowed_number_of_cores:
+  - 1
+  - 2
+  - 4
+  - 8
+
+omp_num_threads: 2
+
+activation_strings:
+  - "d3#"
+  - "restart"
+
+significant_digits_for_netcdf_checks:
+  timeseries: 3
+  profiles: 5
+  other: 8

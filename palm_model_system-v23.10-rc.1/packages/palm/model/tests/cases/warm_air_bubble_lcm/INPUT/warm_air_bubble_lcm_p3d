@@ -1,0 +1,152 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- grid parameters
+!-------------------------------------------------------------------------------
+    nx                         = 7,  ! number of gridboxes in x-direction (nx+1)
+    ny                         = 23, ! number of gridboxes in y-direction (ny+1)
+    nz                         = 60, ! number of gridboxes in z-direction (nz)
+
+    dx                         = 50.0, ! size of single gridbox in x-direction
+    dy                         = 50.0, ! size of single gridbox in y-direction
+    dz                         = 50.0, ! size of single gridbox in z-direction
+        
+!
+!-- initialization and vertical profiles
+!-------------------------------------------------------------------------------
+    initializing_actions       = 'set_constant_profiles initialize_bubble', 
+                                         ! initial conditions (with warm air bubble)
+
+    ug_surface                 = 0.0,    ! u-comp of geostrophic wind at surface
+    surface_pressure           = 1015.4, ! surface pressure
+
+    pt_surface                 = 297.9,            ! temperature at surface
+    pt_vertical_gradient       = 0.0, 0.585,       ! vertical gradient of temperature
+    pt_vertical_gradient_level = 0.0, 740.0,       ! height level of temp gradients
+
+    q_surface                  = 0.016,                         ! mixing ratio at surface
+    q_vertical_gradient        = -2.97E-4, -4.52E-4, -8.1E-5,   ! gradient for mix. ratio
+    q_vertical_gradient_level  = 0.0, 740.0, 3260.0,            ! height lev. for gradients
+         
+!          
+!--  humdity and microphysics
+!-------------------------------------------------------------------------------
+     humidity                  = .TRUE.,  ! enables prog. equation for total water mixing ratio
+     cloud_droplets            = .TRUE.,  ! instead the lcm is used for microphysics
+     
+!
+!-- numerics
+!-------------------------------------------------------------------------------
+    fft_method                 = 'temperton-algorithm',   ! build-in fft method
+    
+/ ! end of initialization parameter namelist   
+
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+&runtime_parameters
+!
+!-- run steering
+!-------------------------------------------------------------------------------
+    end_time                   = 950.0,   ! simulation time of the 3D model
+    dt                         = 1.0,     ! time step (for this setup unfortunately unphysically;
+                                          ! however, a smaller time step is unfeasible for this
+                                          ! test case )
+    netcdf_data_format         = 2,       ! use NetCDF3
+                                          
+
+    create_disturbances        = .TRUE.,  ! randomly perturbate horiz. velocity
+    dt_disturb                 = 150.0,   ! interval for random perturbations
+    disturbance_energy_limit   = 0.01,    ! upper limit for perturbation energy
+
+    data_output_2d_on_each_pe  = .FALSE., ! don't do 2D output on each MPI rank
+    
+!
+!-- data output
+!-------------------------------------------------------------------------------
+    dt_run_control             = 0.0,    ! output interval for run control
+    dt_data_output             = 400.0,  ! output interval for general data
+    dt_dopr                    = 400.0,  ! output interval for profile data
+
+    data_output                = 'w_xy', 
+                                 'w_xz', 
+                                 'theta_xy', 
+                                 'theta_xz', 
+                                 'ql_yz', 
+                                 'w_yz', 
+                                 'u_yz', 
+                                 'v_yz', 
+                                 'theta_yz',
+                   
+    data_output_pr             = 'u', 
+                                 'v', 
+                                 'w', 
+                                 'ql', 
+                                 '#theta', 
+                                 'w"theta"', 
+                                 'w*theta*', 
+                                 'wtheta', 
+                                 'w*2', 
+                                 'theta*2', 
+              
+    section_xy                 = 2, 10,  ! grid index for 2D XY cross sections
+    section_xz                 = 20,     ! grid index for 2D XZ cross sections
+    section_yz                 = -1, 5,  ! grid index for 2D YZ cross sections
+     
+    averaging_interval_pr      = 100.0,  ! averaging interval profile data
+    dt_averaging_input_pr      = 10.0,   ! averaging profile data sampling rate
+
+/ ! end of runtime parameter namelist
+
+!-------------------------------------------------------------------------------
+!-- PARTICLE PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/particle_parameters
+!-------------------------------------------------------------------------------
+&particle_parameters  
+!
+!-- initialize particles in model domain
+!-------------------------------------------------------------------------------
+    psb                        = 20.0,   ! bottom of particle source
+    pst                        = 2000.0, ! top of particle source
+    
+    pdx                        = 25.0,   ! distance between particles along x
+    pdy                        = 25.0,   ! distance between particles along y
+    pdz                        = 25.0,   ! distance between particles along z
+    
+    random_start_position      = .FALSE., ! add random start positions
+    number_of_particle_groups  = 1,       ! only one particle group is used
+    particle_advection_start   = 700,     ! particles are released after 700s
+
+!
+!-- boundary conditions
+!-------------------------------------------------------------------------------
+    bc_par_b                  = 'absorb',  ! bottom boundary condition for particles
+    bc_par_t                  = 'reflect', ! top boundary condition for particles   
+!
+!-- initialize particle model as lagrangian cloud model
+!-------------------------------------------------------------------------------
+    density_ratio              = 0.001,   ! density ratio of particles (air=1, liquid water = 1000)
+    radius                     = 1.0E-6,  ! initial radius of particles
+
+    curvature_solution_effects = .FALSE., ! switch off koehler effects
+    collision_kernel           = 'hall',  ! enabales collision 
+    number_concentration       = 50.0E6,  ! initialize particles with a weighting factor 
+                                          ! such that a number number concentration of
+                                          ! 50 cm^-3 is obtained 
+    use_sgs_for_particles      = .FALSE., ! disable SGS velocities for particles    
+    
+!
+!-- particle output 
+!-------------------------------------------------------------------------------                
+    dt_dopts                   = 60.0,      ! time interval for particle timeseries
+    write_particle_statistics  = .FALSE.,   ! write particle statistics in file
+    dt_write_particle_data     = 10000.0,   ! interval for particle output (Binary Files)
+                                            ! Attention: they might be very huge, so here
+                                            ! particles are only implicitly outputted
+/ ! end of particle parameter namelist
+

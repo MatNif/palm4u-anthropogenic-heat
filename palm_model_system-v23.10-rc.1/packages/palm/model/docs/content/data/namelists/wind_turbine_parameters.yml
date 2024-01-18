@@ -1,0 +1,481 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "wind_turbine_parameters"
+
+air_density:
+  category: General Settings
+  type: R
+  default:
+    value: 1.225
+  si-unit: 'kg m^-3^'
+  description:
+    short: Air density used for turbine torque and power calculation.
+    long: ''
+
+
+dt_data_output_wtm:
+  category: Data Output
+  type: R
+  default:
+    value: 0.0
+  si-unit: 's'
+  description:
+    short: Output interval for NetCDF data.
+    long: |
+      Output occurs at the next closest time step after each integer multiple of [dt_data_output_wtm](#wind_turbine_parameters--dt_data_output_wtm). With the default value $0.0$, data will be output every time step.
+
+
+gear_efficiency:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Efficiency of the gear.
+    long: |
+      Default value means an efficiency of 100%.
+
+
+gear_ratio:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 97.0
+  description:
+    short: Gear ratio from rotor to generator.
+    long: ''
+
+
+generator_efficiency:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 0.944
+  description:
+    short: Electric efficiency of the generator.
+    long: ''
+
+
+generator_inertia:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 534.116
+  si-unit: 'kg m^2^'
+  description:
+    short: Moment of inertia of the generator.
+    long: ''
+
+
+generator_power_rated:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 5296610.0
+  si-unit: 'W'
+  description:
+    short: Rated mechanical (rotor) power of the wind turbine.
+    long: ''
+
+
+generator_speed_rated:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 121.6805
+  si-unit: 'rad s^-1^'
+  description:
+    short: Rated generator speed.
+    long: ''
+
+
+generator_torque_max:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 47402.91
+  si-unit: 'N m'
+  description:
+    short: Maximum Torque of the generator.
+    long: |
+      Should be set to a value 10% above rated.
+
+
+generator_torque_rate_max:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 15000.0
+  si-unit: 'N m s^-1^'
+  description:
+    short: Maximum generator torque increase rate.
+    long: ''
+
+
+hub_x:
+  category: Hub
+  type: R
+  shape: (10000)
+  default:
+    value: ~ 
+  si-unit: 'm'
+  description:
+    short: x-coordinate of the hub.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+      Example for three turbines:
+      `hub_x = 1000.0, 1500.0, 2000.0,`
+
+
+hub_y:
+  category: Hub
+  type: R
+  shape: (10000)
+  default:
+    value: ~ 
+  si-unit: 'm'
+  description:
+    short: y-coordinate of the hub.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+      Example for three turbines:
+      `hub_x = 1000.0, 1500.0, 2000.0,`
+
+
+hub_z:
+  category: Hub
+  type: R
+  shape: (10000)
+  default:
+    value: ~  
+  si-unit: 'm'
+  description:
+    short:  z-coordinate of the hub (hub height).
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+      Example for three turbines:
+      `hub_z = 150.0, 150.0, 150.0,`
+
+
+n_airfoils:
+  category: Rotor
+  type: I
+  default:
+    value: 8
+  description:
+    short: Number of airfoils used in the turbine model.
+    long: |
+      The airfoil data should be provided in the additional input file `<run_identifier>_wtm` (see [here](https://palm.muk.uni-hannover.de/trac/browser/palm/trunk/DATA/NREL_5MW_blade_tables_wtm) for a file describing the NREL 5 MW turbine).
+
+
+n_turbines:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short: Number of wind turbines.
+    long: |
+       [n_turbines](#wind_turbine_parameters--n_turbines) <= *10000* is required.
+
+
+nacelle_cd:
+ category: Nacelle
+ type: R
+ shape: (10000)
+ default:
+   value: 0.85
+ description:
+   short: Drag coefficient of the nacelle.
+   long: |
+     [nacelle_cd](#wind_turbine_parameters--nacelle_cd) and [nacelle_radius](#wind_turbine_parameters--nacelle_radius) both must be non-zero if the nacelle should be included. If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+
+
+nacelle_radius:
+  category: Nacelle
+  type: R
+  shape: (10000)
+  default:
+    value: 0.0
+  si-unit: 'm'
+  description:
+    short: Radius of the nacelle of each turbine.
+    long: |
+      [nacelle_radius](#wind_turbine_parameters--nacelle_radius) and [nacelle_cd](#wind_turbine_parameters--nacelle_cd) both must be non-zero if the nacelle should be included. A nacelle with a spherical shape and a drag coefficient [nacelle_cd](#wind_turbine_parameters--nacelle_cd) is assumed. If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+
+
+pitch_angle:
+  category: Pitch Control
+  type: R
+  shape: (10000)
+  default:
+    value: 0.0
+  si-unit: 'degree'
+  description:
+    short: Constant pitch angle of the blades that is used if [pitch_control](#wind_turbine_parameters--pitch_control) = *.F.*.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+
+
+pitch_control:
+  category: Pitch Control
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the pitch control.
+    long: |
+      This parameter controls the pitch angle such that constant power is produced for wind speeds greater than the rated wind speed. The parameter [generator_power_rated](#wind_turbine_parameters--generator_power_rated) is used here.
+
+
+pitch_rate:
+  category: Pitch Control
+  type: R
+  default:
+    value: 8.0
+  si-unit: 'degree s^-1^'
+  description:
+    short: Maximum pitch rate.
+    long: ''
+
+
+region_15_min:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 70.16224
+  si-unit: 'rad s^-1^'
+  description:
+    short: Lower generator speed boundary of region 1.5.
+    long: |
+      Region 1.5 is a start-up region between regions 1 and 2 that represents the lower limit of the generator speed, which limits the operational speed range of the wind turbine. Note, region 1 is before cut-in wind speed. Here, wind is used to accelerate the rotor so no power is produced. See [Jonkman et al., 2009](https://www.nrel.gov/docs/fy09osti/38060.pdf){:target="_blank"} for more details.
+
+
+region_2_min:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 91.21091
+  si-unit: 'rad s^-1^'
+  description:
+    short: Lower generator speed boundary of region 2.
+    long: ''
+
+
+region_2_slope:
+  category: Drive Train and Speed Control
+  type: R
+  default:
+    value: 2.332287
+  si-unit: 'N m (rad s^-1^)^-2^'
+  description:
+    short: Slope constant for region 2.
+    long: |
+      In region 2, a constant tip speed ratio is maintained to optimize the power capture. In this region, the generator torque is proportional to the square of the filtered generator speed. See [Jonkman et al., 2009](https://www.nrel.gov/docs/fy09osti/38060.pdf){:target="_blank"} for more details.
+
+
+rotor_inertia:
+  category: Rotor
+  type: R
+  default:
+    value: 34784179.0
+  si-unit: 'kg m^2^'
+  description:
+    short: Moment of inertia of the rotor.
+    long: ''
+
+
+rotor_radius:
+  category: Rotor
+  type: R
+  shape: (10000)
+  default:
+    value: 63.0
+  si-unit: 'm'
+  description:
+    short: Radius of the rotor.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+
+
+rotor_speed:
+  category: Drive Train and Speed Control
+  type: R
+  shape: (10000)
+  default:
+    value: 0.9
+  si-unit: 'rad s^-1^'
+  description:
+    short: Initial rotational speed for each turbine.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately.
+
+
+segment_length_tangential:
+  category: Rotor
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Tangential length of rotor segments.
+    long: |
+      The segment length is given as factor of the minimum grid spacing MIN([dx](#initialization_parameters--dx),[dy](#initialization_parameters--dy),[dz](#initialization_parameters--dz)).
+
+
+segment_width_radial:
+  category: Rotor
+  type: R
+  default:
+    value: 0.5
+  description:
+    short: Radial width of rotor segments.
+    long: |
+      The segment width is given as factor of the minimum grid spacing MIN([dx](#initialization_parameters--dx),[dy](#initialization_parameters--dy),[dz](#initialization_parameters--dz)).
+
+
+smearing_kernel_size:
+  category: Numerics
+  type: R
+  default:
+    value: 2.0
+  description:
+    short: Size of the smearing kernel given as multiples of the grid spacing [dx](initialization_parameters--dx).
+    long: |
+      For details, refer to [​https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/wtm](​https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/wtm). A large smearing kernel results in an overestimation of tip speed ratio and power output. For coarse grid spacings (e.g., 12 grid points per rotor diameter) the power overestimation can be as large as 25%. This error can be reduced by setting [smearing_kernel_size](#wind_turbine_parameters--smearing_kernel_size) = *1.0*. Do not use values below *1.0* because then the number of grid cells inside the smearing kernel becomes very small (<10). In this case the sum of the body forces acting on the flow may be lower than the force acting on the rotor blade.
+
+
+speed_control:
+  category: Drive Train and Speed Control
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the speed control.
+    long: |
+      This parameter controls the rotational speed of the turbine for wind speeds less than rated wind speed.
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch off the entire wind turbine module.
+    long: | 
+      [switch_off_module](#wind_turbine_parameters--switch_off_module) = .T. can be used to switch off this module without removing (or commenting) the namelist from the namelist file.
+
+
+tilt_angle:
+  category: Rotor
+  type: R
+  default:
+    value: 0.0
+  si-unit: 'degree'
+  description:
+    short: Tilt angle of the rotor plane.
+    long: |
+      A positive angle means the bottom of the rotor plane is tilted away from the tower to avoid the blades hitting the tower.
+
+
+time_turbine_on:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: 's'
+  description:
+    short: Simulation time at which the turbines are switched on.
+    long: ''
+
+
+tip_loss_correction:
+  category: Rotor
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the tip loss correction.
+    long: ''
+
+
+tower_cd:
+  category: Tower
+  type: R
+  shape: (10000)
+  default:
+    value: 1.2
+  description:
+    short: Drag coefficient of the tower.
+    long: |
+      If [n_turbines](#wind_turbine_parameters--n_turbines) > *1*, values need to be given for each turbine separately. 
+
+
+tower_diameter:
+  category: Tower
+  type: 'R'
+  shape: (10000)
+  default:
+    value: 0.0
+  si-unit: 'm'
+  description:
+    short: Diameter of the cylindrical tower of the wind turbine.
+    long: |
+      This parameter must be non-zero if a tower should be included. The parameter must be specified for every turbine separately.
+
+
+yaw_angle:
+  category: Yaw Control
+  type: R
+  shape: (10000)
+  default:
+    value: 0.0
+  si-unit: 'degree'
+  description:
+    short: Yaw angle for each turbine.
+    long: |
+      A positive yaw means a rotation of the rotor in clockwise direction within the xy-plane. At a yaw angle of zero degrees the rotor is facing west.
+
+
+yaw_control:
+  category: Yaw Control
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on the yaw controller.
+    long: |
+      If [yaw_control](#wind_turbine_parameters--yaw_control) = *.F.*, then the constant yaw angle specified by [yaw_angle](#wind_turbine_parameters--yaw_angle) will be used.
+      If set [yaw_control](#wind_turbine_parameters--yaw_control) = .T., then the yaw angle will adjust according to the local wind direction, as soon as the yaw misalignment reaches [yaw_misalignment_max](#wind_turbine_parameters--yaw_misalignment_max) until [yaw_misalignment_min](#wind_turbine_parameters--yaw_misalignment_min) is reached. The rotational speed of the yaw mechanism is controlled by [yaw_speed](#wind_turbine_parameters--yaw_speed).
+
+
+yaw_misalignment_max:
+  category: Yaw Control
+  type: R
+  default:
+    value: 0.08726
+  si-unit: 'rad'
+  description:
+    short: Maximum tolerated yaw misalignment.
+    long: ''
+
+
+yaw_misalignment_min:
+  category: Yaw Control
+  type: R
+  default:
+    value: 0.008726
+  si-unit: 'rad'
+  description:
+    short: Minimum yaw misalignment for which the actuator stops. 
+    long: ''
+
+
+yaw_speed:
+  category: Yaw Control
+  type: R
+  default:
+    value: 0.005236
+  si-unit: 'rad s^-1^'
+  description:
+    short: Speed of the yaw actuator.
+    long: ''

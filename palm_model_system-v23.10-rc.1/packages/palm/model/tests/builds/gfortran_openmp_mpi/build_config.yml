@@ -1,0 +1,74 @@
+---
+# this is a palmtest build configuration file
+
+compiler:
+  id: GNU
+  c_executable: "{{GNU.c_executable}}"
+  executable: "{{GNU.executable}}"
+  mpi_wrapper: "{{GNU.mpi_wrapper}}"
+  definitions:
+    - "MPI_REAL=MPI_DOUBLE_PRECISION"
+    - "MPI_2REAL=MPI_2DOUBLE_PRECISION"
+    - "__parallel"
+    - "__netcdf"
+    - "__netcdf4"
+    - "__netcdf4_parallel"
+    - "__fftw"
+    - "__rrtmg"
+    - "__fastv8"
+    - "__gfortran"
+  c_options:
+    default:
+      - "-Ofast"
+      - "-Wno-format"
+      - "-Wno-unused-result"
+    debug:
+      - "-O0"
+      - "-g"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-Wno-format"
+      - "-Wno-unused-result"
+  options:
+    default:
+      - "-cpp"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-Wno-maybe-uninitialized"
+      - "-Wno-conversion"
+      - "-Wno-compare-reals"
+      - "-Wno-do-subscript"
+      - "-Ofast"
+      - "-ffree-line-length-none"
+      - "-fopenmp"
+    debug:
+      - "-cpp"
+      - "-O0"
+      - "-g"
+      - "-Wall"
+      - "-Werror"
+      - "-Wextra"
+      - "-pedantic"
+      - "-fcheck=all"
+      - "-fbacktrace"
+      - "-Wno-conversion"
+      - "-Wno-compare-reals"
+      - "-Wno-do-subscript"
+      - "-finit-real=nan"
+      - "-ffree-line-length-none"
+      - "-fopenmp"
+  includes:
+    - "{{GNU.include.netcdf}}"
+    - "{{GNU.include.fftw}}"
+    - "{{GNU.include.rrtmg}}"
+
+linker:
+  options:
+    - "{{GNU.lib.netcdf}}"
+    - "{{GNU.lib.fftw}}"
+    - "{{GNU.lib.rrtmg}}"
+    - "-fopenmp"

@@ -1,0 +1,294 @@
+
+ ******************************    --------------------------------------------
+ * PALM (git SHA-1): e8b65462 *    atmosphere - run without 1D - prerun
+ ******************************    --------------------------------------------
+
+ Date:               2023-02-15    Run:       urban_environment_dcep__gfortran_d
+ Time:                 11:07:44    Run-No.:   00
+ Run on host:        gfortran_d
+ Number of PEs:               2    Processor grid (x,y): (   1,   2) calculated
+                                   A 1d-decomposition along y is used
+ ------------------------------------------------------------------------------
+
+ Numerical Schemes:
+ -----------------
+
+ --> Use the 1.5-order turbulence closure (LES mode).
+ --> Use the boussinesq approximation for the model equations.
+ --> Solve perturbation pressure via FFT using fftw routines
+     perturbation pressure is calculated at every Runge-Kutta step
+ --> Momentum advection via Wicker-Skamarock-Scheme 5th order
+ --> Scalar advection via Wicker-Skamarock-Scheme 5th order
+ --> Loop optimization method: cache
+ --> Time differencing scheme: runge-kutta-3       
+ --> Additional prognostic equation for the specific humidity
+ ------------------------------------------------------------------------------
+
+
+ Run time and time step information:
+ ----------------------------------
+
+ Timestep:             variable     maximum value: 20.000 s    CFL-factor: 0.90
+ Start time:              0.000 s
+ End time:               50.000 s
+
+
+ Computational grid and domain size:
+ ----------------------------------
+
+ Grid length:      dx =     250.000 m    dy =     250.000 m
+                dz(1) =      12.500 m
+                dz(2) =     250.000 m
+
+ Domain size:       x =  16000.000 m     y =  16000.000 m  z(u) =   1049.378 m
+
+ Vertical stretching starts at height:     593.8 m,
+ Vertical stretching starts at index:           48,
+ Vertical stretching ends at height:   9999999.9 m,
+ Vertical stretching ends at index:             65,
+ Factor used for stretching:                 1.080,
+
+ Number of gridpoints (x,y,z):  (0:  63, 0:  63, 0:  65)
+ Subdomain size (x,y,z):        (    64,     32,     66)
+
+
+    Characteristic levels of the geo. wind component ug:
+
+       Height:         0.0     0.0  m
+       ug:            1.00    1.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+    Characteristic levels of the geo. wind component vg:
+
+       Height:         0.0     0.0  m
+       vg:            0.00    0.00  m/s
+       Gradient:    ------    0.00  1/100s
+       Gridpoint:        0       0
+
+
+ Topography information:
+ ----------------------
+
+ Topography: flat                                    
+
+
+ Boundary conditions:
+ -------------------
+
+                     p                    uv                                  pt
+
+ B. bound.: p(0)     = p(1)   | uv(0)     = -uv(1)                | pt(0)     = from soil model  
+ T. bound.: p(nzt+1) = 0      | uv(nzt+1) = ug(nzt+1), vg(nzt+1)  | pt(nzt+1) = pt(nzt) + dpt/dz_
+
+                     e
+
+ B. bound.: e(0)     = e(1)                                                                      
+ T. bound.: e(nzt+1) = e(nzt) = e(nzt-1)                                                         
+
+                     q
+
+ B. bound.: q(0)     = from soil model                                                           
+ T. bound.: q(nzt+1) = q(nzt) + dq/dz                                                            
+
+ Bottom surface fluxes are used in diffusion terms at k=1
+
+
+    Constant flux layer between bottom surface and first computational u,v-level:
+
+       z_mo =   6.25 m   z0 = 0.1000 m   z0h = 0.10000 m   kappa = 0.40
+       zeta value range:     -20.00 <= zeta <= 20.00
+       Predefined surface temperature
+       Predefined surface humidity
+
+
+ Lateral boundaries:
+       left/right:  cyclic              
+       north/south: cyclic              
+
+
+ Initial profiles:
+ ----------------
+
+    Characteristic levels of the initial temperature profile:
+
+       Height:           0.0     0.0  m
+       Temperature:   277.15  277.15  K
+       Gradient:      ------    0.00  K/100m
+       Gridpoint:          0       0
+
+    Characteristic levels of the initial humidity profile:
+
+       Height:           0.0       0.0  m
+       Humidity:     0.1E-02   0.1E-02  kg/kg
+       Gradient:    --------   0.0E+00  (kg/kg)/100m
+       Gridpoint:          0         0
+
+
+ List output:
+ -----------
+
+    1D-Profiles:
+       Output every             9999999.90 s
+       Time averaged over            50.00 s
+       Averaging input every          0.00 s
+
+
+ Data output:
+ -----------
+
+       Time averaged over            50.00 s
+       Averaging input every          0.00 s
+
+    1D-Profiles:
+       Output format: netCDF 64bit offset                     
+
+       Profile: u, u*2, wu, v, v*2, wv, theta, theta*2, wtheta, t_soil,      
+
+              : m_soil, rad_lw_in, rad_lw_out,                               
+       Output every                  50.00 s
+       Time averaged over            50.00 s
+       Averaging input every          0.00 s
+
+    2D-Arrays:
+       Output format: netCDF 64bit offset                     
+
+       XY-cross-section  Arrays:  shf*, ghf*, us*, z0*, t*, ol*, m_liq*, r_s*, r_a*, rad_net*, rad_lw_i
+       Output every                  50.00 s  and at the start
+       Cross sections at k = /0/
+       scalar-coordinates:   /0.0/ m
+
+       Number of output time levels allowed: unlimited
+
+    2D-Arrays(time-averaged):
+       Output format: netCDF 64bit offset                     
+
+       XY-cross-section  Arrays:  shf*, ghf*, qsws*, tsurf*,                                           
+       Output every                  50.00 s  and at the start
+       Time averaged over            50.00 s
+       Averaging input every          0.00 s
+       Cross sections at k = /0/
+       scalar-coordinates:   /0.0/ m
+
+       Number of output time levels allowed: unlimited
+
+    3D-Arrays:
+       Output format: netCDF 64bit offset                     
+
+       Arrays:  u, v, w, theta, q, e, p, m_soil, t_soil, dcep_shfl_roof, dcep_rl_roof
+       Output every                  50.00 s  and at the start
+       Upper output limit at       1049.38 m  (GP   65)
+
+       Number of output time levels allowed: unlimited
+
+    3D-Arrays(time-averaged):
+       Output format: netCDF 64bit offset                     
+
+       Arrays:  u, v, w, theta, q, e, p, m_soil, t_soil,                             
+       Output every                  50.00 s  and at the start
+       Time averaged over            50.00 s
+       Averaging input every          0.00 s
+       Upper output limit at     1049.38 m  (GP   65)
+
+       Number of output time levels allowed: unlimited
+
+    Time series:
+       Output format: netCDF 64bit offset                     
+       Output every                  10.00 s
+
+ ------------------------------------------------------------------------------
+
+
+ Physical quantities:
+ -------------------
+
+    Geograph. latitude  :   latitude  =  52.5 degr
+    Geograph. longitude :   longitude =  13.4 degr
+    Rotation angle      :   rotation_angle =   0.0 degr
+    Angular velocity    :   omega  = 0.729E-04 rad/s
+    Coriolis parameter  :   f      =  0.000116 1/s
+                            f*     =  0.000089 1/s
+
+    Date and time at model start : 2019-03-06 10:00:00 +00
+
+    Gravity             :   g      =  9.8 m/s**2
+
+    Reference state used in buoyancy terms: initial_profile
+
+
+ Cloud physics quantities / methods:
+ ----------------------------------
+
+    Humidity is considered, bu no condensation
+
+
+ LES / Turbulence quantities:
+ ---------------------------
+
+    Mixing length is limited close to surfaces
+
+
+ Actions during the simulation:
+ -----------------------------
+
+    Disturbance impulse (u,v) every :   9999999.90 s
+    Disturbance amplitude           :     0.25 m/s
+    Lower disturbance level         :    31.25 m (GP    3)
+    Upper disturbance level         :   256.25 m (GP   21)
+    Disturbances cease as soon as the disturbance energy exceeds 0.010 m**2/s**2
+    Random number generator used    : random-parallel
+
+
+
+ Land surface model information:
+ ------------------------------
+
+    --> Soil bottom is closed (water content is conserved, default)
+    --> Land surface type  : crops, mixed farming
+    --> Soil porosity type : medium-fine
+
+    Initial soil temperature and moisture profile:
+
+       Height:              -0.01      -0.02      -0.05      -0.10      -0.20      -0.40      -0.80      -2.  m
+       Temperature:        277.15     277.00     277.00     277.00     277.00     277.00     277.00     277.  K
+       Moisture:             0.30       0.30       0.30       0.30       0.30       0.30       0.30       0.  m**3/m**3
+       Root fraction:        0.49       0.26       0.25       0.00       0.00       0.00       0.00       0.  
+       Grid point:              0          1          2          3          4          5          6
+
+
+ Radiation model information:
+ ----------------------------
+
+    --> RRTMG scheme is used
+
+    Albedo is set for land surface type: short grassland/meadow/shrubland
+    Timestep: dt_radiation =  50.00  s
+ ------------------------------------------------------------------------------
+
+
+
+Run-control output:
+------------------
+
+RUN  ITER. HH:MM:SS.SS    DT(E)     UMAX     VMAX     WMAX     U*    W*      THETA*     Z_I     ENERG.   DISTENERG    DIVOLD     DIVNEW     UMAX(KJI)    VMAX(KJI)    WMAX(KJI)   ADVECX   ADVECY   MGCYC
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  0      0 00:00:00.00  20.0000X   1.2562D -0.2449D -0.0624  0.100  0.00   0.208E-01      0.  0.486E+00  0.165E-02  0.138E-03  0.864E-14   10   5  63   12  34   6   12  52  24    0.000    0.000       0
+  0      1 00:00:20.00   3.3900D   1.2554  -0.2482  -0.0620  0.010  0.44  -0.317E+01     75.  0.486E+00  0.161E-02  0.576E-04  0.438E-16   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      2 00:00:23.39   2.5700D   1.2549  -0.2484  -0.0621  0.014  0.44  -0.309E+01     75.  0.486E+00  0.160E-02  0.109E-04  0.169E-16   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      3 00:00:25.96   2.1900D   1.2546  -0.2486  -0.0622  0.017  0.43  -0.230E+01     75.  0.486E+00  0.159E-02  0.912E-05  0.129E-16   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      4 00:00:28.15   1.9700D   1.2543  -0.2487  -0.0622  0.019  0.43  -0.193E+01     75.  0.486E+00  0.159E-02  0.838E-05  0.104E-16   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      5 00:00:30.12   1.8100D   1.2539  -0.2488  -0.0623  0.021  0.43  -0.169E+01     75.  0.486E+00  0.158E-02  0.800E-05  0.874E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      6 00:00:31.92   1.7000D   1.2537  -0.2488  -0.0623  0.023  0.43  -0.152E+01     75.  0.485E+00  0.158E-02  0.772E-05  0.758E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      7 00:00:33.63   1.6200D   1.2534  -0.2488  -0.0623  0.025  0.43  -0.139E+01     75.  0.485E+00  0.157E-02  0.756E-05  0.677E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      8 00:00:35.25   1.5500D   1.2531  -0.2489  -0.0623  0.027  0.43  -0.129E+01     75.  0.485E+00  0.157E-02  0.747E-05  0.620E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0      9 00:00:36.79   1.5000D   1.2528  -0.2489  -0.0624  0.029  0.43  -0.121E+01     75.  0.485E+00  0.157E-02  0.739E-05  0.576E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0     10 00:00:38.29   1.4500D   1.2525  -0.2489  -0.0624  0.030  0.43  -0.114E+01     75.  0.485E+00  0.156E-02  0.737E-05  0.545E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0     11 00:00:39.75   1.4200D   1.2522  -0.2489  -0.0624  0.032  0.43  -0.109E+01     75.  0.485E+00  0.156E-02  0.732E-05  0.520E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0     12 00:00:41.17   1.3800D   1.2519  -0.2489  -0.0624  0.034  0.55  -0.104E+01    162.  0.485E+00  0.155E-02  0.735E-05  0.505E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0     13 00:00:42.55   1.3500D   1.2515  -0.2488  -0.0624  0.035  0.55  -0.100E+01    162.  0.485E+00  0.155E-02  0.731E-05  0.490E-17   10   5  63   12  34   6   11  62  32    0.000    0.000       0
+  0     14 00:00:43.90   1.3300D   1.2513  -0.2488  -0.0624  0.036  0.55  -0.964E+00    162.  0.484E+00  0.155E-02  0.731E-05  0.481E-17   11  61  59   12  34   6   11  62  32    0.000    0.000       0
+  0     15 00:00:45.23   1.3100D   1.2517  -0.2488  -0.0624  0.038  0.55  -0.932E+00    162.  0.484E+00  0.154E-02  0.735E-05  0.476E-17   11  61  59   12  34   6   11  62  32    0.000    0.000       0
+  0     16 00:00:46.54   1.2900D   1.2521  -0.2487  -0.0624  0.039  0.55  -0.903E+00    162.  0.484E+00  0.154E-02  0.738E-05  0.473E-17   11  61  59   12  34   6   11  62  32    0.000    0.000       0
+  0     17 00:00:47.83   1.2700D   1.2525   0.2487  -0.0624  0.040  0.56  -0.878E+00    162.  0.484E+00  0.153E-02  0.740E-05  0.471E-17   11  61  59   19  32  16   11  62  32    0.000    0.000       0
+  0     18 00:00:49.10   1.2500D   1.2528   0.2488  -0.0624  0.042  0.61  -0.854E+00    212.  0.484E+00  0.153E-02  0.741E-05  0.470E-17   11  61  59   19  32  16   11  62  32    0.000    0.000       0
+  0     19 00:00:50.35   1.2400D   1.2532   0.2490  -0.0624  0.043  0.61  -0.834E+00    212.  0.484E+00  0.153E-02  0.742E-05  0.470E-17   11  61  59   19  32  16   11  62  32    0.000    0.000       0

@@ -1,0 +1,63 @@
+#$Id$
+#column 1          column 2
+#name of variable  value of variable (~ must not be used)
+#----------------------------------------------------------------------------
+%base_directory      $HOME/palm/current_version
+%base_data           ~/palm/current_version/JOBS
+%source_path         $HOME/palm/current_version/trunk/SOURCE
+%user_source_path    $base_data/$run_identifier/USER_CODE
+%fast_io_catalog     /scratch/<replace by LUIS username>
+%restart_data_path   /scratch/<replace by LUIS username>
+%output_data_path    $base_data
+%local_jobcatalog    $base_data/$run_identifier/LOG_FILES
+
+%local_ip            130.75.7.130
+%local_username      <replace by LUIS username>
+%defaultqueue        all
+%submit_command      /usr/bin/qsub
+
+%compiler_name       mpinfort
+%compiler_name_ser   mpinfort
+%cpp_options         -fpp -D__parallel -D__nec -D__netcdf -D__netcdf4 -D__netcdf4_parallel -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION
+%make_options        -j 4
+%compiler_options    -O3 -traceback -finline-functions -g -report-all -Werror -I /home/nhbkklau/opt/NetCDF_parallel_nec/include -I /home/nhbkklau/opt/fftw3_nec/include
+%linker_options      -L/home/nhbkklau/opt/NetCDF_parallel_nec/lib -lnetcdff -lnetcdf -Wl,-rpath=/home/nhbkklau/opt/NetCDF_parallel_nec/lib -L/home/nhbkklau/opt/hdf5_parallel_nec/lib -lhdf5 -lhdf5_hl -Wl,-rpath=/home/nhbkklau/opt/hdf5_parallel_nec/lib -L/home/nhbkklau/opt/fftw3_nec/lib -lfftw3 -lmpi
+%execute_command     mpirun -v -ve 0-3  -np {{mpi_tasks}}  ./palm
+%memory              2000
+%login_init_cmd      source /opt/nec/ve/mpi/2.2.0/bin/necmpivars.sh
+
+# BATCH-directives to be used for batch jobs.
+# ATTENTION: The following batch directives still need to be adjusted for the
+#            NEC Aurora system!!!!!!!!!!!!!!
+BD:#!/bin/bash
+#BD:#PBS -A {{project_account}}
+BD:#PBS -N {{run_id}}
+BD:#PBS -l walltime={{cpu_hours}}:{{cpu_minutes}}:{{cpu_seconds}}
+BD:#PBS -l ncpus={{cores}}
+BD:#PBS -l nodes={{nodes}}:ppn={{tasks_per_node}}
+BD:#PBS -l mem={{memory}}mb
+BD:#PBS -W x=PARTITION:lena
+BD:#PBS -o {{job_protocol_file}}
+BD:#PBS -j oe
+BD:#PBS -q {{queue}}
+
+#----------------------------------------------------------------------------
+# INPUT-commands, executed before running PALM - lines must start with "IC:"
+#----------------------------------------------------------------------------
+#IC:ulimit -s unlimited
+
+#----------------------------------------------------------------------------
+# ERROR-commands - executed when program terminates abnormally
+#----------------------------------------------------------------------------
+EC:[[ \$locat = execution ]]  &&  cat  RUN_CONTROL
+EC:[[ \$locat = execution ]]  &&  cat  PARTICLE_INFOS/*
+
+#----------------------------------------------------------------------------
+# OUTPUT-commands - executed when program terminates normally
+#----------------------------------------------------------------------------
+# Combine 1D- and 3D-profile output (these files are not usable for plotting)
+OC:[[ -f LIST_PROFIL_1D     ]]  &&  cat  LIST_PROFIL_1D  >>  LIST_PROFILE
+OC:[[ -f LIST_PROFIL        ]]  &&  cat  LIST_PROFIL     >>  LIST_PROFILE
+
+# Combine all particle information files
+OC:[[ -f PARTICLE_INFOS/_0000 ]]  &&  cat  PARTICLE_INFOS/* >> PARTICLE_INFO

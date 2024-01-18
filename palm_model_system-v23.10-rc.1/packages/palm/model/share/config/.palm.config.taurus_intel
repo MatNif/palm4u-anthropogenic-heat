@@ -1,0 +1,97 @@
+################################################################################
+# This is a configuration file for PALM on TUD's HPC cluster Taurus. 
+# It must be named: .palm.config.<suffix>
+# in order to use it, call palmbuild and palmrun with the option: -c <suffix>
+# Documentation: http://palm.muk.uni-hannover.de/trac/wiki/doc/app/palm_config
+################################################################################
+#
+#-------------------------------------------------------------------------------
+# General compiler and host configuration section.
+# Variable declaration lines must start with a percent character
+# Internal variables can be used as {{VARIABLE_NAME}}. Please see documentation.
+#-------------------------------------------------------------------------------
+%base_directory      $HOME/palm
+%base_data           \$base_directory/JOBS
+%source_path         \$base_directory/palm_model_system/packages/palm/model/src
+%user_source_path    \$base_directory/JOBS/$run_identifier/USER_CODE
+%fast_io_catalog     \$base_directory/tmp
+%restart_data_path   \$base_directory/tmp
+%output_data_path    \$base_directory/JOBS
+%local_jobcatalog    \$base_directory/JOBS/$run_identifier/LOG_FILES
+%remote_jobcatalog   \$base_directory/JOBS/$run_identifier/LOG_FILES
+#
+%local_ip            127.0.0.1
+%local_username      <username>
+#
+#%remote_ip           <ip>
+#%remote_hostname     <hostname>
+#%remote_loginnode    <loginnode>
+#%remote_username     <username>
+#%ssh_key             ~/.ssh/id_rsa
+#
+%project_account     <project-account>
+%submit_command      sbatch
+%execute_command     srun ./palm
+#
+%memory              10160
+%module_commands     module load iimpi/2021b FFTW/3.3.10-iimpi-2021b netCDF-Fortran/4.5.3-iimpi-2021b Python/3.9.6-GCCcore-11.2.0
+#%login_init_cmd      <./execute_cmd_first>
+#
+%compiler_name       \$(which mpiifort)
+%compiler_name_ser   \$(which ifort)
+%cpp_options         -cpp -D__intel_compiler -D__parallel -D__lc -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__netcdf4 -D__netcdf_parallel -D__fftw -D__rrtmg
+%make_options        -j 4
+%compiler_options    -O3 -mtune=native -march=native -cpp -I /sw/installed/\$(module -t list netCDF-Fortran)/include -I /sw/installed/\$(module -t list netCDF |head -1)/include -I /sw/installed/\$(module -t list FFTW)/include -I \$base_directory/rrtmg/include
+%linker_options      -O3 -mtune=native -march=native -cpp /sw/installed/\$(module -t list netCDF-Fortran)/lib/libnetcdff.so /sw/installed/\$(module -t list netCDF |head -1)/lib64/libnetcdf.so /sw/installed/\$(module -t list FFTW)/lib/libfftw3.so \$base_directory/rrtmg/lib/librrtmg.so
+#
+#-------------------------------------------------------------------------------
+# Directives to be used for batch jobs
+# Lines must start with "BD:". If $-characters are required, hide them with \
+# Internal variables can be used as {{variable_name}}. Please see documentation.
+#-------------------------------------------------------------------------------
+BD:#!/bin/bash
+BD:#PBS -A {{project_account}}
+BD:#PBS -N {{run_id}}
+BD:#PBS -l walltime={{cpu_hours}}:{{cpu_minutes}}:{{cpu_seconds}}
+BD:#PBS -l nodes={{nodes}}:ppn={{tasks_per_node}}
+BD:#PBS -o {{job_protocol_file}}
+BD:#PBS -j oe
+BD:#PBS -q {{queue}}
+#
+#-------------------------------------------------------------------------------
+# Directives for batch jobs used to send back the jobfiles from a remote to a local host
+# Lines must start with "BDT:". If $-characters are required, excape them with triple backslash
+# Internal variables can be used as {{variable_name}}. Please see documentation.
+#-------------------------------------------------------------------------------
+BDT:#!/bin/bash
+BDT:#PBS -A {{project_account}}
+BDT:#PBS -N job_protocol_transfer
+BDT:#PBS -l walltime=00:30:00
+BDT:#PBS -l nodes=1:ppn=1
+BDT:#PBS -o {{job_transfer_protocol_file}}
+BDT:#PBS -j oe
+BDT:#PBS -q dataq
+#
+#-------------------------------------------------------------------------------
+# INPUT-commands. These commands are executed before running PALM
+# Lines must start with "IC:"
+#-------------------------------------------------------------------------------
+IC:ulimit  -s unlimited
+#
+#-------------------------------------------------------------------------------
+# ERROR-commands. These commands are executed when PALM terminates abnormally
+# Lines must start with "EC:"
+#-------------------------------------------------------------------------------
+EC:[[ $locat = execution ]]  &&  cat  RUN_CONTROL
+#
+#-------------------------------------------------------------------------------
+# OUTPUT-commands. These commands are executed when PALM terminates normally
+# Lines must start with "OC:"
+#-------------------------------------------------------------------------------
+#
+# Combine 1D- and 3D-profile output (these files are not usable for plotting)
+OC:[[ -f LIST_PROFIL_1D     ]]  &&  cat  LIST_PROFIL_1D  >>  LIST_PROFILE
+OC:[[ -f LIST_PROFIL        ]]  &&  cat  LIST_PROFIL     >>  LIST_PROFILE
+#
+# Combine all particle information files
+OC:[[ -f PARTICLE_INFOS/_0000 ]]  &&  cat  PARTICLE_INFOS/* >> PARTICLE_INFO

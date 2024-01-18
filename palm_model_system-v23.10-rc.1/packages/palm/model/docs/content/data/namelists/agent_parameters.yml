@@ -1,0 +1,485 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "agent_parameters"
+
+a_rand_target:
+  category: General Settings
+  type: L
+  shape: (100)
+  default:  
+    value: .F.
+  description:
+    short: Flag for agents within a group to have random targets outside of model domain.
+    long: |
+      There is one logical value per agent group (see [number_of_agent_groups](#agent_parameters--number_of_agent_groups). If *.T.*, each agent in that group will have a random target just outside the model domain. Otherwise, a target (see [at_x](#agent_parameters--at_x)/[at_y](#agent_parameters--at_y)) must be set manually for each agent group.
+
+adx:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: Distance along x between agents within an agent source.
+    long: |
+      Each agent source is defined as an area from x = [asl](#agent_parameters--asl) to [asr](#agent_parameters--asr) and y = [ass](#agent_parameters--ass) to [asn](#agent_parameters--asn). The first agent is released at x = [asl](#agent_parameters--asl); y = [ass](#agent_parameters--ass). More agents are released at x = [asl](#agent_parameters--asl) + N * [adx](#agent_parameters--adx) (x <= [asr](#agent_parameters--asr)) and y = [ass](#agent_parameters--ass) + N * [ady](#agent_parameters--ady) (y <= [asn](#agent_parameters--asn)), forming a raster.
+
+      To add a random element to these release points, see [random_start_position_agents](#agent_parameters--random_start_position_agents).
+
+ady:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: Distance along y between agents within an agent source.
+    long: |
+      For further explanations see [adx](#agent_parameters--adx).
+
+agent_maximum_age:
+  category: General Settings
+  type: R
+  default:
+    value: 9999999.9 
+  si-unit: s
+  description:
+    short: Maximum time an agent can spend in the simulation before it is deleted.
+    long: ''
+
+agent_time_unlimited:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: time dimension in netCDF output file
+    long: |
+      By default, the time dimension in the netCDF output file for agent data is calculated by
+      
+      MIN( [multi_agent_system_end](#agent_parameters--multi_agent_system_end), [end_time](../Namelists/#runtime_parameters--end_time) ) - [multi_agent_system_start](#agent_parameters--multi_agent_system_start) ) / ( [dt_write_agent_data](#agent_parameters--dt_write_agent_data) * 1.1
+      
+      which adds additional 10% time levels as a safety factor. For [agent_time_unlimited](#agent_parameters--agent_time_unlimited) = *.T.*, the time dimension will be defined as unlimited, so the netCDF file will contain exactly as many time levels as required for output. This minimizes the filesize, but may slow down the I/O performance for writing agent data.
+
+alloc_factor_mas:
+  category: General Settings
+  type: R
+  default:
+    value: 20.0
+  description:
+    short: Factor (in percent) describing the additional memory allocated to the memory needed for initial agents at a given grid cell.
+    long: |
+      Implementation is the same as for the [particle alloc_factor](#particle_parameters--alloc_factor).
+
+asl:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: Left border of agent source(s).
+    long: |
+      Check [adx](#agent_parameters--adx) for information on agent sources.
+
+asn:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: North border of agent source(s).
+    long: |
+      Check [adx](#agent_parameters--adx) for information on agent sources.
+
+asr:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: Right border of agent source(s).
+    long: |
+      Check [adx](#agent_parameters--adx) for information on agent sources.
+
+ass:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: 9999999.9
+  si-unit: m
+  description:
+    short: South border of agent source(s).
+    long: |
+      Check [adx](#agent_parameters--adx) for information on agent sources.
+
+at_x:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: x-coordinate of agent group target.
+    long: |
+      Each agent in a group will navigate through building topography toward the corresponding target with coordinate (x,y) = ([at_x](#agent_parameters--at_x), [at_y](#agent_parameters--at_y)).
+
+at_y:
+  category: General Settings
+  type: R
+  shape: (100)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: y-coordinate of agent group target.
+    long: |
+      Each agent in a group will navigate through building topography toward the corresponding target with coordinate (x,y) = ([at_x](#agent_parameters--at_x), [at_y](#agent_parameters--at_y)).
+
+bc_mas_lr:
+  category: Boundary Conditions
+  type: C*15
+  default:
+    value: 'absorb'
+  description:
+    short: Boundary condition for agents at the left and right model boundary.
+    long: ''
+  allowed_values:
+    - value: 'absorb'
+      description: |
+        Agents are deleted when they leave the model domain.
+    - value: 'cyclic'
+      description: |
+        Agents leaving the domain will enter it again from the opposite side.
+
+bc_mas_ns:
+  category: Boundary Conditions
+  type: C*15
+  default:
+    value: 'absorb'
+  description:
+    short: Boundary condition for agents at the north and south model boundary.
+    long: ''
+  allowed_values:
+    - value: 'absorb'
+      description: |
+        Agents are deleted when they leave the model domain.
+    - value: 'cyclic'
+      description: |
+        Agents leaving the domain will enter it again from the opposite side.
+
+coll_t_0:
+  category: Social Forces
+  type: R
+  default:
+    value: 3.0
+  si-unit: s
+  description:
+    short: Range of unscreened interactions for social force model.
+    long: |
+      Collision avoidance of pedestrians is implemented according to the approach of [Karamouzas et al. (2014)](http://motion.cs.umn.edu/PowerLaw/). This parameter implies a maximum range that pedestrians consider for collision avoidance, i.e., potential collisions that will occur more than [coll_t_0](#agent_parameters--coll_t_0) seconds in the future are largely ignored.
+      
+      **NOTE**: This parameter should generally not be changed.
+
+corner_gate_start:
+  category: General Settings
+  type: R
+  default:
+    value: 0.5
+  si-unit: m
+  description:
+    short: Distance of navigation gate starting point to obstacle corner.
+    long: |
+      Convex obstacle corners are used for agents to navigate toward their target (see [at_x](#agent_parameters--at_x)/[at_y](#agent_parameters--at_y)). To avoid collisions with these obstacles, the navigation points do not coincide exactly with the obstacle corners but are shifted outward along the bisector of the corner. The navigation point for each agent at a given corner is chosen randomly along a line following the corner bisector starting at [corner_gate_start](#agent_parameters--corner_gate_start) outward from the corner and ending at [corner_gate_start](#agent_parameters--corner_gate_start) + [corner_gate_width](#agent_parameters--corner_gate_width) outward from the corner, forming a "gate" at each obstacle corner through which agents can pass. This gate helps to avoid clustering of agents moving in different directions at corner navigation points.
+
+corner_gate_width:
+  category: General Settings
+  type: R
+  default:
+    value: 1.0
+  si-unit: m
+  description:
+    short: Width of navigation gate at obstacle corners.
+    long: |
+      See [corner_gate_start](#agent_parameters--corner_gate_start) for details.
+
+deallocate_memory_mas:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to enable/disable deallocation of unused memory.
+    long: |
+      If the number of agents in a grid box exceeds the allocated memory, new memory is allocated. However, if the number of agents per grid box is only temporarily high, most of the memory will be unused later. If [deallocate_memory_mas](#agent_parameters--deallocate_memory_mas) = *.T.*, the allocated memory used for agents will be dynamically adjusted with respect to the current number of agents every [step_dealloc_mas](#agent_parameters--step_dealloc_mas)'th timestep.
+
+dim_size_agtnum_manual:
+  category: Data Output
+  type: I
+  default:
+    value: ~
+  description:
+    short: Manually set size for agent-number dimension.
+    long: |
+      Agent output has two dimensions, time and agent number. By default, the size of the latter is estimated via the output interval and amount, the MAS simulation time and [agent_maximum_age](#agent_parameters--agent_maximum_age). This is a maximum estimation and may thus be much too large, i.e. it may lead to a huge output filesize. Use [dim_size_agtnum_manual](#agent_parameters--dim_size_agtnum_manual) to explicitly set the dimension size.
+      
+      If [dim_size_factor_agtnum](#agent_parameters--dim_size_factor_agtnum) is also set, the minimum of the resulting dimension sizes is chosen.
+
+      **WARNING:** This may lead to the dimension being smaller than the number of agents and thus data loss.
+
+dim_size_factor_agtnum:
+  category: Data Output
+  type: R
+  default:
+    value: 1.0
+  description:
+    short: Factor to modify the agent-number dimension size for agent output.
+    long: |
+      Agent output has two dimensions, time and agent number. By default, the size of the latter is estimated via the output interval and amount, the MAS simulation time and [agent_maximum_age](#agent_parameters--agent_maximum_age). This is a maximum estimation and may thus be much too large, i.e. it may lead to a huge output filesize. Use [dim_size_factor_agtnum](#agent_parameters--dim_size_factor_agtnum) to reduce the dimension size.
+
+      If [dim_size_agtnum_manual](#agent_parameters--dim_size_agtnum_manual) is also set, the minimum of the resulting dimension sizes is chosen.
+
+      **WARNING:**  This may lead to the dimension being smaller than the number of agents and thus data loss.
+
+dist_to_int_target:
+  category: General Settings
+  type: R
+  default:
+    value: 0.25
+  si-unit: m
+  description:
+    short: Distance at which an intermittent target counts as reached.
+    long: |
+      Each agent in an agent group navigates toward the target specficied for that group ([at_x](#agent_parameters--at_x)/[at_y](#agent_parameters--at_y)). To do this, a preprocessed navigation mesh (visibility graph) is searched for via the A*-algorithm to find the most efficient path to the target. The agent successively navigates toward a number of intermittent targets along the calculated path, each such target providing the direction of the driving force until it is reached. Each intermittent target counts as reached as soon as the distance between it and the current agent position is smaller than [dist_to_int_target](#agent_pparameters--dist_to_int_target). Then, the next intermittent target along the path is chosen.
+
+      **NOTE:** This parameter should be chosen in a way that insures that the next intermittent target is visible to the agent once the current one is reached. If not, agents could get stuck at obstacle corners.
+
+dt_agent:
+  category: General Settings
+  type: R
+  default:
+    value: 0.02
+  si-unit: s
+  description:
+    short: Agent timestep.
+    long: |
+      The MAS performs a number of subtimesteps usually much smaller than the model timestep until all agents have reached the model timestep. The value of this parameter should not exceed 0.02 s, because above that, the local interaction of the agents will become unstable.
+
+dt_arel:
+  category: General Settings
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Interval at which agents are released at their respective sources.
+    long: |
+      Every [dt_arel](#agent_parameters--dt_arel) seconds, agents are released at their sources as defined by [asl](#agent_parameters--asl), [asr](#agent_parameters--asr), [adx](#agent_parameters--adx), [ass](#agent_parameters--ass), [asn](#agent_parameters--asn) and [ady](#agent_parameters--ady).
+
+dt_write_agent_data:
+  category: Data Output
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Output interval for agent NetCDF output.
+    long: |
+      Agent data is output every [dt_write_agent_data](#agent_parameters--dt_write_agent_data) seconds to the NetCDF file [DATA_AGT_NETCD](#iofiles--DATA_AGT_NETCDF).
+      
+      **Note:** To animate the results of an agent simulation at real-time speed, [dt_write_agent_data](#agent_parameters--dt_write_agent_data) = 0.04 is recommended.
+
+      **Note:** While prognostic quantities are output at every output step, this data will not change between two PALM timesteps, because no new values have been calculated yet.
+
+end_time_arel:
+  category: General Settings
+  type: R
+  default:
+    value: 
+  si-unit: s
+  description:
+    short: Simulation time at which the release of agents is stopped.
+    long: |
+      From this time on no more agents are released from the sources as defined by [asl](#agent_parameters--asl), [asr](#agent_parameters--asr), [adx](#agent_parameters--adx), [ass](#agent_parameters--ass), [asn](#agent_parameters--asn) and [ady](#agent_parameters--ady). There may still be agents left in the simulation until the last agent has reached [agent_maximum_age](#agent_parameters--agent_maximum_age) and is deleted or until all agents have left the model domain or reached their targets.
+
+max_dist_from_path:
+  category: General Settings
+  type: R
+  default:
+    value: 0.25
+  si-unit: m
+  description:
+    short: Agent distance from current path section that triggers recalculation of the path of that agent.
+    long: |
+      The path of an agent to the target it is assigned to consists of a number of intermittent targets. If an agent deviates farther from current path section it is on (the line between its last and its current intermittent target) than [max_dist_from_path](#agent_parameters--max_dist_from_path), a recalculation of the path to the target it is assigned to is triggered.
+
+min_nr_agent:
+  category: General Settings
+  type: I
+  default:
+    value: 2
+  description:
+    short: Minimum number of agents for which memory is allocated at every grid cell.
+    long: ''
+
+multi_agent_system_end:
+  category: General Settings
+  type: R
+  default:
+    value: 9999999.9
+  si-unit: s
+  description:
+    short: Simulation time at which the multi agent system will stop executing.
+    long: |
+      **NOTE:** This does not consider spin-up time.
+
+multi_agent_system_start:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Simulation time at which the multi agent system will start executing.
+    long: |
+      **NOTE:** This does not consider spin-up time.
+
+number_of_agent_groups:
+  category: General Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short: Number of agent groups.
+    long: |
+      Sources ([asl](#agent_parameters--asl), [asr](#agent_parameters--asr), [adx](#agent_parameters--adx), [ass](#agent_parameters--ass), [asn](#agent_parameters--asn) and [ady](#agent_parameters--ady) ) and targets ([at_x](#agent_parameters--at_x)/[at_y](#agent_parameters--at_y)) should be defined for each group individually. A maximum of 100 groups is allowed.
+      
+      **Note:** [dt_arel](#agent_parameters--dt_arel) is the same for all groups.
+
+radius_agent:
+  category: Social Forces
+  type: R
+  default:
+    value: 0.25
+  si-unit: m
+  description:
+    short: Quasi-solid core of agents.
+    long: |
+      If agents collide, (distance of agent centers are smaller than 2 * [radius_agent](#agent_parameters--radius_agent)) the standard social force model according to [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282) is used to calculate the repulsive forces they exert on each other, instead of the default [collision avoidance scheme](http://motion.cs.umn.edu/PowerLaw/).
+
+random_start_position_agents:
+  category: General Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Initial position of the particles is varied randomly within certain limits.
+    long: |
+      By default, the initial positions of agents within the source exactly correspond with the positions given by [asl](#agent_parameters--asl), [asr](#agent_parameters--asr), [adx](#agent_parameters--adx), [ass](#agent_parameters--ass), [asn](#agent_parameters--asn) and [ady](#agent_parameters--ady). With [random_start_position_agents](#agent_pparameters--random_start_position_agents) = *.T.*, the initial positions of the agents are allowed to randomly vary from these positions within certain limits.
+
+      **Very important:**
+      If [random_start_position_agents](#agent_pparameters--random_start_position_agents) = *.T.*, the random-number generators on the individual PEs no longer run synchronously. If random disturbances are applied to the velocity field (see [create_disturbances](#runtime_parameters--create_disturbances), then as a consequence for parallel runs, the realizations of the turbulent flow fields will deviate between runs in which different numbers of PEs are used!
+
+read_agents_from_restartfile:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to read agent data from restart file.
+    long: |
+      This currently has no function, because restart runs with agents are not yet implemented. Will follow.
+
+repuls_agent:
+  category: Social Forces
+  type: R
+  default:
+    value: 1.5
+  si-unit: m^2^ s^-2^
+  description:
+    short: Magnitude of the repulsive force agents exert on each other.
+    long: |
+      The repulsive force agents exert on each other according to the original social force model [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282) is calculated from a potential field and drops exponentially with distance. This is the magnitude of that potential field.
+
+repuls_wall:
+  category: Social Forces
+  type: R
+  default:
+    value: 7.0
+  si-unit: m^2^ s^-2^
+  description:
+    short: Magnitude of the repulsive force obstacles exert on agents.
+    long: |
+      The repulsive force obstacles exert on agents according to the original social force model [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282) is calculated from a potential field and drops exponentially with distance. This is the magnitude of that potential field.
+
+scan_radius_agent:
+  category: General Settings
+  type: R
+  default:
+    value: 3.0
+  si-unit: m
+  description:
+    short: Radius around the agent in which it scans for obstacles.
+    long: |
+      Based on [scan_radius_agent](#agent_parameters--scan_radius_agent), each agent at each subtimestep determines a number of gridboxes around it and scans them for obstacles (topography and other agents). It will interact only with obstacles in that radius. The limiting factor is the grid spacing, because a maximum of three grid boxes can be scanned at subdomain boundaries.
+
+sigma_rep_agent:
+  category: Social Forces
+  type: R
+  default:
+    value: 0.3
+  si-unit: m
+  description:
+    short: Width of agent repulsive field.
+    long: |
+      The repulsive force agents exert on each other according to the original social force model [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282) is calculated from a potential field and drops exponentially with distance. This is the width of that potential field.
+
+sigma_rep_wall:
+  category: Social Forces
+  type: R
+  default:
+    value: 0.1
+  si-unit: m
+  description:
+    short: Width of obstacle repulsive field.
+    long: |
+      The repulsive force obstacles exert on agents according to the original social force model [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282) is calculated from a potential field and drops exponentially with distance. This is the width of that potential field.
+
+step_dealloc_mas:
+  category: General Settings
+  type: I
+  default:
+    value: 100
+  description:
+    short: Interval for memory reallocation.
+    long: |
+      See [deallocate_memory_mas](#agent_parameters--deallocate_memory_mas).
+
+switch_off_module:
+  category: Mode
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to switch on/off the module in general.
+    long: |
+      [switch_off_module](#agent_parameters--switch_off_module) = *.T.* can be used to switch off this module without removing (or commenting) the namelist from the namelist file.
+
+tau_accel_agent:
+  category: Social Forces
+  type: R
+  default:
+    value: 0.5
+  si-unit: s
+  description:
+    short: Relaxation time in social force model.
+    long: |
+      [tau_accel_agent](#agent_parameters--tau_accel_agent) determines how quickly an agent will approach its desired velocity and direction. A smaller value leads to a more aggresive walking style.

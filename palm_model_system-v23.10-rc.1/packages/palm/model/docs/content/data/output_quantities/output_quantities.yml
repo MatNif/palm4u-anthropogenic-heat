@@ -1,0 +1,2613 @@
+---
+# This is the YAML Database file for all allowed output quantities
+#
+
+c_liq*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: '%'
+  description: |
+    coverage of plants with liquid water
+  remarks: ''
+
+c_soil*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: '%'
+  description: |
+    coverage of the land surface with bare soil
+  remarks: ''
+
+c_vef*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: '%'
+  description: |
+    coverage of the land surface with vegetation
+  remarks: ''
+
+e:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: m^2^ s^-2^
+  description: |
+    SGS turbulence kinetic energy
+  remarks: ''
+
+e*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    resolved-scale turbulence kinetic energy
+  remarks: |
+    Calculated from variances or fluxes (see https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+eta:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m
+  description: |
+    Kolmogorov length scale
+  remarks: |
+    Only meaningful for DNS mode. The Kolmogorov length scale $\eta$ is defined by $(\nu^3/\epsilon)^{1/4}$ with $\nu$ being the kinematic, molecular viscosity and $\epsilon$ being the turbulent kinetic energy dissipation rate. However, as LES is not resolving the smallest velocity scales, the direct determination of the dissipation rate and therefore of the Kolmogorov length scale is not possible in general. Only if run in DNS mode, a meaningful value of $\eta$ will be output.
+
+ghf*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    ground (soil) heat flux
+  remarks: |
+     From energy balance.
+
+hr:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: K s^-1^
+  description: |
+    heating rate
+  remarks: |
+    Indicates the heating/cooling of an air volume by direct heating/cooling of the air volume by radiation flux divergences (only RRTMG), by diabatic processes at plants, as well as by surface forcing. Note, no heating/cooling by advection, condensation, etc. is considered. This quantity is especially useful to evaluate katabatic flows where radiative cooling of air volumes, emission at plant surfaces, and radiative surface cooling is dominant.
+
+hyp:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: hPa
+  description: |
+    hydrostatic pressure
+  remarks: ''
+
+im_hf_roof:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K m s^-1^
+  description: |
+    heatflux at building roof
+  remarks: |
+    Only 3D output possible.
+
+im_hf_roof_waste:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K m s^-1^
+  description: |
+    waste heatflux at building roof
+  remarks: |
+    Only 3D output possible.
+
+im_hf_wall_win:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K m s^-1^
+  description: |
+    heatflux at building walls and windows
+  remarks: |
+    Only 3D output possible.
+
+im_hf_wall_win_waste:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K m s^-1^
+  description: |
+    waste heatflux at building walls and windows
+  remarks: |
+    Only 3D output possible.
+
+im_t_indoor_mean:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    mean indoor temperature
+  remarks: |
+     Horizontal building average at each storey. Only 3D output possible.
+
+im_theta_10cm_roof:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+     10-cm potential temperature above roofs
+  remarks: |
+     Only 3D output possible.
+
+im_theta_10cm_wall:
+  scope:
+    - indoor_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+     10-cm potential temperature at vertical walls
+  remarks: |
+     Only 3D output possible.
+
+kc_X:
+  scope:
+    - chemistry_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: ppm or kg m^-3^
+  description: |
+    concentration of chemical species X
+  remarks: |
+    Chemistry quantities requires the prefix kc_. X indicates the species name. Only species names belonging to the selected chemistry mechanism are allowed.
+
+kc_w*X*:
+  scope:
+    - chemistry_model
+  type:
+    - vertical profile
+  si-unit: ppm m s^-1^ or kg s^-1^ m^-2^
+  description: |
+    resolved-scale turbulent vertical flux of chemical species X
+  remarks: |
+    Chemistry quantities requires the prefix kc_. X indicates the species name. Only species names belonging to the selected chemistry mechanism are allowed.
+
+kc_w"X":
+  scope:
+    - chemistry_model
+  type:
+    - vertical profile
+  si-unit: ppm m s^-1^ or kg s^-1^ m^-2^
+  description: |
+    subgrid-scale turbulent vertical flux of chemical species X
+  remarks: |
+    Chemistry quantities requires the prefix kc_. X indicates the species name. Only species names belonging to the selected chemistry mechanism are allowed.
+
+kfd*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m
+  description: |
+    katabatic flow depth
+  remarks: |
+    Indicates the top of a katabatic flow characterized by a jet-like structure. To detect a katabatic flow and determine its depth, the flow must show an elevated maximum of shear production and must be roughly aligned with the terrain-slope.
+
+kh:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-1^
+  description: |
+    eddy diffusivity for heat
+  remarks: ''
+
+km:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-1^
+  description: |
+    eddy diffusivity for momentum
+  remarks: ''
+
+l:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m
+  description: |
+    mixing length
+  remarks: ''
+
+lai:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: m^2^ m^-2^
+  description: |
+    leaf area index
+  remarks: ''
+
+lwp*:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 2d-array
+  si-unit: kg m^-2^
+  description: |
+    liquid water path
+  remarks: ''
+
+m_liq*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: m
+  description: |
+    liquid water level on plants
+  remarks: ''
+
+m_soil:
+  scope:
+    - land_surface_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: m^3^ m^-3^
+  description: |
+    volumetric soil moisture
+  remarks: ''
+
+nc:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    -  vertical profile
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    cloud drop number density
+  remarks: |
+    Requires cloud_scheme = morrison.
+
+ng:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    graupel number density
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+ni:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    ice crystal number density
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison' and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T..
+
+nr:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: m^-3^
+  description: |
+    rain drop number density
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng'.
+
+ns:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    snow number density
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+ol*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m
+  description: |
+    Obukhov length in the constant flux layer
+  remarks: ''
+
+p:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: Pa
+  description: |
+    perturbation pressure
+  remarks: ''
+
+pc:
+  scope:
+    - palm_core
+    - lagrangian_particle_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: number per gridbox
+  description: |
+    particle/droplet concentration
+  remarks: ''
+
+pcm_bad:
+  scope:
+    - plant_canopy_model
+  type:
+    - 3d-array
+  si-unit: m^2^ m^-3^
+  description: |
+    basal area density
+  remarks: |
+    Only 3d-output possible.
+
+pcm_heatrate:
+  scope:
+    - plant_canopy_model
+  type:
+    - 3d-array
+  si-unit: K s^-1^
+  description: |
+    plant canopy heating rate by solar radiation
+  remarks: |
+    Only 3d-output possible.
+
+pcm_lad:
+  scope:
+    - plant_canopy_model
+  type:
+    - 3d-array
+  si-unit: m^2^ m^-3^
+  description: |
+    leaf area density
+  remarks: |
+    Only 3d-output possible.
+
+pcm_latentrate:
+  scope:
+    - plant_canopy_model
+  type:
+    - 3d-array
+  si-unit: K s^-1^
+  description: |
+    plant canopy latent heat flux
+  remarks: |
+    Only 3d-output possible.
+
+pcm_transpirationrate:
+  scope:
+    - plant_canopy_model
+  type:
+    - 3d-array
+  si-unit: kg kg^-1^ s^-1^
+  description: |
+    plant canopy transpiration rate by solar radiation
+  remarks: |
+    Only 3d-output possible.
+
+pr:
+  scope:
+    - palm_core
+    - lagrangian_particle_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: m
+  description: |
+    mean particle/droplet radius
+  remarks: ''
+
+pra*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: mm
+  description: |
+    precipitation amount
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'kessler' or 'seifert_beheng'. Time interval to which amount refers to is defined by [precipitation_amount_interval](../Namelists/#bulk_cloud_parameters--precipitation_amount_interval).
+
+prho:
+  scope:
+    - ocean_module
+  type:
+    - vertical profile
+  si-unit: kg m^-3^
+  description: |
+    potential density
+  remarks: ''
+
+prr:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    total precipitation rate of all cloud species
+  remarks: |
+    Is allowed for all schemes except of [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'sat_adjust'.
+
+prr_cloud:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    precipitation rate of cloud droplets (by sedimentation)
+  remarks: |
+    Is allowed for all schemes except of [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'sat_adjust', but makes only sense if [cloud_water_sedimentation](../Namelists/#bulk_cloud_parameters--cloud_water_sedimentation) = .T..
+
+prr_graupel:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    precipitation rate of graupel
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+prr_ice:
+  scope:
+    - vertical profile
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    precipitation rate of ice crystals
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T..
+
+prr_rain:
+  scope:
+    - vertical profile
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    precipitation rate of rain droplets
+  remarks: |
+    Is allowed for all schemes except of [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'sat_adjust'.
+
+prr_snow:
+  scope:
+    - vertical profile
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    precipitation rate of snow
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+q:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    water vapor mixing ratio (or total water mixing ratio if cloud physics is switched on)
+  remarks: |
+    Requires [humidity](../Namelists/#initialization_parameters--humidity) = .T..
+
+qc:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    cloud water mixing ratio
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison'.
+
+qg:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^
+  description: |
+    graupel mixing ratio
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+qi:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^
+  description: |
+    ice crystal mixing ratio
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T..
+
+ql:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+    - lagrangian_particle_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    liquid water mixing ratio
+  remarks: |
+    Requires using the bulk cloud model (BCM) or the Lagrangian cloud model (LCM) via setting of [cloud_droplets](../Namelists/#initialization_parameters--cloud_droplets) = .T..
+
+ql_c:
+  scope:
+    - palm_core
+    - lagrangian_particle_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    change in liquid water mixing ratio due to condensation/evaporation during last time step
+  remarks: |
+    Requires to switch on the Lagrangian cloud model (LCM) via setting of [cloud_droplets](../Namelists/#initialization_parameters--cloud_droplets) = .T..
+
+ql_v:
+  scope:
+    - palm_core
+    - lagrangian_particle_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: m^3^ per gridpox
+  description: |
+    volume of liquid water
+  remarks: |
+    Requires to switch on the Lagrangian cloud model (LCM) via setting of [cloud_droplets](../Namelists/#initialization_parameters--cloud_droplets) = .T..
+
+ql_vp:
+  scope:
+    - palm_core
+    - lagrangian_particle_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: 1
+  description: |
+    weighting factor
+  remarks: |
+    Requires to switch on the Lagrangian cloud model (LCM) via setting of [cloud_droplets](../Namelists/#initialization_parameters--cloud_droplets) = .T..
+
+qr:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    rain water mixing ratio
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng'.
+
+qs:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg kg^-1^
+  description: |
+    snow mixing ratio
+  remarks: |
+    Requires [cloud_scheme](../Namelists/#bulk_cloud_parameters--cloud_scheme) = 'seifert_beheng' or 'morrison', and [microphysics_ice_phase](../Namelists/#bulk_cloud_parameters--microphysics_ice_phase) = .T., and [snow](../Namelists/#bulk_cloud_parameters--snow) = .T., and [graupel](../Namelists/#bulk_cloud_parameters--graupel) = .T..
+
+qsurf*:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 2d-array
+  si-unit: kg kg^-1^
+  description: |
+    mixing ratio at the surface
+  remarks: ''
+
+qsws*:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 2d-array
+  si-unit: kg kg^-1^ m s^-1^ or W m^-2^
+  description: |
+    surface latent heatflux
+  remarks: |
+    Requires [humidity](../Namelists/#initialization_parameters--humidity) = .T..
+
+qsws_liq*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    surface latent heat flux due to evaporation/condensation of liquid water on plants
+  remarks: |
+    From energy balance.
+
+qsws_soil*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    surface latent heat flux due to evaporation/precipitation of bare soil
+  remarks: |
+    From energy balance.
+
+qsws_veg*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    surface latent heat flux due to transpiration of plants
+  remarks: |
+    From energy balance.
+
+qv:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg kg^-1^
+  description: |
+    water vapor mixing ratio
+  remarks: |
+    Requires using the bulk cloud model (BCM).
+
+qv_2m*:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 2d-array
+  si-unit: kg kg^-1^
+  description: |
+    2-m water vapor mixing ratio
+  remarks: |
+    Requires using the buld cloud model. See also description of [theta_2m*](#output_quantities--theta_2m*).
+
+q*2:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+  si-unit: kg^2^ kg^-2^
+  description: |
+    variance of water vapor mixing ratio (or total water mixing ratio if cloud physics is switched on)
+  remarks: |
+    Requires [humidity](../Namelists/#initialization_parameters--humidity) = .T..
+
+rad_lw_cs_hr:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - 3d-array
+  si-unit: K h^-1^
+  description: |
+    clear-sky longwave radiative heating rate
+  remarks: ''
+
+rad_lw_hr:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - 3d-array
+  si-unit: K h^-1^
+  description: |
+    longwave radiative heating rate
+  remarks: ''
+
+rad_lw_in:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming longwave radiation flux
+  remarks: ''
+
+rad_lw_in*:
+  scope:
+    - clear_sky_radiation_model
+    - rrtmg_radiation_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    incoming longwave radiation flux
+  remarks: ''
+
+rad_lw_out:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing longwave radiation flux
+  remarks: ''
+
+rad_lw_out*:
+  scope:
+    - clear_sky_radiation_model
+    - rrtmg_radiation_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing longwave radiation flux
+  remarks: ''
+
+rad_sw_cs_hr:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - 3d-array
+  si-unit: K h^-1^
+  description: |
+    clear-sky shortwave radiative heating rate
+  remarks: ''
+
+rad_sw_hr:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - 3d-array
+  si-unit: K h^-1^
+  description: |
+    shortwave radiative heating rate
+  remarks: ''
+
+rad_sw_in:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming shortwave radiation flux
+  remarks: ''
+
+rad_sw_in*:
+  scope:
+    - clear_sky_radiation_model
+    - rrtmg_radiation_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    incoming shortwave radiation flux
+  remarks: ''
+
+rad_sw_out:
+  scope:
+    - rrtmg_radiation_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing shortwave radiation flux
+  remarks: ''
+
+rad_sw_out*:
+  scope:
+    - clear_sky_radiation_model
+    - rrtmg_radiation_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing shortwave radiation flux
+  remarks: ''
+
+rad_net*:
+  scope:
+    - clear_sky_radiation_model
+    - rrtmg_radiation_model
+  type:
+    - 2d-array
+  si-unit: W m^-2^
+  description: |
+    net radiation flux at the surface
+  remarks: ''
+
+rh:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: '%'
+  description: |
+    relative humidity
+  remarks: |
+    Requires [humidity](../Namelists/#initialization_parameters--humidity) = .T..
+
+rho:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg m^-3^
+  description: |
+    air density
+  remarks: ''
+
+rho_sea_water:
+  scope:
+    - palm_core
+    - ocean_module
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg m^-3^
+  description: |
+    density of sea water
+  remarks: |
+    Requires ocean module switched on.
+
+rtm_dif_<d>_<i>_<j>_<k>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    transparency of view factor of the surface to a surface with i,j,k coordinates
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <i>, <j>,<k> are coordinates of pair surfaces.
+
+rtm_mrt:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    mean radiant temperature
+  remarks: ''
+
+rtm_mrt_lw:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    LW fraction of MRT radiation flux
+  remarks: ''
+
+rtm_mrt_sw:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    SW fraction of MRT radiation flux
+  remarks: ''
+
+rtm_rad_inlw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    complete incoming LW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_inlwdif_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming diffuse LW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_inlwref_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming reflected and emitted LW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_insw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    complete incoming SW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_inswdif_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming diffuse solar SW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_inswdir_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming direct solar SW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_inswref_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    incoming reflected SW radiation at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_net_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    net radiation flux at the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_outlw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing LW radiation from the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_outsw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    outgoing SW radiation from the surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_pc_inlw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    LW radiation absorbed by plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_pc_insw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    SW radiation absorbed by plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_pc_inswdif_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    diffuse solar SW radiation absorbed by plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_pc_inswdir_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    direct solar SW radiation absorbed by plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_pc_inswref_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    reflected SW radiation absorbed by plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_reslw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    residuum of LW radiation absorbed in surface after last reflection
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_rad_ressw_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    residuum of SW radiation absorbed in surface after last reflection
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_skyvf_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    sky view factor
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_skyvft_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    sky view factor including transparency of plant canopy
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_surfalb_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    effective albedo of the surface (weighted average of fractions)
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_surfemis_<d>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    effective emissivity of the surface (weighted average of fractions)
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+rtm_svf_<d>_<i>_<j>_<k>:
+  scope:
+    - radiative_transfer_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    view factor of the surface to a surface with i,j,k coordinates
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <i>, <j>, <k> are coordinates of pair surfaces.
+
+r_a*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: s m^-1^
+  description: |
+    aerodynamic resistance
+  remarks: ''
+
+r_s*:
+  scope:
+    - land_surface_model
+  type:
+    - 2d-array
+  si-unit: s m^-1^
+  description: |
+    resistance of the surface
+  remarks: |
+    Soil plus vegetation.
+
+s:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: kg m^-3^ or ppm
+  description: |
+    concentration of passive scalar
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+sa:
+  scope:
+    - palm_core
+    - ocean_module
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: psu
+  description: |
+    salinity of sea water
+  remarks: |
+    Requires ocean module switched on.
+
+salsa_g_<gaseous_compound>:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    concentration of <gaseous_compound>
+  remarks: |
+    <gaseous_compound> is one of H2SO4, HNO3, NH3, OCNV, OCSV
+
+salsa_LDSA:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: micro m^2^ cm^-3^
+  description: |
+    total lung-deposited surface area
+  remarks: ''
+
+salsa_N_bin<bin number>:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    aerosol number concentration in the aerosol size bin
+  remarks: |
+    <bin number> is one of the specified aerosol bins
+
+salsa_N_UFP:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    total aerosol number concentration of particles smaller than 0.1 µm in diameter, i.e. ultrafine particles
+  remarks: ''
+
+salsa_N_tot:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: m^-3^
+  description: |
+    total aerosol number concentration
+  remarks: ''
+
+salsa_PM0.1:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg m^-3^
+  description: |
+    total mass concentration of particulate matter smaller than 0.1 µm in diameter, i.e. ultrafine particles
+  remarks: ''
+
+salsa_PM2.5:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg m^-3^
+  description: |
+    total mass concentration of particulate matter smaller than 2.5 µm in diameter, i.e. ultrafine particles
+  remarks: ''
+
+salsa_PM10:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: kg m^-3^
+  description: |
+    total mass concentration of particulate matter smaller than 10 µm in diameter, i.e. ultrafine particles
+  remarks: ''
+
+salsa_s_<chemical_compound>:
+  scope:
+    - salsa_aerosol_model
+  type:
+    - 3d-array
+  si-unit: kg m^-3^
+  description: |
+    concentration of <chemical_compound> in the aerosol phase
+  remarks: |
+    <chemical_compound> is one of BC, DU, NH, NO, OC, SO4, SS, H2O
+
+shf*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: K m s^-1^ or W m^-2^
+  description: |
+    surface sensible heat flux
+  remarks: ''
+
+ssurf*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: kg kg^-1^
+  description: |
+    surface scalar concentration
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+ssws*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: kg m^-2^ s^-1^ or ppm m s^-1^
+  description: |
+    surface scalarflux
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+Sw:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: 1
+  description: |
+    skewness of the w-velocity component
+  remarks: |
+    Sw is defined as $w^3 / (w^2)^{1.5}$, where $w$ is the resolved-scale vertical velocity.
+
+s*2:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: (kg m^-3^)^2^
+  description: |
+    resolved scale variance of the passive scalar
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+t_soil:
+  scope:
+    - land_surface_model
+  type:
+    - vertical profile
+    - 3d-array
+  si-unit: K
+  description: |
+    soil temperature
+  remarks: ''
+
+t*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: K
+  description: |
+    (near surface) characteristic temperature
+  remarks: ''
+
+ta:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+    - masked array
+  si-unit: °C
+  description: |
+    true air temperature
+  remarks: ''
+
+ta_2m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: °C
+  description: |
+    true air temperature at 2m above surface
+  remarks: |
+    Estimated from logarithmic interpolation if the 2m level is below the first prognostic grid point, else interpolated between two vertical levels.
+
+td_lsa_q:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ s^-1^
+  description: |
+    horizontal large scale advection tendency for humidity
+  remarks: ''
+
+td_lsa_thetal:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K s^-1^
+  description: |
+    horizontal large scale advection tendency for temperature
+  remarks: ''
+
+td_nud_q:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ s^-1^
+  description: |
+    nudging tendency for humidity
+  remarks: ''
+
+td_nud_thetal:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K s^-1^
+  description: |
+    nudging tendency for temperature
+  remarks: ''
+
+td_nud_u:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m s^-2^
+  description: |
+    nudging tendency for u-component of velocity
+  remarks: ''
+
+td_nud_v:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m s^-2^
+  description: |
+    nudging tendency for v-component of velocity
+  remarks: ''
+
+td_sub_q:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ s^-1^
+  description: |
+    horizontal large scale subsidence tendency for humidity
+  remarks: ''
+
+td_sub_thetal:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K s^-1^
+  description: |
+    horizontal large scale subsidence tendency for temperature
+  remarks: ''
+
+theta:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: K
+  description: |
+    potential temperature
+  remarks: ''
+
+thetal:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - 3d-array
+    - masked array
+  si-unit: K
+  description: |
+    liquid water potential temperature
+  remarks: |
+    Requires using the bulk cloud model (BCM).
+
+thetav:
+  scope:
+    - palm_core
+    - bulk_cloud_model
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: K
+  description: |
+    virtual potential temperature
+  remarks: |
+    Requires [humidity](../Namelists/#initialization_parameters--humidity) = .T..
+
+theta_2m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: K
+  description: |
+    potential temperature at 2m above surface
+  remarks: |
+    Estimated from logarithmic interpolation if the 2m level is below the first prognostic grid point, else interpolated between two vertical levels.
+
+ti:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+    - masked array
+  si-unit: s^-1^
+  description: |
+    curl of velocity vector (magnitude)
+  remarks: ''
+
+tsurf*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: K
+  description: |
+    surface temperature
+  remarks: ''
+
+u:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: m s^-1^
+  description: |
+    u-component of velocity vector
+  remarks: ''
+
+ug:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m s^-1^
+  description: |
+    u-component of the geostrophic wind
+  remarks: ''
+
+usm_iwghf_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    ground heat flux from indoor surface of wall or roof
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_iwghf_window_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    ground heat flux from indoor surface of window
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_qsws_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    latent heat flux from surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_qsws_liq_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    latent heat flux from liquid surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_qsws_veg_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    latent heat flux from vegetation surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_surfcat_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    surface category
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_surfwintrans_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    transmissivity window tiles
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_surfz_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: 1
+  description: |
+    surface height (z)
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_swc_<k>_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: m^3^ m^-3^
+  description: |
+    soil water content of k-th layer of green fraction
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <k> is the number of the green layer.
+
+usm_t_green_<k>_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    temperature of k-th layer of green fraction
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <k> is the number of the green layer.
+
+usm_t_surf_green_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    surface temperature of green surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_t_surf_wall_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    surface temperature of wall or roof surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_t_surf_window_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    surface temperature of window surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_t_wall_<k>_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    temperature of k-th layer of wall fraction
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <k> is the number of the wall layer.
+
+usm_t_window_<k>_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: K
+  description: |
+    temperature of k-th layer of window fraction
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east. <k> is the number of the window layer.
+
+usm_wghf_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    ground heat flux from wall or roof surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_wghf_green_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    ground heat flux from green surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_wghf_window_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    ground heat flux from window surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+usm_wshf_<d>:
+  scope:
+    - urban_surface_model
+  type:
+    - 3d-array
+  si-unit: W m^-2^
+  description: |
+    sensible heat flux from surface
+  remarks: |
+    <d> is one of the directions: up, down, south, north, west, or east.
+
+uu_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of u and u
+  remarks: |
+    To be used for calculation of resolved-scale transport <u'u'> in case of horizontal inhomogeneity. Output is defined on u-grid. Computation of <u'u'> is possible in post-processing via temporal EC-method, i.e. <u'u'> = <uu> - <u><u>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+uv_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of u and v
+  remarks: |
+    To be used for calculation of resolved scale transport <u'v'> in case of horizontal inhomogeneity. Output is defined on u-grid. Therefore, output of uv is not necessarily identical to output of vu. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <u'v'> is possible in post-processing via temporal EC-method, i.e. <u'v'> = <uv> - <u><v>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+uw_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of u and w
+  remarks: |
+    To be used for calculation of resolved scale transport <u'w'> in case of horizontal inhomogeneity. Output is defined on u-grid. Therefore, output of uw is not necessarily identical to output of wu. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <u'w'> is possible in post-processing via temporal EC-method, i.e. <u'w'> = <uw> - <u><w>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+us*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m s^-1^
+  description: |
+    (near surface) friction velocity
+  remarks: ''
+
+u*2:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    variance or horizontal momentum flux of the resolved scale u-velocity component
+  remarks: |
+    In case of [momentum_advec](../Namelists#initialization_parameters--momentum_advec) = 'ws-scheme', see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+v:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: m s^-1^
+  description: |
+    v-component of velocity vector
+  remarks: ''
+
+vf25m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ s^-1^
+  description: |
+    volume-flux rate integrated up to 25m above surface
+  remarks: ''
+
+vf50m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ s^-1^
+  description: |
+    volume-flux rate integrated up to 50m above surface
+  remarks: ''
+
+vf75m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ s^-1^
+  description: |
+    volume-flux rate integrated up to 75m above surface
+  remarks: ''
+
+vf100m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ s^-1^
+  description: |
+    volume-flux rate integrated up to 100m above surface
+  remarks: ''
+
+vfxxm*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ s^-1^
+  description: |
+    volume-flux rate integrated up to detected katabatic flow depth
+  remarks: |
+    See also remarks for kfd*.
+
+vfd25m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ m^-1^ s^-1^
+  description: |
+    volume-flux density integrated up to 25m above surface
+  remarks: |
+    Volume flux per second through a 1m wide column with height of 25m.
+
+vfd50m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ m^-1^ s^-1^
+  description: |
+    volume-flux density integrated up to 50m above surface
+  remarks: |
+    Volume flux per second through a 1m wide column with height of 50m.
+
+vfd75m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ m^-1^ s^-1^
+  description: |
+    volume-flux density integrated up to 75m above surface
+  remarks: |
+    Volume flux per second through a 1m wide column with height of 75m.
+
+vfd100m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ m^-1^ s^-1^
+  description: |
+    volume-flux density integrated up to 100m above surface
+  remarks: |
+    Volume flux per second through a 1m wide column with height of 100m.
+
+vfdxxm*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m^3^ m^-1^ s^-1^
+  description: |
+    volume-flux density integrated up to detected katabatic flow depth
+  remarks: |
+    Volume flux per second through a 1m wide column with height of 75m. See also remarks for kfd*.
+
+vg:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m s^-1^
+  description: |
+    v-component of the geostrophic wind
+  remarks: ''
+
+vu_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of v and u
+  remarks: |
+    To be used for calculation of resolved scale transport <v'u'> in case of horizontal inhomogeneity. Output is defined on v-grid. Therefore, output of vu is not necessarily identical to output of uv. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <v'u'> is possible in post-processing via temporal EC-method, i.e. <v'u'> = <vu> - <v><u>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+vv_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of v and v
+  remarks: |
+    To be used for calculation of resolved-scale transport <v'v'> in case of horizontal inhomogeneity. Output is defined on v-grid. Computation of <v'v'> is possible in post-processing via temporal EC-method, i.e. <v'v'> = <vv> - <v><v>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+vw_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of v and w
+  remarks: |
+    To be used for calculation of resolved-scale transport <v'w'> in case of horizontal inhomogeneity. Output is defined on v-grid. Therefore, output of vw is not necessarily identical to output of wv. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <v'w'> is possible in post-processing via temporal EC-method, i.e. <v'w'> = <vw> - <v><w>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+v*2:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    variance or horizontal momentum flux of the resolved-scale v-velocity component
+  remarks: |
+    In case of [momentum_advec](../Namelists/#initialization_parameters--momentum_advec) = 'ws-scheme', see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+    - 3d-array
+    - masked array
+  si-unit: m s^-1^
+  description: |
+    w-component of velocity vector
+  remarks: ''
+
+wdir:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+    - masked array
+  si-unit: degree
+  description: |
+    direction of horizontal wind vector
+  remarks: ''
+
+wq:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    total vertical turbulent water flux
+  remarks: |
+    Sum of w"q" and w*q*.
+
+wqv:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    total vertical turbulent latent heat flux
+  remarks: |
+    Sum of w"qv" and w*qv*.
+
+wq_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: kg kg^-1^ m s^-1^
+  description: |
+    product of w and q
+  remarks: |
+    To be used for calculation of resolved-scale transport <w'q'> in case of horizontal inhomogeneity. Output is defined on w-grid. Requires humidity = .T.. Computation of <w'q'> is possible in post-processing via temporal EC-method, i.e. <w'q'> = <wq> - <w><q>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+ws:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg m^-2^ s^-1^  or  ppm m s^-1^
+  description: |
+    total vertical turbulent scalar concentration flux
+  remarks: |
+    Sum of w"s" and w*s*. Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+wsa:
+  scope:
+    - palm_core
+    - ocean_mode
+  type:
+    - vertical profile
+  si-unit: psu m s^-1^
+  description: |
+    total vertical turbulent salinity flux
+  remarks: |
+    Sum of w"sa" and w*sa*. Requires ocean mode switched on.
+
+wspeed:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+    - masked array
+  si-unit: m s^-1^
+  description: |
+    magnitude of the horizontal wind vector
+  remarks: ''
+
+wspeed_10m*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m s^-1^
+  description: |
+    10-m wind speed
+  remarks: |
+    Estimated from logarithmic interpolation if the 10m level is below the first prognostic grid point, else interpolated between two vertical levels.
+
+ws_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m s^-1^
+  description: |
+    product of w and s
+  remarks: |
+    To be used for calculation of resolved-scale transport <w's'> in case of horizontal inhomogeneity. Output is defined on w-grid. Computation of <w's'> is possible in post-processing via temporal EC-method, i.e. <w's'> = <ws> - <w><s>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough). Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+wtheta:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    total vertical turbulent sensible heat flux
+  remarks: |
+    Sum of w"theta" and w*theta*.
+
+wtheta_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: K m s^-1^
+  description: |
+    product of w and theta
+  remarks: |
+    To be used for calculation of resolved-scale transport <w'theta'> in case of horizontal inhomogeneity. Output is defined on w-grid. Computation of <w'theta'> is possible in post-processing via temporal EC-method, i.e. <w'theta'> = <wtheta> - <w><theta>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+wthetaBC:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    total vertical turbulent sensible heat flux when using the Bott-Chlond scheme
+  remarks: |
+    Sum of w"theta" and w*thetaBC*.
+
+wthetav:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    total vertical turbulent buoyancy flux
+  remarks: |
+    Sum of w"theta" and w*thetav*.
+
+wu_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of w and u
+  remarks: |
+    To be used for calculation of resolved-scale transport <w'u'> in case of horizontal inhomogeneity. Output is defined on w-grid. Therefore, output of wu is not necessarily identical to output of uw. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <w'u'> is possible in post-processing via temporal EC-method, i.e. <w'u'> = <wu> - <w><u>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+wv_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of w and v
+  remarks: |
+    To be used for calculation of resolved-scale transport <w'v'> in case of horizontal inhomogeneity. Output is defined on w-grid. Therefore, output of wv is not necessarily identical to output of vw. Output of both quantities, however, can be useful for computation of spatial flux gradients. Computation of <w'v'> is possible in post-processing via temporal EC-method, i.e. <w'v'> = <wv> - <w><v>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+ww_product:
+  scope:
+    - palm_core
+  type:
+    - 3d-array
+  si-unit: m^2^ s^-2^
+  description: |
+    product of w and w
+  remarks: |
+    To be used for calculation of resolved-scale transport <w'w'> in case of horizontal inhomogeneity. Output is defined on w-grid. Computation of <w'w'> is possible in post-processing via temporal EC-method, i.e. <w'w'> = <ww> - <w><w>, with < > being the temporal average. For accurate flux calculation the time averaging needs to be sufficiently long (usually 30min) and data from each timestep should enter the average to sample also high-frequency flux contributions (choose dt_averaging_input small enough).
+
+wu:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    u-component of the total vertical turbulent momentum flux
+  remarks: |
+    Sum of w"u" and w*u*.
+
+wv:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    v-component of the total vertical turbulent momentum flux
+  remarks: |
+    Sum of w"v" and w*v*.
+
+w_subs:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m s^-1^
+  description: |
+    large-scale vertical subsidence
+  remarks: ''
+
+w*e*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^3^ s^-3^
+  description: |
+    vertical flux of resolved-scale turbulence kinetic energy
+  remarks: ''
+
+w*q*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    covariance or resolved-scale vertical turbulent water flux
+  remarks: |
+    In case of [scalar_advec](../Namelists/#initialization_parameters--scalar_advec) = 'ws-scheme' see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*qv*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    covariance or resolved-scale vertical turbulent latent heat flux
+  remarks: |
+    In case of [scalar_advec](../Namelists/#initialization_parameters--scalar_advec) = 'ws-scheme' see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*p*ddz:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: Pa m s^-2^
+  description: |
+    divergence of transport of resolved-scale TKE due to pressure fluctuations
+  remarks: |
+    Identical to term that appears in the resolved-scale TKE budget equation.
+
+w*s*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg m^-2^ s^-1^  or  ppm m s^-1^
+  description: |
+    resolved-scale vertical turbulent scalar concentration flux
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+w*sa*:
+  scope:
+    - palm_core
+    - ocean_mode
+  type:
+    - vertical profile
+  si-unit: psu m s^-1^
+  description: |
+    resolved-scale vertical turbulent salinity flux
+  remarks: |
+    Requires ocean mode switched on.
+
+w*theta*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    covariance or resolved-scale vertical turbulent sensible heat flux
+  remarks: |
+    In case of [scalar_advec](../Namelists/#initialization_parameters--scalar_advec) = 'ws-scheme' see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*theta*2:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K^2^ m s^-1^
+  description: |
+    resolved-scale third moment
+  remarks: ''
+
+w*theta*BC:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    resolved-scale vertical turbulent sensible heat flux when using the Bott-Chlond scheme
+  remarks: ''
+
+w*thetav*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    resolved-scale vertical turbulent buoyancy flux
+  remarks: ''
+
+w*u*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    covariance or u-component of resolved-scale vertical turbulent momentum flux
+  remarks: |
+    In case of [momentum_advec](../Namelists/#initialization_parameters--momentum_advec) = 'ws-scheme' see [statistical_evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*u*u*ddz:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-3^
+  description: |
+    divergence of turbulent transport of resolved-scale TKE
+  remarks: |
+    Identical to term that appears in the resolved-scale TKE budget equation.
+
+w*v*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    covariance or v-component of resolved-scale vertical turbulent momentum flux
+  remarks: |
+    In case of [momentum_advec](../Namelists/#initialization_parameters--momentum_advec) = 'ws-scheme' see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*2:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    variance or horizontal momentum flux of the resolved-scale w-velocity component
+  remarks: |
+    In case of [momentum_advec](../Namelists/#initialization_parameters--momentum_advec) = 'ws-scheme', see [statistical evaluation](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/advection#statistical_evaluation).
+
+w*2theta*:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m^2^ s^-2^
+  description: |
+    resolved-scale third moment
+  remarks: ''
+
+w*3:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^3^ s^-3^
+  description: |
+    third moment of the resolved-scale w-velocity component
+  remarks: ''
+
+w"e:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^3^ s^-3^
+  description: |
+    turbulent vertical flux of subgrid-scale TKE
+  remarks: ''
+
+w"eddz:
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-3^
+  description: |
+    divergence of turbulent vertical flux of subgrid-scale TKE
+  remarks: ''
+
+w"q":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    subgrid-scale vertical turbulent water flux
+  remarks: ''
+
+w"qv":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg kg^-1^ m s^-1^  or  W m^-2^
+  description: |
+    subgrid-scale vertical turbulent latent heat flux
+  remarks: ''
+
+w"s":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: kg m^-2^ s^-1^  or  ppm m s^-1^
+  description: |
+    subgrid-scale vertical turbulent scalar concentration flux
+  remarks: |
+    Requires [passive_scalar](../Namelists/#initialization_parameters--passive_scalar) = .T..
+
+w"sa":
+  scope:
+    - palm_core
+    - ocean_mode
+  type:
+    - vertical profile
+  si-unit: psu m s^-1^
+  description: |
+    subgrid-scale vertical turbulent salinity flux
+  remarks: |
+    Requires ocean mode switched on.
+
+w"theta":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    subgrid-scale vertical turbulent sensible heat flux
+  remarks: ''
+
+w"thetav":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: K m s^-1^  or  W m^-2^
+  description: |
+    subgrid-scale vertical turbulent buoyancy flux
+  remarks: ''
+
+w"u":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    u-component of subgrid-scale vertical turbulent momentum flux
+  remarks: ''
+
+w"v":
+  scope:
+    - palm_core
+  type:
+    - vertical profile
+  si-unit: m^2^ s^-2^
+  description: |
+    v-component of subgrid-scale vertical turbulent momentum flux
+  remarks: ''
+
+z0*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m
+  description: |
+    roughness length
+  remarks: ''
+
+z0h*:
+  scope:
+    - palm_core
+  type:
+    - 2d-array
+  si-unit: m
+  description: |
+    roughness length for scalar quantities
+  remarks: ''

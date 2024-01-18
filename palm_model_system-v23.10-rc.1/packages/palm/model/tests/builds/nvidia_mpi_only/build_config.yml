@@ -1,0 +1,40 @@
+---
+# this is a palmtest build configuration file
+
+compiler:
+  id: NVIDIA
+  c_executable: "{{NVIDIA.c_executable}}"
+  executable: "{{NVIDIA.executable}}"
+  mpi_wrapper: "{{NVIDIA.mpi_wrapper}}"
+  definitions:
+    - "MPI_REAL=MPI_DOUBLE_PRECISION"
+    - "MPI_2REAL=MPI_2DOUBLE_PRECISION"
+    - "__parallel"
+    - "__fastv8"
+  c_options:
+    default:
+      - "-fast"
+    debug:
+      - "-g"
+      - "-traceback"
+  options:
+    default:
+      - "-cpp"
+      - "-w"
+      - "-fast"
+      - "-Mfree"
+      - "-Mfprelaxed"
+    debug:
+      - "-cpp"
+      - "-C"
+      - "-g"
+      - "-Minform=inform"
+      - "-Mchkptr"
+      - "-Mchkstk"
+      - "-Mcoff"
+      - "-traceback"
+      - "-Mfree"
+  includes: []
+
+linker:
+  options: []

@@ -1,0 +1,235 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "plant_canopy_parameters"
+#
+
+alpha_lad:
+  category: Physics
+  type: R
+  default:
+    value: ~ 
+  description:
+    short: Alpha coefficient for leaf area density calculation.
+    long: |
+      Dimensionless coefficient required for constructing the leaf-area density (LAD) profile using the beta probability density function (following [Markkanen et al., 2003](https://doi.org/10.1023/A:1021261606719)):
+
+      $$
+      f_\text{PDF}(\frac{z}{H},\alpha,\beta) = \frac{(\frac{z}{H})^{\alpha-1}\;(1-\frac{z}{H})^{\beta-1}}{\int_{0}^{1}\;(\frac{z}{H})^{\alpha-1}\;(1-\frac{z}{H})^{\beta-1}\;d(\frac{z}{H})} \,\, ,
+      $$
+
+      where $z$ is the height above ground, $H$ is the canopy height, and $\alpha$ ([alpha_lad](#plant_canopy_parameters--alpha_lad)) and $\beta$ ([beta_lad](#plant_canopy_parameters--beta_lad)) are the coefficients to be prescribed. The actual LAD are calculated as
+
+      $$
+      \text{LAD}(z,\alpha,\beta) = \text{LAI} \cdot f_\text{PDF}(\frac{z}{H},\alpha,\beta) \cdot H \,\, ,
+      $$
+
+      with the leaf-area index (LAI, defined as the vertical integral of LAD) prescribed by [lai_beta](#plant_canopy_parameters--lai_beta).
+
+      [lai_beta](#plant_canopy_parameters--lai_beta) must be set to a non-zero value in order to use the beta probability density function for the LAD-profile construction. [alpha_lad](#plant_canopy_parameters--alpha_lad) and [beta_lad](#plant_canopy_parameters--beta_lad) steer the vertical distribution of leaf area within the canopy volume. Values for [alpha_lad](#plant_canopy_parameters--alpha_lad) must be greater than zero. Increasing [alpha_lad](#plant_canopy_parameters--alpha_lad) moves the leaf area toward the top of the canopy. If [alpha_lad](#plant_canopy_parameters--alpha_lad) is given, [beta_lad](#plant_canopy_parameters--beta_lad) must be given, too.
+
+      The LAD profile can also be constructed by prescribing vertical gradients of LAD ([lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient), [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level)), starting from the prescribed surface value [lad_surface](#plant_canopy_parameters--lad_surface).
+
+
+beta_lad:
+  category: Physics
+  type: R
+  default:
+    value: ~
+  description:
+    short: Beta coefficient for leaf area density calculation.
+    long: |
+      Dimensionless coefficient required for constructing the leaf-area density (LAD) profile, using a beta probability density function (see [alpha_lad](#plant_canopy_parameters--alpha_lad) for details).
+
+      [beta_lad](#plant_canopy_parameters--beta_lad) and [alpha_lad](#plant_canopy_parameters--alpha_lad) steer the vertical distribution of leaf area within the canopy volume. Values for [beta_lad](#plant_canopy_parameters--beta_lad) must be greater than zero. Increasing [beta_lad](#plant_canopy_parameters--beta_lad) moves the leaf area toward the floor of the canopy. If [beta_lad](#plant_canopy_parameters--beta_lad) is given, [alpha_lad](#plant_canopy_parameters--alpha_lad) must be given, too.
+
+      The LAD profile can also be constructed by prescribing vertical gradients of LAD ([lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient), [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level)), starting from the prescribed surface value [lad_surface](#plant_canopy_parameters--lad_surface).
+
+
+canopy_drag_coeff:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  description:
+    short: Drag coefficient used in the plant-canopy model.
+    long: |
+      The drag coefficient is used to calculate the drag force due to the plant canopy. Please refer to the documentation of the [plant-canopy model](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/canopy) for further details.
+
+      [canopy_drag_coeff](#plant_canopy_parameters--canopy_drag_coeff) must be greater than zero. Typical values are *0.15* ([Shaw and Schumann, 1992](https://doi.org/10.1007/BF02033994)) or *0.20* ([Cescatti and Marcolla, 2004](https://doi.org/10.1016/j.agrformet.2003.08.028)).
+
+
+canopy_mode:
+  category: Mode
+  type: C*30
+  default:
+    value: 'homogeneous'
+  description:
+    short: Set up mode for the canopy layer.
+    long: | 
+  allowed_values:
+    - value: 'homogeneous'
+      description: |
+        Horizontally homogeneous plant canopy extending over the entire model domain.
+    - value: 'read_from_file'
+      description: |
+        Requires a static driver (file suffix `_static`) with 3D information of leaf area density (see LAD definition in the [static driver](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/iofiles/pids/static#lad)).
+    - value: 'user_defined'
+      description: |
+        According to user settings in subroutine {{ link_palm_repo_file('user_init_plant_canopy.f90', 'src/user_init_plant_canopy.f90') }}.
+
+
+cthf:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  si-unit: W m^-2^
+  description:
+    short: Average heat flux at the top of the plant canopy.
+    long: |
+      This parameter prescribes a heat flux at the top of the plant canopy (canopy top heat flux). It is assumed that solar radiation penetrates the canopy and warms the foliage which, in turn, warms the air in contact with it. Based on [cthf](#plant_canopy_parameters--cthf), the heat fluxes inside the canopy down to the canopy floor are determined by a decaying exponential function that is dependent on the cumulative leaf area index ([Shaw and Schumann, 1992](https://doi.org/10.1007/BF02033994)).
+
+      In areas with canopy, [cthf](#initialization_parameters--cthf) overrides [surface_heatflux](#initialization_parameters--surface_heatflux).
+
+
+lad_surface:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  si-unit: m^2^ m^-3^
+  description:
+    short: Surface value of the leaf-area density (LAD).
+    long: |
+      This parameter assigns the value of LAD at the surface (`k = 0`). Starting from this value, the LAD profile is constructed via [lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient) and [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level).
+
+      The LAD profile can also be constructed using a beta probability density function by prescribing values for parameters [alpha_lad](#plant_canopy_parameters--alpha_lad), [beta_lad](#plant_canopy_parameters--beta_lad), and [lai_beta](#plant_canopy_parameters--lai_beta). In this case, [lad_surface](#plant_canopy_parameters--lad_surface) must not be set.
+
+
+lad_type_coef:
+  category: Physics
+  type: R
+  shape: (10)
+  default:
+    value: 1.0
+  description:
+    short: Multiplicative coefficient for different plant-canopy types.
+    long: |
+      This parameter is only active when data is read from ASCII file [PLANT_CANOPY_DATA_3D](https://palm.muk.uni-hannover.de/trac/wiki/doc/tec/canopy).
+
+
+lad_vertical_gradient:
+  category: Physics
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  si-unit: m^2^ m^-4^
+  description:
+    short: Gradients of the leaf area density.
+    long: |
+      The leaf-area density (LAD) gradient holds starting from the height level defined by [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level) up to the level defined by [pch_index](#plant_canopy_parameters--pch_index); precisely: for all uv levels `k` where `zu(k) > lad_vertical_gradient_level` and `k <= pch_index`, LAD is set as
+
+          lad(k) = lad(k-1) + dzu(k) * lad_vertical_gradient
+
+      Above [pch_index](#plant_canopy_parameters--pch_index), LAD will be 0.0.
+
+      A total of 10 different gradients for 11 height intervals (10 intervals if [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level)(1) = *0.0*) can be assigned. The LAD at the surface is assigned via [lad_surface](#plant_canopy_parameters--lad_surface).
+
+
+lad_vertical_gradient_level:
+  category: Physics
+  type: R
+  shape: (10)
+  default:
+    value: 0.0
+  si-unit: m
+  description:
+    short: Height levels for constructing the vertical LAD profile.
+    long: |
+      Height level from which the gradient of the leaf-area density (LAD), defined by [lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient), is effective.
+
+      The height levels must be assigned in ascending order. The default values result in an LAD that is constant with height up to the top of the plant canopy layer defined by [pch_index](#plant_canopy_parameters--pch_index). For the piecewise linear construction of an LAD profile see [lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient).
+
+
+lai_beta:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  description:
+    short: Leaf-area index (LAI) used to construct a vertical leaf-area density (LAD) profile.
+    long: |
+      [lai_beta](#plant_canopy_parameters--lai_beta) is used as a parameter of the beta probability density function to construct the LAD profile. See [alpha_lad](#plant_canopy_parameters--alpha_lad) for details.
+
+      [lai_beta](#plant_canopy_parameters--lai_beta) must be set to a non-zero value, and parameters [alpha_lad](#plant_canopy_parameters--alpha_lad) and [beta_lad](#plant_canopy_parameters--beta_lad) must be given, too.
+
+
+leaf_scalar_exch_coeff:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  description:
+    short: Scalar exchange coefficient for a "bulk" leaf.
+    long: |
+      The parameter is only relevant if [passive_scalar](#initialization_parameters--passive_scalar) = *.T.*.
+
+      The value of the scalar exchange coefficient is required for the parametrization of the sources and sinks of scalar concentration due to the canopy.
+
+
+leaf_surface_conc:
+  category: Physics
+  type: R
+  default:
+    value: 0.0
+  si-unit: kg m^-3^ or ppm
+  description:
+    short: Scalar concentration at the leaf surface.
+    long: |
+      Concentration of a passive scalar at the surface of a "bulk" leaf.
+      Its unit depends if the scalar is treated as particles (kg m<sup>-3</sup>) or as a gas (ppm).
+
+      The parameter is only relevant if [passive_scalar](#initialization_parameters--passive_scalar) = *.T.*.
+
+      [leaf_surface_conc](#plant_canopy_parameters--leaf_surface_conc) is required for the parametrization of the sources and sinks of scalar concentration due to the canopy.
+
+
+pch_index:
+  category: Physics
+  type: I
+  default:
+    value: 0
+  description:
+    short: Grid-point index of the upper boundary of the plant-canopy layer.
+    long: |
+      Above [pch_index](#plant_canopy_parameters--pch_index) the leaf-area density (LAD) is automatically set to zero. Up to [pch_index](#plant_canopy_parameters--pch_index) an LAD profile can be prescribed in two possible ways:
+
+      1. Creating a piecewise linear LAD profile by prescribing the parameters [lad_surface](#plant_canopy_parameters--lad_surface), [lad_vertical_gradient](#plant_canopy_parameters--lad_vertical_gradient) and [lad_vertical_gradient_level](#plant_canopy_parameters--lad_vertical_gradient_level).
+
+      2. Employing a beta probability density function for the vertical leaf-area distribution by prescribing coefficients [alpha_lad](#plant_canopy_parameters--alpha_lad), [beta_lad](#plant_canopy_parameters--beta_lad) and [lai_beta](#plant_canopy_parameters--lai_beta) (see, e.g., [Markkanen et al. (2003)](https://doi.org/10.1023/A:1021261606719)).
+
+      If the LAD profile is given via an input file, parameter [pch_index](#plant_canopy_parameters--pch_index) is automatically set according to the information given in the input file (number of vegetation layers - 1).
+
+
+plant_canopy_transpiration:
+  category: Physics
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Turn on evapotranspiration and corresponding latent heat flux from resolved plant canopy.
+    long: |
+      The calculation utilizes short-wave and long-wave radiation fluxes calculated in the [radiation transfer model](/Guide/LES_Model/Modules/Radiation/).
+
+      The calculation of transpiration rate is based on the Jarvis-Stewart model with parametrizations described in [Daudet et al. (1999)](https://doi.org/10.1016/S0168-1923(99)00079-9) and [Ngao, Adam and Saudreau (2017)](https://doi.org/10.1016/j.agrformet.2017.02.036) with some modifications according to [Stewart (1988)](https://doi.org/10.1016/0168-1923(88)90003-2).
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Switch to turn on/off the module.
+    long: |
+       If [switch_off_module](#plant_canopy_parameters--switch_off_module) = *.T.*, the plant-canopy module is not activated even if the namelist is present in the parameter file.

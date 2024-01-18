@@ -1,0 +1,271 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+ &initialization_parameters
+
+!
+!-- Grid
+!------------------------------------------------------------------------------
+    nx                   = 19,
+    ny                   = 19,
+    nz                   = 60,
+
+    dx                   = 2.0,
+    dy                   = 2.0,
+    dz                   = 2.0,
+
+!
+!-- Numerics
+!------------------------------------------------------------------------------
+    fft_method           = 'fftw',
+    monotonic_limiter_z  = .T.,
+!
+!-- Mode
+!------------------------------------------------------------------------------
+    humidity             = .T.,
+    q_surface            = 0.001,
+
+!
+!-- Initialization
+!------------------------------------------------------------------------------
+    initializing_actions = 'read_from_file set_constant_profiles',   !'set_constant_profiles', or 'read_from_file',
+                                                                     ! or both (met. from inifor, chem constant profiles)
+
+    pt_surface           = 277.15,
+    ug_surface           = 1.0,
+    vg_surface           = 0.0,
+
+    origin_date_time     = '2019-03-06 10:00:00 +00'
+
+!
+!-- Wall/soil spinup
+!------------------------------------------------------------------------------
+    spinup_time         = 1200.0,
+    spinup_pt_mean      = 284.15,
+    spinup_pt_amplitude = 10.0,             ! give a dirunal cycle from 6 - 16 °C
+    dt_spinup           = 120.0,
+    data_output_during_spinup = .F.,
+
+!
+!-- Topography
+!------------------------------------------------------------------------------
+    topography           = 'read_from_file',
+
+!
+!-- Physics
+!------------------------------------------------------------------------------
+    longitude            = 13.4,
+    latitude             = 52.5,
+
+ / ! end of inipar namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+
+!
+!-- Run steering
+!------------------------------------------------------------------------------
+    end_time              = 31.0,
+    create_disturbances   = .T.,
+
+!
+!-- Run-control/timeseries output settings
+!------------------------------------------------------------------------------
+    dt_run_control        =  0.0,
+    dt_dots               =  5.0,
+
+!
+!-- Profile output settings
+!------------------------------------------------------------------------------
+    skip_time_dopr        =  0.0,
+    dt_dopr               = 30.0,
+    averaging_interval_pr = 30.0,
+    dt_averaging_input_pr =  0.0,
+
+    data_output_pr        = '#u',  'u*2',  'wu',  'w*u*',  'w"u"',
+                            '#v',  'v*2',  'wv',  'w*v*',  'w"v"',
+!                            'w',   'w*2',
+                            '#theta', 'theta*2', 'wtheta', 'w*theta*', 'w"theta"',
+                            '#q',  'q*2',
+                            'e', 'e*', '#km', '#l',
+                            '#t_soil', '#m_soil', 'rad_lw_in', 'rad_lw_out',
+                            'salsa_Ntot', 'salsa_N_UFP', 'salsa_LDSA',
+                            'salsa_PM0.1', 'salsa_PM2.5', 'salsa_PM10',
+!
+!-- 2D/3D output settings
+!------------------------------------------------------------------------------
+    do3d_at_begin      = .T.,
+    do2d_at_begin      = .T.,
+
+    dt_data_output     = 60.0,
+    dt_data_output_av  = 60.0,
+    averaging_interval = 60.0,
+    dt_averaging_input =  0.0,
+
+    section_xy         = 0,
+
+!     data_output = 'u', 'v', 'w',
+!                   'salsa_Ntot', 'salsa_PM2.5', 'salsa_LDSA',
+!                   'salsa_s_OC','salsa_g_OCNV','salsa_g_OCSV',
+!                   'salsa_N_bin3', 'salsa_m_bin4',
+
+
+ / ! end of d3par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- RADIATION MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+  &radiation_parameters
+
+     radiation_scheme =  'rrtmg',    !'clear-sky' or 'rrtmg',
+     albedo_type = 5,
+     constant_albedo = .F.,
+
+     dt_radiation = 60.0,
+
+     surface_reflections = .T.,
+     nrefsteps = 3,
+
+  /
+
+
+!-------------------------------------------------------------------------------
+!-- LAND SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!-------------------------------------------------------------------------------
+ &land_surface_parameters
+
+    constant_roughness     = .T.,
+    aero_resist_kray       = .T.,
+
+    vegetation_type        = 2,
+    soil_type              = 3,
+    conserve_water_content = .T.,
+
+    root_fraction          = 0.49, 0.26, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+    soil_temperature       = 277.15, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0, 277.0,
+    soil_moisture          = 0.30,   0.30,  0.30,  0.30,  0.30, 0.30,  0.30,  0.30,
+    deep_soil_temperature  = 277.0,
+
+ / ! end of lsm_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- URBAN SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/usmpar
+!-------------------------------------------------------------------------------
+ &urban_surface_parameters
+
+    usm_wall_mod = .T.,
+
+ / ! end of urban_surface_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- PLANT CANOPY MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/canpar
+!-------------------------------------------------------------------------------
+ &plant_canopy_parameters
+
+    canopy_mode       = 'read_from_file',
+    canopy_drag_coeff = 0.3,
+
+ / ! end of canopy_par namelist
+
+
+!-------------------------------------------------------------------------------
+!-- SALSA PARAMETER NAMELIST
+!-------------------------------------------------------------------------------
+ &salsa_parameters
+
+!
+!-- Time stepping
+    dt_salsa             =   2.0, ! time step for calculating aerosol processes (s)
+    skip_time_do_salsa   =  10.0, ! starting time of SALSA (s)
+
+!
+!-- If initializing_actions includes 'set_constant_profiles' ,
+!-- define the initial aerosol size distribution by dpg, sigmag and n_lognorm
+    dpg                  = 13.5E-9, 54.0E-9, 864.1E-9, ! mean diameter per mode (in metres)
+    sigmag               =     1.8,    2.16,     2.21, ! standard deviation per mode
+    n_lognorm            =  1.43E9,  4.45E8,    7.0E4, ! number concentration per mode (#/m3)
+
+!
+!-- If initializing_actions includes 'set_constant_profiles', apply these initial gas concentrations
+    H2SO4_init           = 5.0E12, ! sulphuric acid (#/m3)
+    HNO3_init            = 3.0E12, ! nitric acid (#/m3)
+    NH3_init             = 6.0E12, ! ammonia (#/m3)
+    OCNV_init            = 1.0E12, ! non-volatile organic gases (#/m3)
+    OCSV_init            = 1.0E12, ! non-volatile organic gases (#/m3)
+
+!
+!-- List of activated chemical components:
+!-- NOTE! Chemical species have to be activated here even if they are not initially present!
+    listspec             = 'OC','NO','NH','','','','',
+    ! listspec             = 'SO4','OC','BC','DU','SS','NO','NH',
+
+!
+!-- Sectional presentation of the particle size distribution
+    reglim               = 3.0E-9, 1.0E-8, 2.5E-6, ! limits of the subranges (m)
+    nbin                 = 1, 7,                   ! number of bins per subrange
+!-- NOTE! Subrange 1 consists only of H2SO4 and/or OC
+    nf2a                 = 1.0,                    ! Number fraction allocated to subrange 2a
+
+!
+!-- Aerosol emissions:
+    salsa_emission_mode  = 'read_from_file', ! 'no_emission','uniform' or 'read_from_file'
+!-- NOTE! chemical components of the source have to be activated in 'listspec'
+!--       and have to be in the same order
+
+!
+!-- If isdtyp = 0, set the chemical composition of the initial particle size distribution
+    mass_fracs_a         = 0.8, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, ! mass fractions of soluble components
+    mass_fracs_b         = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ! mass fractions of insoluble components
+!-- NOTE! Set everyhing to zero in mass_fracs_b if you do not want include insoluble species (default)
+
+!
+!-- Boundary conditions
+!-- Use Dirichlet boundary conditions (initial profiles) at left and right boundaries
+!-- Use cyclic boundary conditions along y
+    bc_aer_l = 'dirichlet',
+    bc_aer_r = 'dirichlet',
+    bc_aer_s = 'cyclic',
+    bc_aer_n = 'cyclic',
+    bc_aer_b = 'neumann',    ! surface flux requires 'neumann'
+    bc_aer_t = 'dirichlet',  ! top
+
+!
+!-- Switches for aerosol processes:
+    nldistupdate         = .T., ! Update size distribution (default .T.)
+    nldepo               = .T., ! Deposition master switch
+    nldepo_pcm           = .T., ! Deposition on vegetation
+    nldepo_surf          = .T., ! Deposition on walls
+    nlcnd                = .F., ! Condensation master switch
+    nlcndgas             = .F., ! Condensation of precursor gases
+    nlcndh2oae           = .F., ! Condensation of H2O on aerosols
+    nlcoag               = .F., ! Coagulation master switch
+    nsnucl               =  0,  ! Nucleation scheme (0 = off)
+    nj3                  =  1,  ! J3 parametrization for nucleation
+
+!
+!-- Deposition parametrisations:
+    depo_pcm_par         = 'zhang2001',  ! plant canopy
+    depo_surf_par        = 'zhang2001',  ! ground, roofs and walls
+    season_z01           = 5             ! Season for zhang2001,
+                                         ! 1 = summer, 2 = autumn, 3 = late autumn
+                                         ! 4 = winter, 5 = transitional spring
+!
+!-- Other switches:
+    advect_particle_water   = .T.,   ! particle water: advect or calculate at each dt_salsa
+    feedback_to_palm        = .F.,   ! feedback to flow due to condensation of water
+    nesting_salsa           = .F.,   ! apply self-nesting for salsa variables
+    nesting_offline_salsa   = .F.,   ! apply offline nesting for salsa
+
+ / ! end of salsa_par namelist

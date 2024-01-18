@@ -1,0 +1,185 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "fastv8_coupler_parameters"
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to switch on/off the this module.
+    long: |
+      If [switch_off_module](fastv8_coupler_parameters--switch_off_module) = *.T.*, this module is not activated even if the namelist is present in the parameter file.
+
+
+nturbines:
+  category: General Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: Number of individual turbines.
+    long: |
+      The number of turbines set in order to tell PALM, with how many FASTv8 instances it is supposed to establish a TCP/IP connection.
+
+
+time_turbine_on:
+  category: General Settings 
+  type: R
+  default: 0.0
+  si-unit: s
+  description:
+    short: Time delay relative to the PALM simulation time after which the FASTv8 instance coupling is started.
+    long: |
+      This can be set to a value greater than 0.0, in order to delay the activation of all coupled turbines.
+
+
+fast_n_blades_max:
+  category: General Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: Maximum number of blades that an individual FASTv8 instance is allowed to communicate to PALM.
+    long: |
+      Please set this to the highest number of blades, a turbine has in your simulation setup.
+
+
+fast_n_blade_elem_max:
+  category: General Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: Maximum number of blade elements that an individual FASTv8 server instance is allowed to communicate to PALM.
+    long: |
+      Please set this to the highest number of blade elements, a turbine has in your simulation setup.
+
+
+fast_host_addr_default:
+  category: General Settings
+  type: C*15
+  default: '127.0.0.1'
+  description:
+    short: Default IPv4 address that all FASTv8 server instances are expected to run on.
+    long: |
+      PALM uses this address in order to establish communication with all configured FASTv8 instances. This can be set to any valid IPv4 address. This value is only used in case [fast_host_addr](fastv8_coupler_parameters--fast_host_addr) is not set for a specific turbine.
+
+
+fast_host_addr:
+  category: Turbine-specific Settings
+  type: C*15
+  shape: (300)
+  default:
+    value_of: '[fast_host_addr_default](#fastv8_coupler_parameters--fast_host_addr_default)'
+  description:
+    short: IPv4 address that a specific FASTv8 server instance is expected to run on.
+    long: |
+      PALM uses this address in order to establish communication with each of the configured FASTv8 instances. For up to 300 FASTv8 server instances, a individual IPv4 address can be configured. 
+
+
+fast_host_port:
+  category: Turbine-specific Settings
+  type: C*5
+  shape: (300)
+  default:
+    value: ~
+  description:
+    short: Network port number on which a specific FASTv8 server instance is expected to listen for incoming network connections.
+    long: |
+      PALM uses this port number in order to establish communication with each of the configured FASTv8 instances. For up to 300 FASTv8 server instances, a individual IPv4 address can be configured.
+
+
+palm_tower_ref_pos_x:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: Turbine tower base reference position in X direction inside the PALM domain for each turbine.
+    long: |
+      This must be set to a positiv value that falls inside the configured PALM model domain. Note, that as the the wind velocities PALM is communicating to FASTv8 are retrieved at 2x the respective rotor diameter upstream from the turbine position, this value must at least be set so that is has a distance from the left domain boundary of more that 2x the rotor diameter.
+
+
+palm_tower_ref_pos_y:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: ~
+  si-unit: m
+  description:
+    short: Turbine tower base reference position in Y direction inside the PALM domain for each turbine.
+    long: |
+      This must be set to a positiv value that falls inside the configured PALM model domain.
+
+
+palm_tower_ref_pos_z:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 0.0
+  si-unit: m
+  description:
+    short: Turbine tower base reference position in Z direction inside the PALM domain for each turbine.
+    long: |
+      This must be set to a positiv value that falls inside the configured PALM model domain.
+
+
+reg_fac:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 2.0
+  si-unit: m
+  description:
+    short: Regularization factor for force distribution for each turbine.
+    long: ''
+
+fbox_fac:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 1.5
+  description:
+    short: Force distribution cut-off factor for each turbine.
+    long: |
+      Edge length of the box around each turbine in which forces are distributed (edge length = edgelen_fac * turbine radius). Around every point of attack there should be the at least the distance of 3 * grid spacing * reg_fac for force distribution available.
+
+
+dtow:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 0.0
+  description:
+    short: Turbine tower diameter for each turbine.
+    long: ''
+
+
+htow:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 0.0
+  description:
+    short: Turbine tower height for each turbine.
+    long: ''
+
+turb_C_d_tow:
+  category: Turbine-specific Settings 
+  type: R
+  shape: (300)
+  default:
+    value: 1.2
+  description:
+    short: Drag coefficient for each turbine tower.
+    long: ''

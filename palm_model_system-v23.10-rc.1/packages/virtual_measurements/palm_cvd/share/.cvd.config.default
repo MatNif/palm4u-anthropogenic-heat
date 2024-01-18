@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+#--------------------------------------------------------------------------------#
+# This file is part of the PALM model system.
+#
+# PALM is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# PALM is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PALM. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 1997-2022  Leibniz Universitaet Hannover
+# Copyright 2022-2022  pecanode GmbH
+#--------------------------------------------------------------------------------#
+#
+# Description:
+# ------------
+# Processing tool for creating PIDS conform virtual measurement setup file
+# from UC2 data-standard conform observational data or from prescribed input
+# coordinates.
+#
+# @Author Matthias Suehring (suehring@muk.uni-hannover.de)
+#
+#--------------------------------------------------------------------------------#
+
+#
+#------------------------------------------------------------------------------------------------
+# Section where some global file attributes can be specified.
+[global]
+
+author =
+contact_person =
+acronym =
+comment =
+data_content =
+dependencies =
+keywords = virtual measurement setup file
+source =
+campaign =
+location =
+site =
+institution =
+palm_version = 7.0
+references =
+
+
+#
+#------------------------------------------------------------------------------------------------
+# Section to specify csv or xlsx file data.
+# A .xlsx or a .csv file is provided with specific coordinates. The filename is given under
+# input_file_coord, the variables that shall be sampled is given under vars_to_be_measured.
+#------------------------------------------------------------------------------------------------
+#[csv_xlsx_data]
+
+#featureType = trajectory
+#name_longitude = longitude
+#name_latitude = latitude
+#height = 2.
+
+#data_path = /palm_model_system/packages/virtual_measurements/palm_cvd/data/
+#input_file_coord = example_coordinates.csv
+#vars_to_be_measured = u, v, w
+
+#
+#------------------------------------------------------------------------------------------------
+# Section for observational input data. Following scenario is assumed: A number of NetCDF files
+# with metadata from observations is available under the given data path. This case, palm_cvd
+# scans all files, extracts the metadata, and writes the specific information to the output
+# NetCDF file. This method requires a certain input standard which has been defined in (UC)2.
+#------------------------------------------------------------------------------------------------
+#[input_from_netcdf]
+
+#data_path = ./data/
+
+#
+#------------------------------------------------------------------------------------------------
+# Section to specify further sampling locations and sampling variables by hand.
+# Please note, at the moment only timeseries can be specified.
+# If no customized sampling location is desired, just set number_positions to zero.
+#------------------------------------------------------------------------------------------------
+[custom_positions]
+
+# Give the number of custom sampling coordinates
+number_positions = 4
+
+# Give site coordinates: E_UTM (m), N_UTM (m), z (m).
+# Please give z in meters above ground.
+#
+#             [ E_UTM,    N_UTM,      z (agl) ]
+#
+coordinates1: [ 387670.0, 5819090.0,  4.0     ]
+coordinates2: [ 387676.0, 5819139.0,  1.0     ]
+coordinates3: [ 387630.0, 5819065.0,  41.0    ]
+coordinates4: [ 387270.0, 5819191.0,  8.5     ]
+# ...
+
+# Give the variables that shall be sampled. Note, there is a
+# number of default variables that will be always sampled, which is:
+# u, v, w, theta and hus (mixing ratio).
+# On top of these, you can individually prescribe further variables
+# for each site. In order to prescribe further variables, please
+# follow the naming convention defined in the [UC]2 data standard.
+
+vars_to_be_measured1: [ "u", "v", "w", "theta", "rlus", "rsus" ]
+vars_to_be_measured2: [ "rnds", "wdir" ]
+vars_to_be_measured3: [ "us" ]
+vars_to_be_measured4: [ "utheta", "vtheta", "wtheta", "wspeed" ]
+# ...

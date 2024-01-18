@@ -1,0 +1,73 @@
+
+&initialization_parameters
+
+
+    nx = 127,
+    ny = 95,
+    nz = 64,
+
+    dx = 32.0,
+    dy = 32.0,
+    dz = 32.0,
+
+    dz_stretch_factor = 1.0745622117140738,
+    dz_stretch_level = 1500.0,
+
+    roughness_length = 0.1,
+
+    ug_surface   = 9.5782,
+    vg_surface   = -2.8737,
+
+    neutral       = .F.,
+    humidity      = .T.,
+
+    surface_heatflux = 0.0,
+    surface_waterflux = 0.0,
+
+    bc_q_b  = 'neumann',
+    bc_pt_b = 'neumann',
+
+
+    initializing_actions= 'set_constant_profiles',  ! set_constant_profiles, cyclic_fill
+
+
+    bc_uv_t                     = 'neumann',
+    bc_lr                       = 'dirichlet/radiation',
+
+
+    psolver                     = 'multigrid',
+
+    restart_data_format         = 'mpi_shared_memory',
+
+    rayleigh_damping_factor = 0.01,
+    rayleigh_damping_height = 1500.0,
+
+/
+
+&turbulent_inflow_parameters
+
+   turbulent_inflow_method     = 'read_from_file',
+
+/
+
+
+&runtime_parameters
+
+    end_time                    = 600.0,
+
+    dt_run_control              = 0.0,
+
+    skip_time_data_output       = 0.0,
+
+    dt_data_output              = 10.0,
+
+    data_output = 'u', 'v', 'w', 'e',
+
+    create_disturbances         = .F.,
+
+    netcdf_data_format          = 2,
+    data_output_2d_on_each_pe   = .F.,
+
+/
+
+

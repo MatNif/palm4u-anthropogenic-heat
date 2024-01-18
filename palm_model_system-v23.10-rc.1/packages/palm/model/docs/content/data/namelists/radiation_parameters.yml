@@ -1,0 +1,437 @@
+---
+# This is the YAML Database file for all allowed parameters within the namelist "radiation_parameters"
+
+albedo:
+  category: Surface Settings
+  type: R
+  default: ~
+  description:
+    short: Surface albedo.
+    long:  |
+      A value for this parameter should be assigned when a broadband albedo value is required for the whole domain and no describtion of the [albedo_type](#radiation_parameters--albedo_type) is given via static driver, i.e. [albedo_type](#radiation_parameters--albedo_type) = *0*
+
+      This parameter will be overwritten when albedo data is given via [albedo_type](#radiation_parameters--albedo_type).
+
+
+albedo_lw_dif:
+  category: Surface Settings
+  type: R
+  default: ~
+  description:
+    short: Surface albedo for longwave diffuse radiation for a solar angle of 60°.
+    long:  |
+      This parameter is used when [radiation_scheme](#radiation_parameters--radiation_scheme) is set to *'rrtmg'* or *'tenstream'*. A value for this parameter must be assigned if [albedo_type](#radiation_parameters--albedo_type) = *0*.
+
+
+albedo_lw_dir:
+  category: Surface Settings
+  type: R
+  default: ~
+  description:
+    short: Surface albedo for longwave direct radiation for a solar angle of 60°.
+    long:  |
+      This parameter is used when [radiation_scheme](#radiation_parameters--radiation_scheme) is set to *'rrtmg'* or *'tenstream'*. A value for this parameter must be assigned if [albedo_type](#radiation_parameters--albedo_type) = *0*.
+
+
+albedo_sw_dif:
+  category: Surface Settings
+  type: R
+  default: ~
+  description:
+    short: Surface albedo for shortwave direct radiation for a solar angle of 60°.
+    long:  |
+      This parameter is used when [radiation_scheme](#radiation_parameters--radiation_scheme) is set to *'rrtmg'* or *'tenstream'*. A value for this parameter must be assigned if [albedo_type](#radiation_parameters--albedo_type) = *0*.
+
+
+albedo_sw_dir:
+  category: Surface Settings
+  type: R
+  default: ~
+  description:
+    short: Surface albedo for shortwave direct radiation for a solar angle of 60°.
+    long:  |
+      This parameter is used when [radiation_scheme](#radiation_parameters--radiation_scheme) is set to *'rrtmg'* or *'tenstream'*. A value for this parameter must be assigned if [albedo_type](#radiation_parameters--albedo_type) = *0*.
+
+
+albedo_type:
+  category: Surface Settings
+  type: I
+  default: 5
+  description:
+    short: Albedo type of the surface.
+    long:  |
+      This parameter controls the choice of the surface albedos for direct/diffuse/broadband radiation according to the following list of predefined land surfaces.
+
+      For [radiation_scheme](#radiation_parameters--radiation_scheme) = *'rrtmg'* the shortwave and longwave albedo values are used and the actual albedos are then calculated based on the current solar angle after Briegleb et al. (1986) and Briegleb (1992). The displayed values are given for a solar zenith angle of 60° and will vary in the course of the day according to Briegleb et al. (1986) and Briegleb (1992). Setting one or more of the parameters [albedo_lw_dif](#radiation_parameters--albedo_lw_dif), [albedo_lw_dir](#radiation_parameters--albedo_lw_dir), [albedo_sw_dif](#radiation_parameters--albedo_sw_dif), and/or [albedo_sw_dir](#radiation_parameters--albedo_sw_dir) will overwrite the respective values set by [albedo_type](#radiation_parameters--albedo_type). By default, [albedo_lw_dif](#radiation_parameters--albedo_lw_dif) = [albedo_lw_dir](#radiation_parameters--albedo_lw_dir) and [albedo_sw_dif](#radiation_parameters--albedo_sw_dif) = [albedo_sw_dir](#radiation_parameters--albedo_sw_dir). Moreover, [constant_albedo](#radiation_parameters--constant_albedo) = *.T.* will keep the albedos constant during the simulation.
+
+      For [radiation_scheme](#radiation_parameters--radiation_scheme) = *'clear-sky'* the broadband albedo is used and does not vary in the course of the simulation.
+
+
+bufsize_alltoall:
+  category: General Settings
+  type: I
+  default: 0
+  description:
+    short: Maximum number of items sent in `MPI_AlltoAll` calls at once (0 = infinite).
+    long:  |
+      Some implementations of the MPI protocol or their underlying hardware have limits on the size of sending/receiving buffers. If the user experiences problems in `MPI_AlltoAll` transfer, e.g. segmentation faults in MPI, setting this to a value different than zero replaces the large transfers by sequences of limited-size exchanges. The default setting *0* means no limit, which is suitable for most situations and it should not be changed unless there are problems with MPI. The optimal value for best performance highly depends on the parallel hardware and its configuration and needs to be determined by testing; a good starting point is *1.000.000*. The value should not be set lower than approx. *1000* as too many small exchanges could lead to severely degraded performance.
+
+
+constant_albedo:
+  category: Surface Settings
+  type: L
+  default: .F.
+  description:
+    short: Flag to keep the surface albedo constant during the simulation.
+    long:  |
+      If set to *.T.*, the surface albedos are kept constant during the entire simulation, while if set to *.F.*, the actual albedos are calculated after Briegleb et al. (1986) and Briegleb (1992).
+
+
+dt_radiation:
+  category: Surface Settings
+  type: R
+  default: 0.0
+  si-unit: s
+  description:
+    short: Time step of the radiation model.
+    long:  |
+      This parameter describes how frequently the radiation fluxes are updated. This parameter must be set in the namelist, because the default value will issue an error message and abort the simulation, otherwise.
+
+
+emissivity:
+  category: Surface Settings
+  type: R
+  default: 0.95
+  description:
+    short: Surface emissivity (*0.0* - *1.0*) for user-defined grid points.
+    long:  |
+      Please note, by default [emissivity](#radiation_parameters--emissivity) is determined by the prescribed vegetation-, pavement-, water-, or building type at the given surface element. Setting this parameter has only an effect if vegetation-, pavement-, water-, or building type is set to zero, i.e. a user-defined value.
+
+      At the moment, only a single [emissivity](#radiation_parameters--emissivity) value can be used for each band in the atmospheric window.
+
+
+lw_radiation:
+  category: Mode
+  type: L
+  default: .T.
+  description:
+    short: Flag to switch the calculation of longwave radiation on.
+    long:  |
+      This flag is effective only when [radiation_scheme](#radiation_parameters--radiation_scheme) is set to *'rrtmg'* or *'tenstream'*.
+
+
+mrt_geom:
+  category: MRT Settings
+  type: I
+  default:
+    value: 1
+  description:
+    short: Method for MRT direction weights simulating a sphere or a human body.
+    long:  |
+      
+  allowed_values:
+      - value: 0
+        description: |
+          Sphere (no weighting).
+      - value: 1
+        description: |
+          Original weighting function simulating human body.
+      - value: 2
+        description: |
+          Human body shape simulated as ellipsoid.
+
+
+mrt_geom_params:
+  category: MRT Settings
+  type: R
+  shape: (2)
+  default:
+    value: [0.12, 0.88]
+  description:
+    short: Parameters of the selected weighting method ([mrt_geom](#mrt_geom--mrt_geom)).
+    long:  |
+      For [mrt_geom](#radiation_parameters--mrt_geom) = *1* and [mrt_geom](#radiation_parameters--mrt_geom) = *2*, [mrt_geom_params](#radiation_parameters--mrt_geom_params) represents width and height of the human body.
+
+
+mrt_include_sw:
+  category: MRT Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to include shortwave radiation into the mean radiant temperature calculation.
+    long:  |
+      This flag should be set to *.T.* when shortwave radiant flux for MRT boxes (rtm_mrt_sw) is required in the output.
+
+
+mrt_minlevel:
+  category: MRT Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: Lowest vertical box (grid index) above surface for which to calculate MRT.
+    long: ''
+
+
+mrt_nlevels:
+  category: MRT Settings
+  type: I
+  default:
+    value: 0
+  description:
+    short: Number of vertical boxes above surface for which to calculate mean radiant temperature.
+    long:  |
+      This value is used also for calculation of MRT and PET values in the biometeorology module (bio_mrt and bio_pet output variables).
+
+
+mrt_skip_roof:
+  category: MRT Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to skip calculating mean radiant temperature above the roof surfaces.
+    long:  |
+      This flag limits the mean radiant temperature calculations to the levels above the ground.
+
+
+net_radiation:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: Wm^-2^
+  description:
+    short: Net radiation flux at the surface.
+    long:  |
+      This parameter is only used in case of [radiation_scheme](#radiation_parameters--radiation_scheme) = *'constant'*.
+
+
+nrefsteps:
+  category: RTM Settings
+  type: I
+  default:
+    value: 3
+  description:
+    short: Number of reflection steps to be performed inside the RTM.
+    long:  |
+      The number of reflection steps for the reflected short- and long-wave radiation between mutually visible surfaces.
+
+
+plant_lw_interact:
+  category: RTM Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to allow plant canopy to interact with longwave radiation.
+    long:  |
+      When the flag is set to *.T.*, it enables absorption and emission of longwave radiation by the resolved plant canopy. If value is set to *.F.*, the plant canopy is transparent to longwave radiation.
+
+
+localized_raytracing:
+  category: RTM Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to enable the localized parallelization scheme for raytracing in RTM.
+    long:  |
+      The new localized parallelization scheme uses different distribution of workload and data transfer while raytracing. This scheme does not need one-sided MPI operations (see [raytrace_mpi_rma](#radiation_parameters--raytrace_mpi_rma)) and it does not use several global arrays, thus improving scalability. It is also significantly faster. Currently it has to be enabled manually, but it will later become the default scheme.
+
+
+radiation_interactions_on:
+  category: RTM Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to deactivate RTM even if vertical urban/land surfaces or trees exist in the domain.
+    long:  |
+      Setting this parameter to *.F.* deactivates the RTM even if vertical urban/land surfaces or trees exist in the domain. In this case, all surfaces will receive radiation fluxes directly from the choosen radiation model (e.g. *'rrtmg'* or *'clear-sky'*).
+
+      Warning:  [radiation_interactions_on](#radiation_parameters--radiation_interactions_on) = *.T.* is not allowed, if the bulk cloud model (BCM) is used together with the urban- and/or land-surface model (USM and/or LSM) and the radiation model.
+
+
+radiation_only:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to activate the radiation model without urban/land surfaces being defined.
+    long:  |
+      Setting this parameter to *.T.* activates the radiation model without urban/land surfaces being defined. In such radiation-only simulations, the radiative transfer equation is only solved for the atmosphere and no energy balance is solved at the surface. The surface parameter albedo and emissivity are either loaded by the namelist ([albedo_type](#radiation_parameters--albedo_type), [albedo](#radiation_parameters--albedo), [emissivity](#radiation_parameters--emissivity)) or read by a static driver file.
+
+      **Warning:** Setting this flag to *.T.* is not allowed in combination with the urban- and/or land-surface model (USM and/or LSM) or [radiation_interactions_on](#radiation_parameters--radiation_interactions_on) = *.T.*. Furthermore, it is only implemented for [radiation_scheme](#radiation_parameters--radiation_scheme) = *'rrtmg'*.
+
+
+radiation_scheme:
+  category: General Settings
+  type: C*10
+  default:
+    value: 'clear-sky'
+  description:
+    short: Radiation scheme to be used.
+    long:  |
+  allowed_values:
+     - value: constant
+       description: |
+         A constant net radiation at the surface is prescribed (see [net_radiation](#radiation_parameters--net_radiation)).
+     - value: clear-sky
+       description: |
+         A simple clear sky model is used to calculate the radiation fluxes at the surface (shortwave incoming, shortwave outgoing, longwave incoming, longwave outgoing) and, consequently, the net radiation at the surface. This scheme requires setting [albedo](#radiaton_parameters--albedo), [origin_date_time](#initialization_parameters--origin_date_time), [longitude](#initialization_parameters--longitude) and [latitude](#initialization_parameters--latitude).
+     - value: external
+       description: |
+         External radiative input of short- and long-wave downwelling radiation is used, which can be taken from observations or mesoscale models. Note, in the case of a nested run, each child model will read the radiation input either from its own dynamic input file, or if a dynamic input file is not available for each of the child models, it will be read from the dynamic input file for the root model.
+
+         External radiation input can be provided as `level-of-detail = 1` (radiation depends only on time and is horizontally homogeneous) or as `level-of-detail = 2` (radiation depends on time, y, x and can be horizontally heterogeneous). Please note, at the moment `level-of-detail = 2` is not possible in combination with buildings or complex orography where surface reflections occur.
+     - value: rrtmg
+       description: |
+         The ​RRTMG model is used to calculate the radiative heating rates for each model column. This scheme requires setting [origin_date_time](#initialization_parameters--origin_date_time), [longitude](#initialization_parameters--longitude) and [latitude](#initialization_parameters--latitude). The following parameters can be set optionally: [albedo_type](#radiation_parameters--albedo_type) (and/or [albedo_lw_dif](#radiation_parameters--albedo_lw_dif), [albedo_lw_dir](#radiation_parameters--albedo_lw_dir), [albedo_sw_dif](#radiation_parameters--albedo_sw_dif), [albedo_sw_dir](#radiation_parameters--albedo_sw_dir)). However, [constant_albedo](#radiation_parameters--constant_albedo) can be used to fix the albedo during the simulation. It is also possible to use the switches [lw_radiation](#radiation_parameters--lw_radiation) and [sw_radiation](#radiation_parameters--sw_radiation).
+
+         Please note that the use of RRTMG requires the user to compile PALM with `-D__rrtmg` preprocessor directive (in the `.palm.config.<configuration_identifier>` file). But before this, the RRTMG libraries must be installed, which is usually done automatically by the PALM `installer`.
+     - value: tenstream
+       description: |
+          The ​TenStream model is used to calculate the full 3-D radiative transfer equation. Unlike RRTMG, it approximately solves the radiative transfer equation in 3-D and computes irradiance and heating rates from optical properties. In addition to the up- and down-ward fluxes, the TenStream solver computes the radiative transfer coefficients for sideward streams.
+
+
+radiation_volumetric_flux:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag indicating whether volumetric radiative fluxes will be calculated.
+    long: ''
+
+
+raytrace_discrete_azims:
+  category: RTM Settings
+  type: I
+  default:
+    value: 80
+  description:
+    short:  Number of horizontal discrete directions (azimuths) for angular discretization.
+    long:  |
+      This parameter is used in the RTM model to calculate the sky view factor, surface-surface view factor and direct solar visibility for all surfaces.
+
+
+raytrace_discrete_elevs:
+  category: RTM Settings
+  type: I
+  default:
+    value: 80
+  description:
+    short:  Number of vertical discrete elevations for angular discretization.
+    long:  |
+      This parameter is used to calculate the sky view factor, surface-surface view factor and direct solar visibility for all surfaces.
+
+
+raytrace_mpi_rma:
+  category: MRT Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to enable one-sided MPI communication to access LAD array and grid surfaces for raytracing.
+    long:  |
+      This flag is only for debugging purposes and should not be switched off in real simulations.
+
+      **Attention:** Some machine related settings may be necessary to avoid system degradation when using MPI-RMA communication. See for example [http://palm.muk.uni-hannover.de/trac/wiki/doc/app/machine/hlrnIII](http://palm.muk.uni-hannover.de/trac/wiki/doc/app/machine/hlrnIII).
+
+
+skip_time_do_radiation:
+  category: General Settings
+  type: R
+  default:
+    value: 0.0
+  si-unit: s
+  description:
+    short: Time after which the radiation model is switched on.
+    long:  |
+      This parameter can be used to allow the LES model to develop turbulence before the flow is affected by radiation.
+
+
+surface_reflections:
+  category: RTM Settings
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Flag to switch off the surface-surface reflections in RTM.
+    long:  |
+      This flag is intended only for special purposes (e.g. debugging, testing of sensitivities) and should not be switched off for real simulations.
+
+
+sw_radiation:
+  category: Mode
+  type: L
+  default:
+    value: .T.
+  description:
+    short: Parameter to switch off the calculation of shortwave radiation.
+    long:  |
+      When using RRTMG, shortwave radiation calls can be switched off by setting [sw_radiation](#radiation_parameters--sw_radiation) = *.F.*. Note that shortwave radiation is automatically switched off during nighttime.
+
+
+switch_off_module:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to switch off the radiation module.
+    long:  |
+      Setting this flag to *.T.* will switch off the radiation module although the respective module namelist appears in the namelist file.
+
+
+trace_fluxes_above:
+  category: RTM Settings
+  type: R
+  default:
+    value: -1.0
+  description:
+    short: This parameter enables tracing of values of radiative fluxes in RTM.
+    long:  |
+      If this threshold is exceeded, RTM prints a debug message with the maximal value of the corresponding flux with additional useful information (location of maximum, corresponding albedo and emissivity,...). The value *0.0* means to print maxima at all timesteps for all particular radiative fluxes while the value *-1.0* (default) disables this check completely.
+
+
+ts_icollapse:
+  category: TenStream Settings
+  type: I
+  default:
+    value: -1
+  description:
+    short: Flag to return flux results from the background atmosphere.
+    long: | 
+  allowed_values:
+     - value: 1
+       description: |
+         Receive the TenStream flux results from the background atmosphere above the dynamical grid.
+     - value: -1
+       description: |
+         Collapse the TenStream flux results from the background atmosphere above the dynamical grid.
+
+
+unscheduled_radiation_calls:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Parameter to allow additional calls of the radiation code.
+    long:  |
+      Usually the radiation is called in time intervals as given by [dt_radiation](#radiation_parameters--dt_radiation), however in the case of fast changes in the skin temperature, it is recommended to update the radiative fluxes independently from the prescribed radiation call frequency to prevent numerical oscillations. The value of the temperature threshold used is *0.2* K.
+
+
+use_broadband_albedo:
+  category: General Settings
+  type: L
+  default:
+    value: .F.
+  description:
+    short: Flag to use broadband albedo instead of diffuse/direct albedo.
+    long:  |
+      This flag is used only when the radiation scheme RRTMG or TenStream is used.

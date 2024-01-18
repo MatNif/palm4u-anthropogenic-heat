@@ -1,0 +1,226 @@
+PMC0001:
+  loglevel: ERROR
+  message: |
+    nesting-setup requires different number of MPI procs (...) than provided (...)
+  description: |
+    The total number of MPI processes for all nested domains given in the [&nesting_parameters namelist](../Namelists/#nesting-parameters) via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) is larger than the number of MPI processes that has been assigned via `palmrun` option `-X`. Either provide more cores via option `-X` or decrease the number of MPI processes via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts).
+    
+    **Attention:** For hybrid OpenMP/MPI-runs the number of MPI processes allowed for the run is given by `-X` divided by the number of threads per MPI-task, as set via `palmrun` option `-O`. 
+
+PMC0002:
+  loglevel: ERROR
+  message: |
+    errors in &nesting_parameters
+  description: |
+    See [&nesting_parameters namelist](../Namelists/#nesting-parameters) for allowed parameters and values.
+
+PMC0003:
+  loglevel: INFO
+  message: |
+    At least one dimension of lower left corner of one domain is not 0. All lower left corners were set to (0,0).
+  description: |
+    In case of [nesting_mode](../Namelists/#nesting_parameters--nesting_mode) = *'vertical_only'* (pure one-dimensional nesting in vertical direction), all domains must have the lower left corner at `x=0`, `y=0`. If declared differently via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts), the corners are automatically set to `(0,0)`.
+
+PMC0004:
+  loglevel: ERROR
+  message: |
+    parent buffer too small ...
+  description: |
+    Internal error within the PALM model coupler. Please contact the PALM developers, e.g. via the trouble-ticket system.
+
+PMC0005:
+  loglevel: ERROR
+  message: |
+    illegal nesting boundary condition: ...
+  description: |
+    See [nesting_bounds](../Namelists/#nesting_parameters--nesting_bounds) for allowed values.
+
+PMC0006:
+  loglevel: ERROR
+  message: |
+    illegal nesting mode: ...
+  description: |
+    See [nesting_mode](../Namelists/#nesting_parameters--nesting_mode) for allowed value.
+
+PMC0007:
+  loglevel: ERROR
+  message: |
+    illegal nesting datatransfer mode: ...
+  description: |
+    See [nesting_datatransfer_mode](../Namelists/#nesting_parameters--nesting_datatransfer_mode) for allowed values.
+
+PMC0008:
+  loglevel: ERROR
+  message: |
+    combination of nesting and atmosphere-ocean coupling is no allowed
+  description: |
+    Using nesting in coupled atmosphere-ocean runs is not available.
+
+PMC0009:
+  loglevel: ERROR
+  message: |
+    nested child (id: ..) domain boundaries along ... do not match the respective parent boundaries
+  description: |
+    [nesting_bounds](../Namelists/#nesting_parameters--nesting_bounds) has been chosen either *'cyclic_along_x'*, *'cyclic_along_y'*, or *'vertical_only'*, but the child does not exactly match the parent size along the respective direction(s). Respectively adjust the child domain size via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts).
+
+PMC0010:
+  loglevel: ERROR
+  message: |
+    nx+1 in ocean is not divisible by nx+1 in atmosphere without remainder
+  description: |
+    For atmosphere-ocean coupling, a smaller grid size in x-direction can be chosen for the ocean, so that the ocean has more grid points along x than the atmosphere. In that case, data must be interpolated from the atmosphere to the ocean grid. Therefore, it must be ensured that each atmosphere grid interval contains the same number of ocean gridpoints. This is ensured only if condition $(nx_o + 1) - INT \left( \frac{nx_o + 1}{nx_a + 1} \right) * (nx_a + 1) = 0$ holds, where $nx_o,  nx_a$ are the number of grid points along $x$ for the ocean and atmosphere model, respectively. This requires that $nx_o+1$ is a multiple of $nx_a+1$. Set [nx](../Namelists/#initialization_parameters--nx) for the atmosphere and ocean model respectively.
+
+PMC0011:
+  loglevel: ERROR
+  message: |
+    ny+1 in ocean is not divisible by ny+1 in atmosphere without remainder
+  description: |
+    For atmosphere-ocean coupling, a smaller grid size in y-direction can be chosen for the ocean, so that the ocean has more grid points along y than the atmosphere. In that case, data must be interpolated from the atmosphere to the ocean grid. Therefore, it must be ensured that each atmosphere grid interval contains the same number of ocean gridpoints. This is ensured only if condition $(ny_o + 1) - INT \left( \frac{ny_o + 1}{ny_a + 1} \right) * (ny_a + 1) = 0$ holds, where $ny_o,  ny_a$ are the number of grid points along $y$ for the ocean and atmosphere model, respectively. This requires that $ny_o+1$ is a multiple of $ny_a+1$. Set [ny](../Namelists/#initialization_parameters--ny) for the atmosphere and ocean model respectively.
+
+PMC0012:
+  loglevel: ERROR
+  message: |
+    nested child domain does not fit into its parent domain, ... edge is either too close or outside its parent ... edge'
+  description: |
+    A nest domain does not completely fit in its parent domain, or in case of [nesting_bounds](../Namelists/#nesting_parameters--nesting_bounds) = *'vertical_only'* the horizontal boundaries of a nest domain do not exactly match the horizontal boundaries of its parent domain. In 3D-nesting mode, the vertical extent of the child must be smaller than that of the parent domain.
+
+PMC0013:
+  loglevel: ERROR
+  message: |
+    nested parallel child domains (ids: ... and ...) overlap
+  description: |
+    Two or more parallel nest domains overlap each other in space. Parallel nest domains must never overlap. Respective child ids that violate this condition are given in the error message. Adjust the nest coordinates via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts).
+
+PMC0014:
+  loglevel: ERROR
+  message: |
+    Child domain too narrow [or shallow] for anterpolation in ...-direction
+  description: |
+    In case of [nesting_mode](../Namelists/#nesting_parameters--nesting_mode) = *'two-way'*, the child domain must cover a sufficient number of parent-grid cells in all directions. Otherwise anterpolation is not possible. The absolute minimum number of parent grid cells covered in x- and y-directions is ( 3 + 2 * [anterpolation_buffer_width](../Namelists/#nesting_parameters--anterpolation_buffer_width) ), and ( 2 + [anterpolation_buffer_width](../Namelists/#nesting_parameters--anterpolation_buffer_width) ) in z-direction. Adjust the child domain size respectively. Note, that child domains are recommended to cover much larger number of parent-grid cells.
+
+PMC0015:
+  loglevel: WARNING
+  message: |
+    anterpolation_buffer_width value too high, reset to 0
+  description: |
+    In case of a marginally small child domain and [nesting_mode](../Namelists/#nesting_parameters--nesting_mode) = *'two-way'* (see [PMC0014](#pmc_interface_mod--PMC0014)), [anterpolation_buffer_width](../Namelists/#nesting_parameters--anterpolation_buffer_width) is set to *0* (the default value is *2*) so that the minimum criteria (see [PMC0014](#pmc_interface_mod--PMC0014)) for the child domain size in terms of the number of parent-grid cells covered are satisfied. Note, that child domains are recommended to cover much larger number of parent-grid cells.
+
+PMC0016:
+  loglevel: INFO
+  message: |
+    anterpolation_buffer_width value too high, reset to the default value 2
+  description: |
+    In case of too wide anterpolation buffer and [nesting_mode](../Namelists/#nesting_parameters--nesting_mode) = *'two-way'*, [anterpolation_buffer_width](../Namelists/#nesting_parameters--anterpolation_buffer_width) is reset to its default value of *2*, so that the minimum criteria (see [PMC0014](#pmc_interface_mod--PMC0014)) for the child domain size in terms of the number of parent-grid cells covered are satisfied. Note, that child domains are recommended to cover much larger number of parent-grid cells.
+
+PMC0017:
+  loglevel: ERROR
+  message: |
+    nested child domain ... must match its parent grid lines
+  description: |
+    Nested child domain lower left corner (x,y) / upper right corner (x,y) / top (z) coordinates must match the parent grid lines, i.e. they must be integer divisible by the parent grid spacings in the respective coordinate direction. Respectively adjust the child domain size via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) and/or ensure that the parent grid spacings ([nx](../Namelists/#initialization_parameters--nx), [ny](../Namelists/#initialization_parameters--ny), [nz](../Namelists/#initialization_parameters--nz)) are multiples of the respective child grid spacings.
+
+PMC0018:
+  loglevel: ERROR
+  message: |
+    nesting grid-spacing ratio ( ... / ... ) must have an integer value ...
+  description: |
+    Ensure that the parent grid spacings ([nx](../Namelists/#initialization_parameters--nx), [ny](../Namelists/#initialization_parameters--ny), [nz](../Namelists/#initialization_parameters--nz)) are multiples of the respective child grid spacings. This also implies that vertical grid stretching is not allowed in nested runs except in the root domain above the top level of the highest nest-domain.
+
+PMC0019:
+  loglevel: ERROR
+  message: |
+    child subdomain width in ...-direction must not be smaller than its parent grid ... . Change the PE-grid setting (npex, npey) to satisfy this requirement.
+  description: |
+    In nested runs the child domain decomposition must be such that the subdomain size is never smaller than the parent grid-spacing in the respective direction. Decrease the number of cores assigned for the child via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts).
+
+PMC0020:
+  loglevel: ERROR
+  message: |
+    pointer for array "..." can't be associated for ... domain
+  description: |
+    Internal error, related to the PALM model coupler, which is responsible for data exchange in nested runs. In case that the default code in `pmc_interface_mod.f90` has not been modified, contact the PALM developers, e.g. via the trouble-ticket system.
+
+PMC0021:
+  loglevel: WARNING
+  message: |
+    mismatch between root model and child settings: ...(root) = ... ...(child) = ... child value is set to root value
+  description: |
+    The displayed parameter has been assigned different values for the root domain and a child domain (the id of the child domain is listed in the first line of the message), but it must have the same value for all domains. The child domain value is automatically set to the one given for the root domain. In order to get rid of this warning message, adjust the parameter in the respective namelist file of the child (or root) domain.
+
+PMC0022:
+  loglevel: WARNING
+  message: |
+    mismatch between root model and child settings: homogenize_surface_temperature must be set the same for all models. child value is set to root value.
+  description: |
+    Set [homogenize_surface_temperature](../Namelists/#initialization_parameters--homogenize_surface_temperature) to the same value for the root model and all childs. See also [PMC0021](#pmc_interface_mod--PMC0021).
+
+PMC0023:
+  loglevel: ERROR
+  message: |
+    dt_coupling is required to be set in atmosphere runtime parameters namelist
+  description: |
+    In case of runs with [coupled atmosphere-ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/coupled) the temporal interval for the data exchange [dt_coupling](../Namelists/#runtime_parameters--dt_coupling) must be set.
+
+PMC0024:
+  loglevel: ERROR
+  message: |
+    dt_coupling < 0.0 is not allowed
+  description: |
+    In case of runs with [coupled atmosphere-ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/coupled) the temporal interval for the data exchange [dt_coupling](../Namelists/#runtime_parameters--dt_coupling) must be >= *0.0* and equal in both models.
+
+PMC0025:
+  loglevel: ERROR
+  message: |
+    mismatch between atmosphere and ocean model: dt_coupling (atmosphere) = "..." dt_coupling (ocean) = "..." ocean value is set to atmosphere value
+  description: |
+    In case of runs with [coupled atmosphere-ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/coupled) the temporal interval for the data exchange [dt_coupling](../Namelists/#runtime_parameters--dt_coupling) must be given the same value in both models.
+
+PMC0026:
+  loglevel: ERROR
+  message: |
+    mismatch between atmosphere and ocean model: time from reference point (atmosphere) = ... time_from reference point (ocean) = ...
+  description: |
+    In case of runs with [coupled atmosphere-ocean](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/coupled) the simulated time from the reference point is stored internally in variable `time_to_be_simulated_from_reference_point`. In coupled runs this variable is required to have the same value in atmosphere and ocean model. A possible reason for this error is if precursor runs for atmosphere and ocean are used with different startup times. See [coupled atmosphere-ocean runs](https://palm.muk.uni-hannover.de/trac/wiki/doc/app/examples/coupled) for a detailed description of the setup for precursor runs.
+
+PMC0027:
+  loglevel: ERROR
+  message: |
+    ... in atmosphere is smaller than ... in ocean
+  description: |
+    Coupled atmosphere ocean runs allow to use different grid resolutions in atmosphere and ocean. It is, however, not allowed to use a finer grid resolution in the atmosphere than in the ocean. Change the indicated grid spacing respectively.
+
+PMC0028:
+  loglevel: ERROR
+  message: |
+    RMA window too small on ...
+  description: |
+    If particles pass the borders between the child and parent domain they will be exchanged using MPI windows (MPI window = memory that is allocated to be accessed by remote processes for one sided communication). Within this process it could happen that the size of the windows is too small due to a very large number of particles that need to be transferred between the domains. Either choose a smaller amount of particles or change the internal limit of `max_nr_prts_in_rma_win` from *100000* to a higher value.
+
+PMC0029:
+  loglevel: ERROR
+  message: |
+    particle outside parent bounds: ... ...
+  description: |
+    Internal error. Please inform the PALM developers, e.g. via submitting a trouble ticket.
+
+PMC0030:
+  loglevel: ERROR
+  message: |
+    no child defined
+  description: |
+    For a nested setup, at least one child domain has to be defined via [domain_layouts](../Namelists/#nesting_parameters--domain_layouts).
+
+PMC0031:
+  loglevel: ERROR
+  message: |
+    heigth of child bottom boundary (... m) must not lie below the bottom boundary of the respective parent (... m)
+  description: |
+    This message may arise in case of elevated childs. Change the [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) respectively.
+
+PMC0032:
+  loglevel: WARNING
+  message: |
+    deprecated format for domain_layouts is used
+  description: |
+    From release 23.10 on, the nesting-parameter [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) requires seven values for each parent/child. The 7th value defines the vertical shift of the child. Change your `&nesting_parameters` namelist respectively. See [domain_layouts](../Namelists/#nesting_parameters--domain_layouts) for further information.
+

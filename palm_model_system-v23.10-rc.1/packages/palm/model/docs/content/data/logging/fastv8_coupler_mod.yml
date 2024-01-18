@@ -1,0 +1,126 @@
+F8C0001:
+  loglevel: ERROR
+  message: |
+    Using FASTv8 Coupler requires cpp macro "__fastv8" during build.
+  description: |
+    You have switched on the FASTv8 Coupler by specifying the namelist [fastv8_coupler_parameters](../Namelists/#fastv8-coupler-parameters) but PALM has been build without the `__fastv8` preprocessor directive. Please rebuild PALM using the `__fastv8` preprocessor directive.
+
+F8C0002:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "nturbines" must set to a value greater than 0.
+  description: ''
+
+F8C0003:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "nturbines" must set to a value greater than 0.
+  description: |
+    [fastv8_coupler_parameters](../Namelists/#fastv8-coupler-parameters) namelist parameter [nturbines](../Namelists/#fastv8_coupler_parameters--nturbines) must be set to a value less or equal to 300. If you would like to use more turbines, you need to increase the value of the variable `nturbines_max` in the source code.
+
+F8C0004:
+  loglevel: ERROR
+  message: |
+    fastv8-coupler-parameters namelist parameter "fast_n_blades_max" must set to a value greater than 0.
+  description: ''
+
+F8C0005:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "fast_n_blade_elem_max" must set to a value greater than 0.
+  description: ''
+
+F8C0006:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "fast_host_addr_default" must be set to a valid IP adress e.g 127.0.0.1 (currently it is not set).
+  description: ''
+
+F8C0007:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "fast_host_port(i)" must be set to a valid port number (currently it is not set).
+  description: ''
+
+F8C0008:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "palm_tower_ref_pos_x(i)" must be within the model domain (currently it is set to <value>).
+  description: |
+    [fastv8_coupler_parameters](../Namelists/#fastv8-coupler-parameters) namelist parameter [palm_tower_ref_pos_x(i)](../Namelists/#fastv8_coupler_parameters--palm_tower_ref_pos_x) must be set to a value that represents a valid x-coordiate in meters within the model domain. Please ensure, that the turbine is placed so that there is at least 2x the rotor diameter distance to the left domain boundary.
+
+F8C0009:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "palm_tower_ref_pos_y(i)" must be within the model domain (currently it is set to <value>).
+  description: |
+    [fastv8_coupler_parameters](../Namelists/#fastv8-coupler-parameters) namelist parameter [palm_tower_ref_pos_y(i)](../Namelists/#fastv8_coupler_parameters--palm_tower_ref_pos_y) must be set to a value that represents a valid y-coordiate in meters within the model domain.
+
+F8C0010:
+  loglevel: ERROR
+  message: |
+    fastv8_coupler_parameters namelist parameter "palm_tower_ref_pos_z(i)" must be within the model domain (currently it is set to <value>).
+  description: |
+    [fastv8_coupler_parameters](../Namelists/#fastv8-coupler-parameters) namelist parameter [palm_tower_ref_pos_z(i)](../Namelists/#fastv8_coupler_parameters--palm_tower_ref_pos_z) must be set to a value that represents a valid z-coordiate in meters within the model domain.
+
+F8C0011:
+  loglevel: ERROR
+  message: |
+    Currently initializing_actions = "read_restart_data" is not implemented while using the FASTv8 Coupler.
+  description: ''
+
+F8C0012:
+  loglevel: ERROR
+  message: |
+    Unable to initalize communication with FAST server(s).
+  description: |
+    Please make sure that all configured FASTv8 instances are running and reachable via the correct IPv4 and port over network.
+
+F8C0013:
+  loglevel: ERROR
+  message: |
+    Unable to update information between FORTRAN and C.
+  description: ''
+
+F8C0014:
+  loglevel: ERROR
+  message: |
+    Unable to establish connection with all FAST server(s).
+  description: ''
+
+F8C0015:
+  loglevel: ERROR
+  message: |
+    At least one FAST server finished the simulation.
+  description: ''
+
+F8C0016:
+  loglevel: ERROR
+  message: |
+    Unable to send start signale to FAST server(s).
+  description: ''
+
+F8C0017:
+  loglevel: ERROR
+  message: |
+    At least one FAST server finished the simulation.
+  description: ''
+
+F8C0018:
+  loglevel: ERROR
+  message: |
+    Different times on different FAST instances.
+  description: ''
+
+F8C0019:
+  loglevel: ERROR
+  message: |
+    Unable to send velocities to FAST server(s). Please check if any of the FAST servers finished the simulation.
+  description: ''
+  
+
+F8C0020:
+  loglevel: ERROR
+  message: |
+    At least one FAST server finished the simulation.
+  description: ''
