@@ -809,8 +809,7 @@
     LOGICAL ::  dt_fixed = .FALSE.                               !< fixed timestep (namelist parameter dt set)?
     LOGICAL ::  dt_3d_reached                                    !< internal timestep for particle advection
     LOGICAL ::  dt_3d_reached_l                                  !< internal timestep for particle advection
-    LOGICAL ::  external_anthropogenic_heat = .FALSE.            !< anthropogenic heat imported from external building/transport model or other source?
-                                                                 !< TODO: make sure this parameter is set properly
+    LOGICAL ::  external_anthropogenic_heat = .FALSE.            !< switch for anthropogenic heat from external building/transport model or other sources
     LOGICAL ::  first_call_mas = .TRUE.                          !< call mas only once per timestep ??
     LOGICAL ::  force_print_header = .FALSE.                     !< namelist parameter
     LOGICAL ::  galilei_transformation = .FALSE.                 !< namelist parameter

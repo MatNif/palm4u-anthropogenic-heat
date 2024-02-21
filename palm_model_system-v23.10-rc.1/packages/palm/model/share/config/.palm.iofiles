@@ -22,6 +22,7 @@ PIDS_EMIS_TRAFFIC        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT 
 PIDS_UVEM                inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _uvlookup*
 PIDS_VM                  inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _vmeas*
 PIDS_WTM                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _wtmpar*
+PIDS_AH                  inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _ah*
 RRTMG_LW                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _rlw
 RRTMG_SW                 inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _rsw
 tenstream.options        inopt:tr   d3#:d3r    $base_data/$run_identifier/INPUT            _ts_options
