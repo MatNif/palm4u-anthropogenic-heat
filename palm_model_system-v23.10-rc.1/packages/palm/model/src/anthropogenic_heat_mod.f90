@@ -20,28 +20,18 @@
 !
 ! Description:
 ! ------------
-!> This module calculates the effect of wind turbines on the flow fields. The initial version
-!> contains only the advanced actuator disk with rotation method (ADM-R).
-!> The wind turbines include the tower effect, can be yawed and tilted.
-!> The wind turbine model includes controllers for rotational speed, pitch and yaw.
-!> Currently some specifications of the NREL 5 MW reference turbine are hardcoded whereas most input
-!> data comes from separate files (currently external, planned to be included as namelist which will
-!> be read in automatically).
-!>
-!> @todo Replace dz(1) appropriatly to account for grid stretching
-!> @todo Revise code according to PALM Coding Standard
-!> @todo Implement ADM and ALM turbine models
-!> @todo Generate header information
-!> @todo Implement further parameter checks and error messages
-!> @todo Revise and add code documentation
-!> @todo Output turbine parameters as timeseries
-!> @todo Include additional output variables
-!> @todo Revise smearing the forces for turbines in yaw
-!> @todo Revise nacelle and tower parameterization
-!> @todo Allow different turbine types in one simulation
+!> This module introduces anthropogenic heat emissions from external sources into PALM. It considers
+!> heat from buildings, traffic, and other point sources. 
+!> AH-profiles for BUILDINGS are typically obtained from a building energy model (BEM) 
+!> that replicates PALM's buildings in terms of geometry and materials, but applies a different 
+!> heating or cooling system to them.
+!> TRAFFIC AH-profiles are meant to be obtained from a traffic model that replicates PALM's streets 
+!> and incorporates traffic flow data. 
+!> POINT SORUCES are a more generic data fromat that can be used to represent any other source of 
+!> anthropogenic heat: e.g. incineration plants, power plants, or industrial complexes.
 !
 !--------------------------------------------------------------------------------------------------!
- MODULE wind_turbine_model_mod
+ MODULE anthropogenic_heat_mod
 
     #if defined( __parallel )
         USE MPI
@@ -104,9 +94,12 @@
         USE kinds
     
         USE netcdf_data_input_mod,                                                                     &
-            ONLY:  check_existence,                                                                    &
+            ONLY:  char_fill,                                                                          &
+                   check_existence,                                                                    &
                    close_input_file,                                                                   &
                    get_variable,                                                                       &
+                   get_attribute,                                                                      &
+                   get_dimension_length,                                                               &
                    input_pids_wtm,                                                                     &
                    input_pids_ah,                                                                      &
                    inquire_num_variables,                                                              &
@@ -124,10 +117,40 @@
             ONLY:  rrd_mpi_io_global_array,                                                            &
                    wrd_mpi_io_global_array
     
-    
+    !
+    !-- Define data types
+        TYPE 1d_int_array
+             INTEGER(iwp) :: fill                               !< fill value
+             INTEGER(iwp), DIMENSION(:), ALLOCATABLE ::  array  !< 1d integer array
+
+             LOGICAL ::  from_file = .FALSE.  !< flag indicating whether an input variable is available and read from file or default
+                                              !< values are used
+        END TYPE 1d_int_array
+      
+
+         
         IMPLICIT NONE
     
         PRIVATE
+    
+    ! ------- NEW ANTHROPOGENIC HEAT MODEL VARIABLES ------- !
+
+        INTEGER(iwp) ::  n_buildings            !< number of buildings (for array allocation)
+        INTEGER(iwp) ::  n_streets              !< number of streets (for array allocation)
+        INTEGER(iwp) ::  n_points               !< number of point sources (for array allocation)
+        INTEGER(iwp) ::  n_timesteps            !< number of time steps (for array allocation)
+
+
+        TYPE(1d_int_array) :: building_ids          !< ids of buildings with anthropogenic heat profiles
+        TYPE(1d_int_array) :: road_ids              !< ids of roads with anthropogenic heat profiles
+        TYPE(1d_int_array) :: point_ids             !< ids of point sources with anthropogenic heat profiles
+        REAL(wp), DIMENSION(:), ALLOCATABLE :: t    !< time steps
+
+
+
+
+
+    ! ------- OLD WIND TURBINE MODEL VARIABLES ------- !
     
         CHARACTER(LEN=800) ::  dom_error_message  !< error message returned by the data-output module
         CHARACTER(LEN=100) ::  variable_name      !< name of output variable
@@ -445,6 +468,52 @@
     
     
      CONTAINS
+
+
+    !--------------------------------------------------------------------------------------------------!
+    ! Description:
+    ! ------------
+    !> Parin for &anthropogenic_heat_par for external anthropogenic heat sources model
+    !--------------------------------------------------------------------------------------------------!
+     SUBROUTINE ah_parin
+    
+      IMPLICIT NONE
+  
+      CHARACTER(LEN=100) ::  line  !< dummy string that contains the current line of the parameter file
+  
+      INTEGER(iwp) ::  io_status   !< status after reading the namelist file
+  
+      LOGICAL ::  switch_off_module = .FALSE.  !< local namelist parameter to switch off the module
+                                               !< although the respective module namelist appears in
+                                               !< the namelist file
+  
+      NAMELIST /anthropogenic_heat_parameters/  switch_off_module                                  
+  
+  !
+  !-- Move to the beginning of the namelist file and try to find and read the namelist.
+      REWIND( 11 )
+      READ( 11, anthropogenic_heat_parameters, IOSTAT=io_status )
+  
+  !
+  !-- Action depending on the READ status
+      IF ( io_status == 0 )  THEN
+  !
+  !--    anthropogenic_heat_parameters namelist was found and read correctly. Enable the
+  !--    external anthropogenic heat module.
+         IF ( .NOT. switch_off_module )  external_anthropogenic_heat = .TRUE.
+  
+      ELSEIF ( io_status > 0 )  THEN
+  !
+  !--    anthropogenic_heat_parameters namelist was found but contained errors. Print an error message
+  !--    including the line that caused the problem.
+         BACKSPACE( 11 )
+         READ( 11 , '(A)' ) line
+         CALL parin_fail_message( 'anthropogenic_heat_turbines', line )
+  
+      ENDIF
+  
+   END SUBROUTINE ah_parin
+
     
     
     !--------------------------------------------------------------------------------------------------!
@@ -748,16 +817,22 @@
         ALLOCATE( var_names(1:num_vars) )
         CALL inquire_variable_names( id_netcdf, var_names )
     !
-    !-- Read vegetation type and required attributes
-        IF ( check_existence( var_names, 'vegetation_type' ) )  THEN
-        vegetation_type_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, vegetation_type_f%fill, .FALSE., 'vegetation_type' )
+    !-- Read dimensions from file
+         CALL get_dimension_length( id_netcdf, n_buildings, 'building_id' )
+         CALL get_dimension_length( id_netcdf, n_streets, 'street_id' )
+         CALL get_dimension_length( id_netcdf, n_points, 'point_id' )
+         CALL get_dimension_length( id_netcdf, n_timesteps, 'time' )
+    !
+    !-- Read building ids from file 
+        IF ( check_existence( var_names, 'building_id' ) )  THEN
+           building_ids%from_file = .TRUE.
+           CALL get_attribute( id_netcdf, char_fill, building_ids%fill, .FALSE., 'building_id', .FALSE. )
         
-        ALLOCATE( vegetation_type_f%var(nys:nyn,nxl:nxr) )
+           ALLOCATE( building_ids%array(1:n_buildings) ) 
         
-        CALL get_variable( id_netcdf, 'vegetation_type', vegetation_type_f%var, nxl, nxr, nys, nyn )
+           CALL get_variable( id_netcdf, 'building_id', building_ids%array )
         ELSE
-        vegetation_type_f%from_file = .FALSE.
+           building_ids%from_file = .FALSE.
         ENDIF
         
     !
@@ -1389,20 +1464,7 @@
     
     !
     !-- Maximum number of segments per ring:
-        nsegs_max = MAXVAL( nsegs )
-    
-    !!
-    !!-- TODO: Folgendes im Header ausgeben!
-    !    IF ( myid == 0 )  THEN
-    !       PRINT*, 'nrings(1) = ', nrings(1)
-    !       PRINT*, '----------------------------------------------------------------------------------'
-    !       PRINT*, 'nsegs(:,1) = ', nsegs(:,1)
-    !       PRINT*, '----------------------------------------------------------------------------------'
-    !       PRINT*, 'nrings_max = ', nrings_max
-    !       PRINT*, 'nsegs_max = ', nsegs_max
-    !       PRINT*, 'nsegs_total(1) = ', nsegs_total(1)
-    !    ENDIF
-    
+        nsegs_max = MAXVAL( nsegs )    
     
     !
     !-- Allocate 1D arrays (dimension = number of turbines):

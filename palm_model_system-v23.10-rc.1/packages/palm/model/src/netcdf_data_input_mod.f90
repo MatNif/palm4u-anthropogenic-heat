@@ -547,7 +547,6 @@
     LOGICAL ::  input_pids_vm      = .FALSE.   !< Flag indicating whether input file for virtual measurements exist
     LOGICAL ::  input_pids_wtm     = .FALSE.   !< Flag indicating whether input file for wind turbine model exists
     LOGICAL ::  input_pids_ah      = .FALSE.   !< Flag indicating whether input file for externally computed anthropogenic heat from buildings & traffic exists 
-                                               !< TODO: correctly handle the setting of this flag
 
     LOGICAL ::  collective_read = .FALSE.      !< Enable NetCDF collective read
 
@@ -673,10 +672,12 @@
            init_3d,                                                                                &
            init_model,                                                                             &
            input_file_atts,                                                                        &
+           input_file_ah,                                                                          &
            input_file_dynamic,                                                                     &
            input_file_static,                                                                      &
            input_file_vm,                                                                          &
            input_file_wtm,                                                                         &
+           input_pids_ah,                                                                          &
            input_pids_static,                                                                      &
            input_pids_dynamic,                                                                     &
            input_pids_vm,                                                                          &
@@ -803,6 +804,8 @@
              EXIST = input_pids_vm )
     INQUIRE( FILE = TRIM( input_file_wtm )     // TRIM( coupling_char ),                           &
              EXIST = input_pids_wtm )
+    INQUIRE( FILE = TRIM( input_file_ah )      // TRIM( coupling_char ),                           &
+             EXIST = input_pids_ah )
 #endif
 
 !
@@ -3787,7 +3790,7 @@
     nc_stat = NF90_INQUIRE_DIMENSION( id, dimid(2), LEN = dimsize(2) )
 
 !
-!-- Read character array. Note, each element is read individually, in order to better separate
+!-- Read character array. Note, each element is read individually, in order to better separateread
 !-- single strings.
     DO  i = 1, dimsize(2)
        nc_stat = NF90_GET_VAR( id, id_var, var(i),                                                 &
