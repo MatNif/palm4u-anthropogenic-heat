@@ -33,121 +33,134 @@
 !--------------------------------------------------------------------------------------------------!
  MODULE anthropogenic_heat_mod
 
-    #if defined( __parallel )
-        USE MPI
-    #endif
+#if defined( __parallel )
+    USE MPI
+#endif
     
-        USE arrays_3d,                                                                                 &
-            ONLY:  tend,                                                                               &
-                   u,                                                                                  &
-                   v,                                                                                  &
-                   w,                                                                                  &
-                   zu,                                                                                 &
-                   zw
+    USE arrays_3d,                                                                                     &
+       ONLY:  tend,                                                                                    &
+              u,                                                                                       &
+              v,                                                                                       &
+              w,                                                                                       &
+              zu,                                                                                      &
+              zw
     
-        USE basic_constants_and_equations_mod,                                                         &
-            ONLY:  pi
+    USE basic_constants_and_equations_mod,                                                             &
+       ONLY:  pi
     
-        USE control_parameters,                                                                        &
-            ONLY:  coupling_char,                                                                      &
-                   debug_output,                                                                       &
-                   dt_3d,                                                                              &
-                   dz,                                                                                 &
-                   end_time,                                                                           &
-                   external_anthropogenic_heat,                                                        &
-                   initializing_actions,                                                               &
-                   message_string,                                                                     &
-                   origin_date_time,                                                                   &
-                   restart_data_format_output,                                                         &
-                   time_since_reference_point,                                                         &
-                   wind_turbine
+    USE control_parameters,                                                                            &
+       ONLY:  coupling_char,                                                                           &
+              debug_output,                                                                            &
+              dt_3d,                                                                                   &
+              dz,                                                                                      &
+              end_time,                                                                                &
+              external_anthropogenic_heat,                                                             &
+              initializing_actions,                                                                    &
+              message_string,                                                                          &
+              origin_date_time,                                                                        &
+              restart_data_format_output,                                                              &
+              time_since_reference_point,                                                              &
+              wind_turbine
     
-        USE cpulog,                                                                                    &
-            ONLY:  cpu_log,                                                                            &
-                   log_point_s
+    USE cpulog,                                                                                        &
+       ONLY:  cpu_log,                                                                                 &
+              log_point_s
     
-        USE data_output_module
+    USE data_output_module
+   
+    USE grid_variables,                                                                                &
+       ONLY:  ddx,                                                                                     &
+              dx,                                                                                      &
+              ddy,                                                                                     &
+              dy
     
-        USE grid_variables,                                                                            &
-            ONLY:  ddx,                                                                                &
-                   dx,                                                                                 &
-                   ddy,                                                                                &
-                   dy
+    USE indices,                                                                                       &
+       ONLY:  nbgp,                                                                                    &
+              nx,                                                                                      &
+              nxl,                                                                                     &
+              nxlg,                                                                                    &
+              nxr,                                                                                     &
+              nxrg,                                                                                    &
+              ny,                                                                                      &
+              nyn,                                                                                     &
+              nyng,                                                                                    &
+              nys,                                                                                     &
+              nysg,                                                                                    &
+              nz,                                                                                      &
+              nzb,                                                                                     &
+              nzt,                                                                                     &
+              topo_flags
     
-        USE indices,                                                                                   &
-            ONLY:  nbgp,                                                                               &
-                   nx,                                                                                 &
-                   nxl,                                                                                &
-                   nxlg,                                                                               &
-                   nxr,                                                                                &
-                   nxrg,                                                                               &
-                   ny,                                                                                 &
-                   nyn,                                                                                &
-                   nyng,                                                                               &
-                   nys,                                                                                &
-                   nysg,                                                                               &
-                   nz,                                                                                 &
-                   nzb,                                                                                &
-                   nzt,                                                                                &
-                   topo_flags
+    USE kinds
     
-        USE kinds
+    USE netcdf_data_input_mod,                                                                         &
+       ONLY:  char_fill,                                                                               &
+              check_existence,                                                                         &
+              close_input_file,                                                                        &
+              get_variable,                                                                            &
+              get_attribute,                                                                           &
+              get_dimension_length,                                                                    &
+              input_pids_wtm,                                                                          &
+              input_pids_ah,                                                                           &
+              inquire_num_variables,                                                                   &
+              inquire_variable_names,                                                                  &
+              input_file_wtm,                                                                          &
+              input_file_ah,                                                                           &
+              num_var_pids,                                                                            &
+              open_read_file,                                                                          &
+              pids_id,                                                                                 &
+              vars_pids
     
-        USE netcdf_data_input_mod,                                                                     &
-            ONLY:  char_fill,                                                                          &
-                   check_existence,                                                                    &
-                   close_input_file,                                                                   &
-                   get_variable,                                                                       &
-                   get_attribute,                                                                      &
-                   get_dimension_length,                                                               &
-                   input_pids_wtm,                                                                     &
-                   input_pids_ah,                                                                      &
-                   inquire_num_variables,                                                              &
-                   inquire_variable_names,                                                             &
-                   input_file_wtm,                                                                     &
-                   input_file_ah,                                                                      &
-                   num_var_pids,                                                                       &
-                   open_read_file,                                                                     &
-                   pids_id,                                                                            &
-                   vars_pids
+    USE pegrid
     
-        USE pegrid
-    
-        USE restart_data_mpi_io_mod,                                                                   &
-            ONLY:  rrd_mpi_io_global_array,                                                            &
-                   wrd_mpi_io_global_array
+    USE restart_data_mpi_io_mod,                                                                       &
+       ONLY:  rrd_mpi_io_global_array,                                                                 &
+              wrd_mpi_io_global_array
     
     !
     !-- Define data types
-        TYPE 1d_int_array
-             INTEGER(iwp) :: fill                               !< fill value
-             INTEGER(iwp), DIMENSION(:), ALLOCATABLE ::  array  !< 1d integer array
-
-             LOGICAL ::  from_file = .FALSE.  !< flag indicating whether an input variable is available and read from file or default
-                                              !< values are used
-        END TYPE 1d_int_array
-      
-
-         
-        IMPLICIT NONE
+    TYPE int_1d_array
+       INTEGER(iwp) ::  fill                               !< fill value
+       INTEGER(iwp), DIMENSION(:), ALLOCATABLE :: val      !< 1d integer-value array
+       LOGICAL ::  from_file = .FALSE.                     !< flag indicating whether an input variable is available and read from file 
+                                                           !< or default value is used
+    END TYPE int_1d_array
     
-        PRIVATE
+    TYPE real_2d_matrix
+       REAL(wp) ::  fill                                  !< fill value
+       REAL(wp), DIMENSION(:,:), ALLOCATABLE :: val       !< 2d real-value matrix
+       LOGICAL ::  from_file = .FALSE.                    !< flag indicating whether an input variable is available and read from file 
+                                                          !< or default value is used
+    END TYPE real_2d_matrix
+
+    TYPE point_corrdinates
+       REAL(wp) ::  x_fill                                !< fill value for x-coordinates
+       REAL(wp) ::  y_fill                                !< fill value for y-coordinates
+       REAL(wp), DIMENSION(:), ALLOCATABLE ::  x          !< x-coordinates of point sources
+       REAL(wp), DIMENSION(:), ALLOCATABLE ::  y          !< y-coordinates of point sources
+       LOGICAL ::  from_file = .FALSE.                    !< flag indicating whether an input variable is available and read from file 
+                                                          !< or default value is used
+    END TYPE point_corrdinates
+
+       
+    IMPLICIT NONE
+    
+    PRIVATE
     
     ! ------- NEW ANTHROPOGENIC HEAT MODEL VARIABLES ------- !
 
-        INTEGER(iwp) ::  n_buildings            !< number of buildings (for array allocation)
-        INTEGER(iwp) ::  n_streets              !< number of streets (for array allocation)
-        INTEGER(iwp) ::  n_points               !< number of point sources (for array allocation)
-        INTEGER(iwp) ::  n_timesteps            !< number of time steps (for array allocation)
+    TYPE(int_1d_array) :: building_ids          !< ids of buildings with anthropogenic heat profiles
+    TYPE(int_1d_array) :: street_ids            !< ids of streets with anthropogenic heat profiles
+    TYPE(int_1d_array) :: point_ids             !< ids of point sources with anthropogenic heat profiles
+    REAL(wp), DIMENSION(:), ALLOCATABLE :: t    !< time steps
 
 
-        TYPE(1d_int_array) :: building_ids          !< ids of buildings with anthropogenic heat profiles
-        TYPE(1d_int_array) :: road_ids              !< ids of roads with anthropogenic heat profiles
-        TYPE(1d_int_array) :: point_ids             !< ids of point sources with anthropogenic heat profiles
-        REAL(wp), DIMENSION(:), ALLOCATABLE :: t    !< time steps
+    TYPE(real_2d_matrix) :: building_ah       !< anthropogenic heat profiles for buildings
+    TYPE(real_2d_matrix) :: street_ah         !< anthropogenic heat profiles for streets
+    TYPE(real_2d_matrix) :: point_ah          !< anthropogenic heat profiles for point sources
+    
 
-
-
+    TYPE(point_corrdinates) :: point_coords      !< exact coordinates of point sources
 
 
     ! ------- OLD WIND TURBINE MODEL VARIABLES ------- !
@@ -771,568 +784,152 @@
     ! ------------
     !> Reads anthropogenic heat profiles emitted from building and ground surfaces from a NetCDF file.
     !--------------------------------------------------------------------------------------------------!
-     SUBROUTINE netcdf_data_input_anthro_heat_profiles
+    SUBROUTINE netcdf_data_input_anthro_heat_profiles
+        
+       IMPLICIT NONE
 
-        USE boundary_settings_mod,                                                                    &
-            ONLY:  set_lateral_neumann_bc
-        
-        USE exchange_horiz_mod,                                                                        &
-            ONLY:  exchange_horiz_2d,                                                                  &
-                   exchange_horiz_2d_byte,                                                             &
-                   exchange_horiz_2d_int
-        
-        IMPLICIT NONE
-        
-        CHARACTER(LEN=100), DIMENSION(:), ALLOCATABLE ::  var_names  !< variable names in static input file
-        
-        INTEGER(iwp) ::  id_netcdf !< NetCDF id of input file
-        INTEGER(iwp) ::  k         !< running index along z-direction
-        INTEGER(iwp) ::  k2        !< running index
-        INTEGER(iwp) ::  num_vars  !< number of variables in input file
-        INTEGER(iwp) ::  nz_soil   !< number of soil layers in file
-        
-        INTEGER(ibp), DIMENSION(:,:), ALLOCATABLE ::  tmp_2d_byte  !< temporary array to hold horizontal slices of 3d-data
-        
-        REAL(wp), DIMENSION(:,:), ALLOCATABLE ::  tmp_2d  !< temporary array to hold horizontal slices of 3d-data
-        
+       INTEGER(iwp) ::  id_netcdf                                    !< NetCDF id of input file
+       INTEGER(iwp) ::  num_vars                                     !< number of variables in input file
+       CHARACTER(LEN=100), DIMENSION(:), ALLOCATABLE ::  var_names   !< variable names in static input file   
+       
+       
+       INTEGER(iwp) ::  n_buildings = 0           !< number of buildings (for array allocation)
+       INTEGER(iwp) ::  n_streets = 0             !< number of streets (for array allocation)
+       INTEGER(iwp) ::  n_points = 0              !< number of point sources (for array allocation)
+       INTEGER(iwp) ::  n_timesteps = 0           !< number of time steps (for array allocation)
         
     !-- If no anthropogenic heat input file is available, skip this routine
-        IF ( .NOT. input_pids_ah )  RETURN
+       IF ( .NOT. input_pids_ah )  RETURN
     !
     !-- Measure CPU time
-        CALL cpu_log( log_point_s(82), 'NetCDF input', 'start' )
+       CALL cpu_log( log_point_s(82), 'NetCDF input', 'start' )
     !
     !-- Skip the following if no expternal anthropogenic heat profiles are to be considered in the calculations.
-        IF ( .NOT. external_anthropogenic_heat )  RETURN
+       IF ( .NOT. external_anthropogenic_heat )  RETURN
         
     #if defined ( __netcdf )
     !
     !-- Open file in read-only mode
-        CALL open_read_file( TRIM( input_file_ah ) // TRIM( coupling_char ) , id_netcdf )
+       CALL open_read_file( TRIM( input_file_ah ) // TRIM( coupling_char ) , id_netcdf )
     !
     !-- Inquire all variable names.
     !-- This will be used to check whether an optional input variable exists or not.
-        CALL inquire_num_variables( id_netcdf, num_vars )
+       CALL inquire_num_variables( id_netcdf, num_vars )
         
-        ALLOCATE( var_names(1:num_vars) )
-        CALL inquire_variable_names( id_netcdf, var_names )
+       ALLOCATE( var_names(1:num_vars) )
+       CALL inquire_variable_names( id_netcdf, var_names )
     !
     !-- Read dimensions from file
-         CALL get_dimension_length( id_netcdf, n_buildings, 'building_id' )
-         CALL get_dimension_length( id_netcdf, n_streets, 'street_id' )
-         CALL get_dimension_length( id_netcdf, n_points, 'point_id' )
-         CALL get_dimension_length( id_netcdf, n_timesteps, 'time' )
+       CALL get_dimension_length( id_netcdf, n_buildings, 'building_id' )
+       CALL get_dimension_length( id_netcdf, n_streets, 'street_id' )
+       CALL get_dimension_length( id_netcdf, n_points, 'point_id' )
+       CALL get_dimension_length( id_netcdf, n_timesteps, 'time' )
     !
     !-- Read building ids from file 
-        IF ( check_existence( var_names, 'building_id' ) )  THEN
-           building_ids%from_file = .TRUE.
-           CALL get_attribute( id_netcdf, char_fill, building_ids%fill, .FALSE., 'building_id', .FALSE. )
+       IF ( n_buildings > 0 .AND. check_existence( var_names, 'building_id' ) )  THEN
+          building_ids%from_file = .TRUE.
+          CALL get_attribute( id_netcdf, char_fill, building_ids%fill, .FALSE., 'building_id', .FALSE. )  !< TODO: Check if the fill value is really attributed
         
-           ALLOCATE( building_ids%array(1:n_buildings) ) 
+          ALLOCATE( building_ids%val(1:n_buildings) ) 
         
-           CALL get_variable( id_netcdf, 'building_id', building_ids%array )
-        ELSE
-           building_ids%from_file = .FALSE.
-        ENDIF
+          CALL get_variable( id_netcdf, 'building_id', building_ids%val )
+       ELSE
+          building_ids%from_file = .FALSE.
+       ENDIF
+    !
+    !-- Read streed ids from file 
+       IF ( n_streets > 0 .AND. check_existence( var_names, 'street_id' ) )  THEN
+          street_ids%from_file = .TRUE.
+          CALL get_attribute( id_netcdf, char_fill, street_ids%fill, .FALSE., 'street_id', .FALSE. )
+      
+          ALLOCATE( street_ids%val(1:n_streets) ) 
+      
+          CALL get_variable( id_netcdf, 'street_id', street_ids%val )
+       ELSE
+          street_ids%from_file = .FALSE.
+       ENDIF
+    !
+    !-- Read point ids from file 
+       IF ( n_points > 0 .AND. check_existence( var_names, 'point_id' ) )  THEN
+         point_ids%from_file = .TRUE.
+         CALL get_attribute( id_netcdf, char_fill, point_ids%fill, .FALSE., 'point_id', .FALSE. )
+     
+         ALLOCATE( point_ids%val(1:n_points) ) 
+     
+         CALL get_variable( id_netcdf, 'point_id', point_ids%val )
+      ELSE
+         point_ids%from_file = .FALSE.
+      ENDIF
+    !
+    !-- Read timesteps from file TODO: Check if this implementation is correct. How are empty timesteps handled?
+       IF ( n_timesteps > 0 .AND. check_existence( var_names, 'time' ) )  THEN   
+          ALLOCATE( t(1:n_timesteps) ) 
+         
+          CALL get_variable( id_netcdf, 'time', t)
+       ENDIF
+
+    !
+    !-- Read anthrpogenic heat profiles from buildings from file
+       IF ( building_ids%from_file .AND. check_existence( var_names, 'building_ah') ) THEN
+          building_ah%from_file = .TRUE.
+          CALL get_attribute( id_netcdf, char_fill, building_ah%fill, .FALSE., 'building_ah', .FALSE. )
         
+          ALLOCATE( building_ah%val(1:n_timesteps,1:n_buildings) )
+        
+          CALL get_variable( id_netcdf, 'building_ah', building_ah%val )
+       ELSE
+          building_ah%from_file = .FALSE.
+       ENDIF
     !
-    !-- Read soil type and required attributes
-        IF ( check_existence( var_names, 'soil_type' ) )  THEN
-        soil_type_f%from_file = .TRUE.
+    !-- Read anthrpogenic heat profiles from streets from file
+       IF ( street_ids%from_file .AND. check_existence( var_names, 'street_ah') ) THEN
+          street_ah%from_file = .TRUE.
+          CALL get_attribute( id_netcdf, char_fill, street_ah%fill, .FALSE., 'street_ah', .FALSE. )
+       
+          ALLOCATE( street_ah%val(1:n_timesteps,1:n_streets) )
+       
+          CALL get_variable( id_netcdf, 'street_ah', street_ah%val )
+       ELSE
+          street_ah%from_file = .FALSE.
+       ENDIF
     !
-    !--    Note, lod is currently not on file; skip for the moment
-    !       CALL get_attribute( id_surf, char_lod,                                                      &
-    !                           soil_type_f%lod,                                                        &
-    !                           .FALSE., 'soil_type' )
-        CALL get_attribute( id_netcdf, char_fill, soil_type_f%fill, .FALSE., 'soil_type' )
-    
-        IF ( soil_type_f%lod == 1 )  THEN
-    
-            ALLOCATE( soil_type_f%var_2d(nys:nyn,nxl:nxr)  )
-    
-            CALL get_variable( id_netcdf, 'soil_type', soil_type_f%var_2d, nxl, nxr, nys, nyn )
-    
-        ELSEIF ( soil_type_f%lod == 2 )  THEN
+    !-- Read anthropogenic heat profiles from points from file
+       IF ( point_ids%from_file .AND. check_existence( var_names, 'point_ah') ) THEN
+          point_ah%from_file = .TRUE.
+          CALL get_attribute( id_netcdf, char_fill, point_ah%fill, .FALSE., 'point_ah', .FALSE. )
+       
+          ALLOCATE( point_ah%val(1:n_timesteps,1:n_points) )
+       
+          CALL get_variable( id_netcdf, 'point_ah', point_ah%val )
+       ELSE
+          point_ah%from_file = .FALSE.
+       ENDIF
+   
     !
-    !--       Obtain number of soil layers from file.
-            CALL get_dimension_length( id_netcdf, nz_soil, 'zsoil' )
-    
-            ALLOCATE( soil_type_f%var_3d(0:nz_soil,nys:nyn,nxl:nxr) )
-    
-            CALL get_variable( id_netcdf, 'soil_type', soil_type_f%var_3d, nxl, nxr, nys, nyn, 0,      &
-                                nz_soil )
-    
-        ENDIF
-        ELSE
-        soil_type_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read pavement type and required attributes
-        IF ( check_existence( var_names, 'pavement_type' ) )  THEN
-        pavement_type_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, pavement_type_f%fill, .FALSE., 'pavement_type' )
-    
-        ALLOCATE( pavement_type_f%var(nys:nyn,nxl:nxr)  )
-    
-        CALL get_variable( id_netcdf, 'pavement_type', pavement_type_f%var, nxl, nxr, nys, nyn )
-        ELSE
-        pavement_type_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read water type and required attributes
-        IF ( check_existence( var_names, 'water_type' ) )  THEN
-        water_type_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, water_type_f%fill, .FALSE., 'water_type' )
-    
-        ALLOCATE( water_type_f%var(nys:nyn,nxl:nxr)  )
-    
-        CALL get_variable( id_netcdf, 'water_type', water_type_f%var, nxl, nxr, nys, nyn )
-    
-        ELSE
-        water_type_f%from_file = .FALSE.
-        ENDIF
-    !
-    !-- Read relative surface fractions of vegetation, pavement and water.
-        IF ( check_existence( var_names, 'surface_fraction' ) )  THEN
-        surface_fraction_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, surface_fraction_f%fill, .FALSE., 'surface_fraction')
-    !
-    !--    Inquire number of surface fractions
-        CALL get_dimension_length( id_netcdf, surface_fraction_f%nf, 'nsurface_fraction' )
-    !
-    !--    Allocate dimension array and input array for surface fractions
-        ALLOCATE( surface_fraction_f%nfracs(0:surface_fraction_f%nf-1) )
-        ALLOCATE( surface_fraction_f%frac(0:surface_fraction_f%nf-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of surface fractions
-        CALL get_variable( id_netcdf, 'nsurface_fraction', surface_fraction_f%nfracs )
-    !
-    !--    Read surface fractions
-        CALL get_variable( id_netcdf, 'surface_fraction', surface_fraction_f%frac,                    &
-                            nxl, nxr, nys, nyn, 0, surface_fraction_f%nf-1 )
-        ELSE
-        surface_fraction_f%from_file = .FALSE.
-        ENDIF
-    !
-    !-- Read building parameters and related information
-        IF ( check_existence( var_names, 'building_pars' ) )  THEN
-        building_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, building_pars_f%fill, .FALSE., 'building_pars' )
-    !
-    !--    Inquire number of building parameters
-        CALL get_dimension_length( id_netcdf, building_pars_f%np, 'nbuilding_pars' )
-    !
-    !--    Allocate dimension array and input array for building parameters
-        ALLOCATE( building_pars_f%pars(0:building_pars_f%np-1) )
-        ALLOCATE( building_pars_f%pars_xy(0:building_pars_f%np-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of building parameters
-        CALL get_variable( id_netcdf, 'nbuilding_pars', building_pars_f%pars )
-    !
-    !--    Read building_pars
-        CALL get_variable( id_netcdf, 'building_pars', building_pars_f%pars_xy,                       &
-                            nxl, nxr, nys, nyn, 0, building_pars_f%np-1 )
-        ELSE
-        building_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read building surface parameters
-        IF ( check_existence( var_names, 'building_surface_pars' ) )  THEN
-        building_surface_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, building_surface_pars_f%fill, .FALSE.,              &
-                            'building_surface_pars' )
-    !
-    !--    Read building_surface_pars
-        CALL get_variable_surf( id_netcdf, 'building_surface_pars', building_surface_pars_f )
-        ELSE
-        building_surface_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read albedo type and required attributes
-        IF ( check_existence( var_names, 'albedo_type' ) )  THEN
-        albedo_type_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, albedo_type_f%fill, .FALSE.,  'albedo_type' )
-    
-        ALLOCATE( albedo_type_f%var(nys:nyn,nxl:nxr)  )
-    
-        CALL get_variable( id_netcdf, 'albedo_type', albedo_type_f%var, nxl, nxr, nys, nyn )
-        ELSE
-        albedo_type_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read albedo parameters and related information
-        IF ( check_existence( var_names, 'albedo_pars' ) )  THEN
-        albedo_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, albedo_pars_f%fill, .FALSE., 'albedo_pars' )
-    !
-    !--    Inquire number of albedo parameters
-        CALL get_dimension_length( id_netcdf, albedo_pars_f%np, 'nalbedo_pars' )
-    !
-    !--    Allocate dimension array and input array for albedo parameters
-        ALLOCATE( albedo_pars_f%pars(0:albedo_pars_f%np-1) )
-        ALLOCATE( albedo_pars_f%pars_xy(0:albedo_pars_f%np-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of albedo parameters
-        CALL get_variable( id_netcdf, 'nalbedo_pars', albedo_pars_f%pars )
-    
-        CALL get_variable( id_netcdf, 'albedo_pars', albedo_pars_f%pars_xy,                           &
-                            nxl, nxr, nys, nyn, 0, albedo_pars_f%np-1 )
-        ELSE
-        albedo_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read pavement parameters and related information
-        IF ( check_existence( var_names, 'pavement_pars' ) )  THEN
-        pavement_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, pavement_pars_f%fill, .FALSE., 'pavement_pars' )
-    !
-    !--    Inquire number of pavement parameters
-        CALL get_dimension_length( id_netcdf, pavement_pars_f%np, 'npavement_pars' )
-    !
-    !--    Allocate dimension array and input array for pavement parameters
-        ALLOCATE( pavement_pars_f%pars(0:pavement_pars_f%np-1) )
-        ALLOCATE( pavement_pars_f%pars_xy(0:pavement_pars_f%np-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of pavement parameters
-        CALL get_variable( id_netcdf, 'npavement_pars', pavement_pars_f%pars )
-    
-        CALL get_variable( id_netcdf, 'pavement_pars', pavement_pars_f%pars_xy,                       &
-                            nxl, nxr, nys, nyn, 0, pavement_pars_f%np-1 )
-        ELSE
-        pavement_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read pavement subsurface parameters and related information
-        IF ( check_existence( var_names, 'pavement_subsurface_pars' ) )  THEN
-        pavement_subsurface_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, pavement_subsurface_pars_f%fill, .FALSE.,           &
-                            'pavement_subsurface_pars' )
-    !
-    !--    Inquire number of parameters
-        CALL get_dimension_length( id_netcdf, pavement_subsurface_pars_f%np,                          &
-                                    'npavement_subsurface_pars' )
-    !
-    !--    Inquire number of soil layers
-        CALL get_dimension_length( id_netcdf, pavement_subsurface_pars_f%nz, 'zsoil' )
-    !
-    !--    Allocate dimension array and input array for pavement parameters
-        ALLOCATE( pavement_subsurface_pars_f%pars(0:pavement_subsurface_pars_f%np-1) )
-        ALLOCATE( pavement_subsurface_pars_f%pars_xyz(0:pavement_subsurface_pars_f%np-1,            &
-                                                        0:pavement_subsurface_pars_f%nz-1,            &
-                                                        nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of pavement parameters
-        CALL get_variable( id_netcdf, 'npavement_subsurface_pars', pavement_subsurface_pars_f%pars )
-    
-        CALL get_variable( id_netcdf, 'pavement_subsurface_pars', pavement_subsurface_pars_f%pars_xyz,&
-                            nxl, nxr, nys, nyn, 0, pavement_subsurface_pars_f%nz-1,                  &
-                            0, pavement_subsurface_pars_f%np-1 )
-        ELSE
-        pavement_subsurface_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    
-    !
-    !-- Read vegetation parameters and related information
-        IF ( check_existence( var_names, 'vegetation_pars' ) )  THEN
-        vegetation_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, vegetation_pars_f%fill, .FALSE., 'vegetation_pars' )
-    !
-    !--    Inquire number of vegetation parameters
-        CALL get_dimension_length( id_netcdf, vegetation_pars_f%np, 'nvegetation_pars' )
-    !
-    !--    Allocate dimension array and input array for surface fractions
-        ALLOCATE( vegetation_pars_f%pars(0:vegetation_pars_f%np-1) )
-        ALLOCATE( vegetation_pars_f%pars_xy(0:vegetation_pars_f%np-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of the parameters
-        CALL get_variable( id_netcdf, 'nvegetation_pars', vegetation_pars_f%pars )
-        CALL get_variable( id_netcdf, 'vegetation_pars', vegetation_pars_f%pars_xy,                   &
-                            nxl, nxr, nys, nyn, 0, vegetation_pars_f%np-1 )
-        ELSE
-        vegetation_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read root parameters/distribution and related information
-        IF ( check_existence( var_names, 'soil_pars' ) )  THEN
-        soil_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, soil_pars_f%fill, .FALSE., 'soil_pars' )
-        CALL get_attribute( id_netcdf, char_lod, soil_pars_f%lod, .FALSE., 'soil_pars' )
-    
-    !
-    !--    Inquire number of soil parameters
-        CALL get_dimension_length( id_netcdf, soil_pars_f%np, 'nsoil_pars' )
-    !
-    !--    Read parameters array
-        ALLOCATE( soil_pars_f%pars(0:soil_pars_f%np-1) )
-        CALL get_variable( id_netcdf, 'nsoil_pars', soil_pars_f%pars )
-    
-    !
-    !--    In case of level of detail 2, also inquire number of vertical soil layers, allocate memory
-    !--    and read the respective dimension.
-        IF ( soil_pars_f%lod == 2 )  THEN
-            CALL get_dimension_length( id_netcdf, soil_pars_f%nz, 'zsoil' )
-    
-            ALLOCATE( soil_pars_f%layers(0:soil_pars_f%nz-1) )
-            CALL get_variable( id_netcdf, 'zsoil', soil_pars_f%layers )
-    
-        ENDIF
-    
-    !
-    !--    Read soil parameters, depending on level of detail
-        IF ( soil_pars_f%lod == 1 )  THEN
-            ALLOCATE( soil_pars_f%pars_xy(0:soil_pars_f%np-1,nys:nyn,nxl:nxr) )
-    
-            CALL get_variable( id_netcdf, 'soil_pars', soil_pars_f%pars_xy,                            &
-                                nxl, nxr, nys, nyn, 0, soil_pars_f%np-1 )
-    
-        ELSEIF ( soil_pars_f%lod == 2 )  THEN
-            ALLOCATE( soil_pars_f%pars_xyz(0:soil_pars_f%np-1,0:soil_pars_f%nz-1,nys:nyn,nxl:nxr) )
-            CALL get_variable( id_netcdf, 'soil_pars', soil_pars_f%pars_xyz,                           &
-                                nxl, nxr, nys, nyn, 0, soil_pars_f%nz-1, 0, soil_pars_f%np-1 )
-        ENDIF
-        ELSE
-        soil_pars_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Read water parameters and related information
-        IF ( check_existence( var_names, 'water_pars' ) )  THEN
-        water_pars_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, water_pars_f%fill, .FALSE., 'water_pars' )
-    !
-    !--    Inquire number of water parameters
-        CALL get_dimension_length( id_netcdf, water_pars_f%np, 'nwater_pars' )
-    !
-    !--    Allocate dimension array and input array for water parameters
-        ALLOCATE( water_pars_f%pars(0:water_pars_f%np-1) )
-        ALLOCATE( water_pars_f%pars_xy(0:water_pars_f%np-1,nys:nyn,nxl:nxr) )
-    !
-    !--    Get dimension of water parameters
-        CALL get_variable( id_netcdf, 'nwater_pars', water_pars_f%pars )
-        CALL get_variable( id_netcdf, 'water_pars', water_pars_f%pars_xy,                             &
-                            nxl, nxr, nys, nyn, 0, water_pars_f%np-1 )
-        ELSE
-        water_pars_f%from_file = .FALSE.
-        ENDIF
-    !
-    !-- Read root area density - parametrized vegetation
-        IF ( check_existence( var_names, 'root_area_dens_s' ) )  THEN
-        root_area_density_lsm_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, root_area_density_lsm_f%fill, .FALSE.,              &
-                            'root_area_dens_s' )
-    !
-    !--    Obtain number of soil layers from file and allocate variable
-        CALL get_dimension_length( id_netcdf, root_area_density_lsm_f%nz, 'zsoil' )
-        ALLOCATE( root_area_density_lsm_f%var(0:root_area_density_lsm_f%nz-1,nys:nyn,nxl:nxr) )
-    
-    !
-    !--    Read root-area density
-        CALL get_variable( id_netcdf, 'root_area_dens_s', root_area_density_lsm_f%var,                &
-                            nxl, nxr, nys, nyn, 0, root_area_density_lsm_f%nz-1 )
-    
-        ELSE
-        root_area_density_lsm_f%from_file = .FALSE.
-        ENDIF
-    !
-    !-- Read street type and street crossing
-        IF ( check_existence( var_names, 'street_type' ) )  THEN
-        street_type_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, street_type_f%fill, .FALSE., 'street_type' )
-        ALLOCATE( street_type_f%var(nys:nyn,nxl:nxr) )
-        CALL get_variable( id_netcdf, 'street_type', street_type_f%var, nxl, nxr, nys, nyn )
-        ELSE
-        street_type_f%from_file = .FALSE.
-        ENDIF
-    
-        IF ( check_existence( var_names, 'street_crossing' ) )  THEN
-        street_crossing_f%from_file = .TRUE.
-        CALL get_attribute( id_netcdf, char_fill, street_crossing_f%fill, .FALSE., 'street_crossing' )
-        ALLOCATE( street_crossing_f%var(nys:nyn,nxl:nxr) )
-        CALL get_variable( id_netcdf, 'street_crossing', street_crossing_f%var, nxl, nxr, nys, nyn )
-        ELSE
-        street_crossing_f%from_file = .FALSE.
-        ENDIF
-    
-    !
-    !-- Still missing: root_resolved and building_surface_pars.
-    !-- Will be implemented as soon as they are available.
+    !-- Read coordinates of point sources from file
+       IF ( point_ah%from_file .AND. check_existence( var_names, 'point_x') .AND. check_existence( var_names, 'point_y') ) THEN
+         point_coords%from_file = .TRUE.
+         CALL get_attribute( id_netcdf, char_fill, point_coords%x_fill, .FALSE., 'point_x', .FALSE. )
+         CALL get_attribute( id_netcdf, char_fill, point_coords%y_fill, .FALSE., 'point_y', .FALSE. )
+      
+         ALLOCATE( point_coords%x(1:n_points) )
+         ALLOCATE( point_coords%y(1:n_points) )
+      
+         CALL get_variable( id_netcdf, 'point_x', point_coords%x )
+         CALL get_variable( id_netcdf, 'point_y', point_coords%y )
+      ELSE
+         point_coords%from_file = .FALSE.
+      ENDIF
     
     !
     !-- Finally, close input file
-        CALL close_input_file( id_netcdf )
+       CALL close_input_file( id_netcdf )
     #endif
     !
     !-- End of CPU measurement
-        CALL cpu_log( log_point_s(82), 'NetCDF input', 'stop' )
-    
-    !
-    !-- Exchange ghost points for surface variables. Therefore, resize variables.
-        IF ( albedo_type_f%from_file )  THEN
-        CALL add_ghost_layers( albedo_type_f%var )
-        CALL exchange_horiz_2d_byte( albedo_type_f%var, nys, nyn, nxl, nxr, nbgp )
-        CALL set_lateral_neumann_bc( albedo_type_f%var )
-        ENDIF
-        IF ( pavement_type_f%from_file )  THEN
-        CALL add_ghost_layers( pavement_type_f%var )
-        CALL exchange_horiz_2d_byte( pavement_type_f%var, nys, nyn, nxl, nxr, nbgp )
-        CALL set_lateral_neumann_bc( pavement_type_f%var )
-        ENDIF
-        IF ( soil_type_f%from_file  .AND.  ALLOCATED( soil_type_f%var_2d ) )  THEN
-        CALL add_ghost_layers( soil_type_f%var_2d )
-        CALL exchange_horiz_2d_byte( soil_type_f%var_2d, nys, nyn, nxl, nxr, nbgp )
-        CALL set_lateral_neumann_bc( soil_type_f%var_2d )
-        ENDIF
-        IF ( vegetation_type_f%from_file )  THEN
-        CALL add_ghost_layers( vegetation_type_f%var )
-        CALL exchange_horiz_2d_byte( vegetation_type_f%var, nys, nyn, nxl, nxr, nbgp )
-        CALL set_lateral_neumann_bc( vegetation_type_f%var )
-        ENDIF
-        IF ( water_type_f%from_file )  THEN
-        CALL add_ghost_layers( water_type_f%var )
-        CALL exchange_horiz_2d_byte( water_type_f%var, nys, nyn, nxl, nxr, nbgp )
-        CALL set_lateral_neumann_bc( water_type_f%var )
-        ENDIF
-    
-    !
-    !-- Exchange ghost points for 3/4-D variables. For the sake of simplicity, loop further dimensions
-    !-- to use 2D exchange routines. This is preferred to introducing new MPI-data types that are
-    !-- required just here.
-    !-- In order to avoid compiler warnings due to non-contiguous array-arguments, use temporary
-    !-- 2d-arrays.
-        IF ( soil_type_f%from_file  .AND.  ALLOCATED( soil_type_f%var_3d ) )  THEN
-        CALL add_ghost_layers( soil_type_f%var_3d, 0, nz_soil )
-        ALLOCATE( tmp_2d_byte(nysg:nyng,nxlg:nxrg) )
-        DO  k = 0, nz_soil
-            tmp_2d_byte(:,:) = soil_type_f%var_3d(k,:,:)
-            CALL exchange_horiz_2d_byte( tmp_2d_byte, nys, nyn, nxl, nxr, nbgp )
-            CALL set_lateral_neumann_bc( tmp_2d_byte )
-            soil_type_f%var_3d(k,:,:) = tmp_2d_byte(:,:)
-        ENDDO
-        DEALLOCATE( tmp_2d_byte )
-        ENDIF
-    
-        ALLOCATE( tmp_2d(nysg:nyng,nxlg:nxrg) )
-    
-        IF ( surface_fraction_f%from_file )  THEN
-        CALL add_ghost_layers( surface_fraction_f%frac, 0, surface_fraction_f%nf-1 )
-        DO  k = 0, surface_fraction_f%nf-1
-            tmp_2d(:,:) = surface_fraction_f%frac(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            surface_fraction_f%frac(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( building_pars_f%from_file )  THEN
-        CALL add_ghost_layers( building_pars_f%pars_xy, 0, building_pars_f%np-1 )
-        DO  k = 0, building_pars_f%np-1
-            tmp_2d(:,:) = building_pars_f%pars_xy(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            building_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( albedo_pars_f%from_file )  THEN
-        CALL add_ghost_layers( albedo_pars_f%pars_xy, 0, albedo_pars_f%np-1 )
-        DO  k = 0, albedo_pars_f%np-1
-            tmp_2d(:,:) = albedo_pars_f%pars_xy(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            albedo_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( pavement_pars_f%from_file )  THEN
-        CALL add_ghost_layers( pavement_pars_f%pars_xy, 0, pavement_pars_f%np-1 )
-        DO  k = 0, pavement_pars_f%np-1
-            tmp_2d(:,:) = pavement_pars_f%pars_xy(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            pavement_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( vegetation_pars_f%from_file )  THEN
-        CALL add_ghost_layers( vegetation_pars_f%pars_xy, 0, vegetation_pars_f%np-1 )
-        DO  k = 0, vegetation_pars_f%np-1
-            tmp_2d(:,:) = vegetation_pars_f%pars_xy(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            vegetation_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( water_pars_f%from_file )  THEN
-        CALL add_ghost_layers( water_pars_f%pars_xy, 0, water_pars_f%np-1 )
-        DO  k = 0, water_pars_f%np-1
-            tmp_2d(:,:) = water_pars_f%pars_xy(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            water_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( root_area_density_lsm_f%from_file )  THEN
-        CALL add_ghost_layers( root_area_density_lsm_f%var, 0, root_area_density_lsm_f%nz-1 )
-        DO  k = 0, root_area_density_lsm_f%nz-1
-            tmp_2d(:,:) = root_area_density_lsm_f%var(k,:,:)
-            CALL exchange_horiz_2d( tmp_2d )
-            CALL set_lateral_neumann_bc( tmp_2d )
-            root_area_density_lsm_f%var(k,:,:) = tmp_2d(:,:)
-        ENDDO
-        ENDIF
-    
-        IF ( soil_pars_f%from_file )  THEN
-        IF ( soil_pars_f%lod == 1 )  THEN
-            CALL add_ghost_layers( soil_pars_f%pars_xy, 0, soil_pars_f%np-1 )
-            DO  k = 0, soil_pars_f%np-1
-                tmp_2d(:,:) = soil_pars_f%pars_xy(k,:,:)
-                CALL exchange_horiz_2d( tmp_2d )
-                CALL set_lateral_neumann_bc( tmp_2d )
-                soil_pars_f%pars_xy(k,:,:) = tmp_2d(:,:)
-            ENDDO
-    
-        ELSEIF ( soil_pars_f%lod == 2 )  THEN
-            CALL add_ghost_layers( soil_pars_f%pars_xyz, 0, soil_pars_f%np-1, 0, soil_pars_f%nz-1 )
-            DO  k2 = 0, soil_pars_f%nz-1
-                DO  k = 0, soil_pars_f%np-1
-                    tmp_2d(:,:) = soil_pars_f%pars_xyz(k,k2,:,:)
-                    CALL exchange_horiz_2d( tmp_2d )
-                    CALL set_lateral_neumann_bc( tmp_2d )
-                    soil_pars_f%pars_xyz(k,k2,:,:) = tmp_2d(:,:)
-                ENDDO
-            ENDDO
-        ENDIF
-        ENDIF
-    
-        IF ( pavement_subsurface_pars_f%from_file )  THEN
-        CALL add_ghost_layers( pavement_subsurface_pars_f%pars_xyz,                                 &
-                                0, pavement_subsurface_pars_f%np-1,                                  &
-                                0, pavement_subsurface_pars_f%nz-1 )
-        DO  k2 = 0, pavement_subsurface_pars_f%nz-1
-            DO  k = 0, pavement_subsurface_pars_f%np-1
-                tmp_2d(:,:) = pavement_subsurface_pars_f%pars_xyz(k,k2,:,:)
-                CALL exchange_horiz_2d( tmp_2d )
-                CALL set_lateral_neumann_bc( tmp_2d )
-                pavement_subsurface_pars_f%pars_xyz(k,k2,:,:) = tmp_2d(:,:)
-            ENDDO
-        ENDDO
-        ENDIF
-    
-        DEALLOCATE( tmp_2d )
+       CALL cpu_log( log_point_s(82), 'NetCDF input', 'stop' )
     
     END SUBROUTINE netcdf_data_input_anthro_heat_profiles
-
         
 
     !
