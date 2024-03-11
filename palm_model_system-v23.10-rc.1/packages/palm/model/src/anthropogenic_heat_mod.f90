@@ -133,24 +133,19 @@
        MODULE PROCEDURE ah_parin
     END INTERFACE ah_parin
     
-    INTERFACE ah_profiles_netcdf_data_input
-       MODULE PROCEDURE ah_profiles_netcdf_data_input
-    END INTERFACE ah_profiles_netcdf_data_input
+    INTERFACE ah_init
+       MODULE PROCEDURE ah_init
+    END INTERFACE ah_init
     
-    INTERFACE ah_apply_to_surfaces
-       MODULE PROCEDURE ah_apply_to_surfaces
-    END INTERFACE ah_apply_to_surfaces
+    INTERFACE ah_actions
+       MODULE PROCEDURE ah_actions
+    END INTERFACE ah_actions
     
-    
-    PUBLIC                                                                                         &
-       building_ah,                                                                                &
-       street_ah,                                                                                  &
-       point_ah
     
     PUBLIC                                                                                         &
        ah_parin,                                                                                   &
-       ah_profiles_netcdf_data_input,                                                              &
-       ah_apply_to_surfaces
+       ah_init,                                                                                    &
+       ah_actions
     
     
     CONTAINS
@@ -199,6 +194,20 @@
   
     END SUBROUTINE ah_parin
 
+    
+    !--------------------------------------------------------------------------------------------------!
+    ! Description:
+    ! ------------
+    !> Initialization of the anthropogenic heat model TODO: Check if this method is needed in AH mod
+    !--------------------------------------------------------------------------------------------------!
+    SUBROUTINE ah_init
+
+       IMPLICIT NONE
+
+       CALL ah_profiles_netcdf_data_input
+    
+    END SUBROUTINE ah_init
+
 
     !--------------------------------------------------------------------------------------------------!
     ! Description:
@@ -223,7 +232,7 @@
        IF ( .NOT. input_pids_ah )  RETURN
     !
     !-- Measure CPU time
-       CALL cpu_log( log_point_s(82), 'NetCDF input', 'start' )
+       CALL cpu_log( log_point_s(82), 'NetCDF input', 'start' )  ! TODO: Check if log_point needs to be chaged
     !
     !-- Skip the following if no expternal anthropogenic heat profiles are to be considered in the calculations.
        IF ( .NOT. external_anthropogenic_heat )  RETURN
@@ -426,6 +435,36 @@
     !--------------------------------------------------------------------------------------------------!
     ! Description:
     ! ------------
+    !> Perform actions for the anthropogenic heat model
+    !--------------------------------------------------------------------------------------------------!
+    SUBROUTINE ah_actions( location )
+
+       IMPLICIT NONE
+
+       CHARACTER(LEN=*) ::  location 
+
+       CALL cpu_log( log_point(24), 'ah_actions', 'start' )  ! TODO: Check if log_point needs to be chaged
+
+       SELECT CASE ( location )
+
+          CASE ( 'after_pressure_solver' )
+             !-- Apply anthropogenic heat profiles to the corresponding surfaces
+             CALL ah_apply_to_surfaces
+
+          CASE DEFAULT
+             CONTINUE
+
+       END SELECT
+
+       CALL cpu_log( log_point(24), 'ah_actions', 'stop' )
+
+    END SUBROUTINE ah_actions
+
+
+
+    !--------------------------------------------------------------------------------------------------!
+    ! Description:
+    ! ------------
     !> This routine applies the imported anthropogenic heat profiles to the corresponding urban surfaces.
     !--------------------------------------------------------------------------------------------------!
     SUBROUTINE ah_apply_to_surfaces
@@ -609,16 +648,6 @@
     SUBROUTINE ah_check_parameters
    
     END SUBROUTINE ah_check_parameters
-    
-    
-    !--------------------------------------------------------------------------------------------------!
-    ! Description:
-    ! ------------
-    !> Initialization of the anthropogenic heat model TODO: Check if this method is needed in AH mod
-    !--------------------------------------------------------------------------------------------------!
-     SUBROUTINE ah_init
-    
-     END SUBROUTINE ah_init
 
 
     !--------------------------------------------------------------------------------------------------!

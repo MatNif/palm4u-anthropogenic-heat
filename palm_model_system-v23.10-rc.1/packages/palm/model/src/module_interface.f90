@@ -28,6 +28,11 @@
 !
 !-- Load module-specific control parameters.
 !-- ToDo: move all of them to respective module or a dedicated central module
+    USE anthropogenic_heat_mod,                                                                    &
+        ONLY:  ah_parin,                                                                           &
+               ah_init,                                                                            &
+               ah_actions
+
     USE biometeorology_mod,                                                                        &
         ONLY:  bio_3d_data_averaging,                                                              &
                bio_check_data_output,                                                              &
@@ -95,6 +100,7 @@
                dcep,                                                                               &
                debug_output,                                                                       &
                debug_output_timestep,                                                              &
+               external_anthropogenic_heat,                                                        &
                indoor_model,                                                                       &
                land_surface,                                                                       &
                large_scale_forcing,                                                                &
@@ -661,6 +667,7 @@
 
     CALL dynamics_parin
 
+    CALL ah_parin
     CALL bio_parin
     CALL bcm_parin
     CALL chem_parin
@@ -1095,6 +1102,7 @@
     CALL dynamics_init
     CALL tcm_init
 
+    IF ( external_anthropogenic_heat ) CALL ah_init
     IF ( biometeorology      )  CALL bio_init
     IF ( bulk_cloud_model    )  CALL bcm_init
     IF ( air_chemistry       )  CALL chem_init
@@ -1248,6 +1256,7 @@
     CALL tcm_actions( location )
     CALL doq_actions( location )
 
+    IF ( external_anthropogenic_heat )  CALL ah_actions( location )
     IF ( bulk_cloud_model       )  CALL bcm_actions( location )
     IF ( air_chemistry          )  CALL chem_actions( location )
     IF ( fastv8_coupler_enabled )  CALL f8c_actions( location )
