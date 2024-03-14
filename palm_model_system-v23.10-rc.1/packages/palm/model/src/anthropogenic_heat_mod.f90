@@ -84,6 +84,8 @@
        ONLY:  surf_usm,                                                                                &
               surf_lsm
     
+    IMPLICIT NONE
+
     !
     !-- Define data types
     TYPE int_dimension
@@ -107,9 +109,6 @@
        LOGICAL ::  from_file = .FALSE.                    !< flag indicating whether an input variable is available and read from file 
                                                           !< or default value is used
     END TYPE point_coordinates
-
-       
-    IMPLICIT NONE
     
     PRIVATE
 

@@ -39,6 +39,7 @@ SOURCES = \
 	advec_w_pw.f90 \
 	advec_ws.f90 \
 	advec_w_up.f90 \
+	anthropgenic_heat_mod.f90 \
 	array_utilities.f90 \
 	average_3d_data.f90 \
 	basic_constants_and_equations_mod.f90 \
@@ -280,6 +281,13 @@ advec_w_pw.o: \
 advec_w_up.o: \
 	mod_kinds.o \
 	modules.o
+anthropgenic_heat_mod.o: \
+	mod_kinds.o \
+	modules.o \
+	basic_constants_and_equations_mod.o \
+	cpulog_mod.o \
+	netcdf_data_input_mod.o \
+	surface_mod.o
 average_3d_data.o: \
 	cpulog_mod.o \
 	exchange_horiz_mod.o \
@@ -838,6 +846,7 @@ model_1d_mod.o: \
 module_interface.o: \
 	mod_kinds.o \
 	modules.o \
+	anthropogenic_heat_mod.o \
 	biometeorology_mod.o \
 	bulk_cloud_model_mod.o \
 	chemistry_model_mod.o \
