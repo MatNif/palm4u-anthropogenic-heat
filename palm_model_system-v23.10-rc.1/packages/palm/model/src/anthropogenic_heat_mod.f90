@@ -501,7 +501,8 @@
              surf_usm%waste_heat(surf_ind) = ( building_ah%val(b, t_step + 1) * ( time_since_reference_point - ah_time(t_step) ) +   &
                                                building_ah%val(b, t_step) * ( ah_time(t_step + 1) - time_since_reference_point ) )   &
                                              / ( ah_time(t_int + 1) - ah_time(t_step) ) &
-                                             / SIZE(surf_indexes)
+                                             / SIZE(surf_indexes) &
+                                             / (dx * dy)
           ENDDO
        ENDDO
 
@@ -511,6 +512,7 @@
           surf_usm%waste_heat(p_surf_index) = ( point_ah%val(p, t_step + 1) * ( time_since_reference_point - ah_time(t_step) ) +   &
                                                 point_ah%val(p, t_step) * ( ah_time(t_step + 1) - time_since_reference_point ) )   &
                                               / ( ah_time(t_int + 1) - ah_time(t_step) )
+                                              / (dx * dy)
        ENDDO
 
 
