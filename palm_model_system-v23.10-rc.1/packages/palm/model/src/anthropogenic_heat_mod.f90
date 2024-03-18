@@ -52,11 +52,14 @@
 
     USE cpulog,                                                                                        &
        ONLY:  cpu_log,                                                                                 &
+              log_point,                                                                               &
               log_point_s
    
     USE grid_variables,                                                                                &
        ONLY:  ddx,                                                                                     &
-              ddy
+              ddy,                                                                                     &
+              dx,                                                                                      &
+              dy
     
     USE indices,                                                                                       &
        ONLY:  nx,                                                                                      &
@@ -101,14 +104,14 @@
                                                           !< or default value is used
     END TYPE real_2d_matrix
 
-    TYPE point_coordinates
+    TYPE point_coordinates_t
        REAL(wp) ::  x_fill                                !< fill value for x-coordinates
        REAL(wp) ::  y_fill                                !< fill value for y-coordinates
        REAL(wp), DIMENSION(:), ALLOCATABLE ::  x          !< x-coordinates of point sources
        REAL(wp), DIMENSION(:), ALLOCATABLE ::  y          !< y-coordinates of point sources
        LOGICAL ::  from_file = .FALSE.                    !< flag indicating whether an input variable is available and read from file 
                                                           !< or default value is used
-    END TYPE point_coordinates
+    END TYPE point_coordinates_t
     
     PRIVATE
 
@@ -123,7 +126,7 @@
     TYPE(real_2d_matrix) :: point_ah          !< anthropogenic heat profiles for point sources
     
 
-    TYPE(point_coordinates) :: point_coords      !< exact coordinates of point sources
+    TYPE(point_coordinates_t) :: point_coords      !< exact coordinates of point sources
     
     
     SAVE
@@ -236,7 +239,7 @@
     !-- Skip the following if no expternal anthropogenic heat profiles are to be considered in the calculations.
        IF ( .NOT. external_anthropogenic_heat )  RETURN
         
-    #if defined ( __netcdf )
+#if defined ( __netcdf )
     !
     !-- Open file in read-only mode
        CALL open_read_file( TRIM( input_file_ah ) // TRIM( coupling_char ) , id_netcdf )
@@ -288,7 +291,7 @@
       ENDIF
     !
     !-- Read timesteps from file
-       IF ( n_timesteps > 0 .AND. check_existence( var_names, 'time' ) .AND. 
+       IF ( n_timesteps > 0 .AND. check_existence( var_names, 'time' ) .AND.                       &
            ( building_ids%from_file .OR. street_ids%from_file .OR. point_ids%from_file ) )  THEN   
           ALLOCATE( ah_time(1:n_timesteps) ) 
          
@@ -303,25 +306,16 @@
         
           ALLOCATE( building_ah%val(1:n_buildings,1:n_timesteps) )
         
-          CALL get_variable( id_netcdf, 'building_ah', building_ah%val )
-          !-- TODO:(DONE) Output warning if the anthropogenic heat profile is not fully defined (use message.f90 module, use message_string from control_parameters under modules.f90)
+         !  WRITE(*,*) 'n_buildings', n_buildings
+         !  WRITE(*,*) 'n_timesteps', n_timesteps
+         !  WRITE(*,*) 'lbound(val)', lbound(building_ah%val)
+         !  WRITE(*,*) 'ubound(val)', ubound(building_ah%val)
+
+          ! TODO: check dimension of building_ah, might be necessary to swap dimensions so that read-routine works
+          CALL get_variable( id_netcdf, 'building_ah', building_ah%val, 0, n_buildings-1, 0, n_timesteps-1 )
           CALL ah_check_input_profiles('buildings', building_ah)
        ELSE
           building_ah%from_file = .FALSE.
-       ENDIF
-    !
-    !-- Read anthrpogenic heat profiles from streets from file
-       IF ( street_ids%from_file .AND. check_existence( var_names, 'street_ah') ) THEN
-          street_ah%from_file = .TRUE.
-          CALL get_attribute( id_netcdf, char_fill, street_ah%fill, .FALSE., 'street_ah', .FALSE. )
-       
-          ALLOCATE( street_ah%val(1:n_buildings,1:n_timesteps) )
-       
-          CALL get_variable( id_netcdf, 'street_ah', street_ah%val )
-          !-- TODO:(DONE) Output warning if the anthropogenic heat profile is not fully defined (use message.f90 module, use message_string from control_parameters under modules.f90)
-          CALL ah_check_input_profiles('streets', street_ah)
-       ELSE
-          street_ah%from_file = .FALSE.
        ENDIF
     !
     !-- Read anthropogenic heat profiles from points from file
@@ -329,10 +323,9 @@
           point_ah%from_file = .TRUE.
           CALL get_attribute( id_netcdf, char_fill, point_ah%fill, .FALSE., 'point_ah', .FALSE. )
        
-          ALLOCATE( point_ah%val(1:n_buildings,1:n_timesteps) )
+          ALLOCATE( point_ah%val(1:n_points,1:n_timesteps) )
        
-          CALL get_variable( id_netcdf, 'point_ah', point_ah%val )
-          !-- TODO:(DONE) Output warning if the anthropogenic heat profile is not fully defined (use message.f90 module)
+          CALL get_variable( id_netcdf, 'point_ah', point_ah%val, 0, n_timesteps, 0, n_points )
           CALL ah_check_input_profiles('points', point_ah)
        ELSE
           point_ah%from_file = .FALSE.
@@ -360,7 +353,7 @@
     !
     !-- Finally, close input file
        CALL close_input_file( id_netcdf )
-    #endif
+#endif
     !
     !-- End of CPU measurement
        CALL cpu_log( log_point_s(82), 'NetCDF input', 'stop' )
@@ -377,7 +370,7 @@
 
        IMPLICIT NONE
 
-       CHARACTER(len=20), INTENT(IN) :: source            !< source of the anthropogenic heat profile
+       CHARACTER(LEN=*), INTENT(IN) :: source            !< source of the anthropogenic heat profile
        TYPE(real_2d_matrix), INTENT(IN) :: ah_profile     !< anthropogenic heat profile
 
        !-- Check if the anthropogenic heat profile contains only non-negative values
@@ -406,10 +399,10 @@
 
        IMPLICIT NONE
 
-       TYPE(point_coords_t), INTENT(IN) :: point_coordinates     !< point source coordinates
+       TYPE(point_coordinates_t), INTENT(IN) :: point_coordinates     !< point source coordinates
 
-       INTEGER(iwp) :: p                                         !< auxiliary index
-       INTEGER(iwp) :: i_grid, j_grid                            !< domain grid indices of the point source
+       INTEGER(iwp) :: p                           !< auxiliary index
+       INTEGER(iwp) :: i_grid, j_grid              !< domain grid indices of the point source
 
        !-- Check if any of the point source coordinates are not fully defined
        IF ( ANY( point_coordinates%x == point_coordinates%x_fill ) .OR. &
@@ -422,11 +415,13 @@
        ENDIF
       
        ! -- TODO: (Done) Check if the point source coordinates are within the model domain
-       CALL metric_coords_to_grid_indices(point_coordinates%x, point_coordinates%y, i_grid, j_grid)
-       IF ( i_grid < 0 .OR. i_grid > nx .OR. j_grid < 0 .OR. j_grid > ny ) THEN
-          message_string = 'Some point sources are located outside the model domain.'
-          CALL message( 'netcdf_data_input_anthro_heat_profiles', 'AH0004', 1, 2, 0, 6, 0 )
-       ENDIF
+       DO  p = LBOUND(point_coordinates%x, DIM=1), UBOUND(point_coordinates%x, DIM=1)
+          CALL metric_coords_to_grid_indices(point_coordinates%x(p), point_coordinates%y(p), i_grid, j_grid)
+          IF ( i_grid < 0 .OR. i_grid > nx .OR. j_grid < 0 .OR. j_grid > ny ) THEN
+             message_string = 'Some point sources are located outside the model domain.'
+             CALL message( 'netcdf_data_input_anthro_heat_profiles', 'AH0004', 1, 2, 0, 6, 0 )
+          ENDIF
+       ENDDO
 
     END SUBROUTINE ah_check_point_source_locations
 
@@ -475,6 +470,8 @@
        INTEGER(iwp) :: b_surf_index                               !< building surface index
        INTEGER(iwp), ALLOCATABLE :: p_surf_index                  !< point source surface index
 
+       REAL(wp)  :: t_exact                                       !< copy of time_since_reference_point
+
        ! -- Identify the time step to which the anthropogenic heat profiles will be applied
        t_exact = time_since_reference_point
        t_step = MINLOC( ABS( ah_time - MAX( t_exact, 0.0_wp ) ), DIM = 1 ) - 1
@@ -492,25 +489,25 @@
        !
        ! Identify the relevant surfaces and apply the anthropogenic heat profiles to them
        ! -- for buildings
-       DO  b = LBOUND(building_ids%val), UBOUND(building_ids%val)
+       DO  b = LBOUND(building_ids%val, DIM=1), UBOUND(building_ids%val, DIM=1)
           CALL ah_building_id_to_surfaces(building_ids%val(b), b_surf_indexes)
           ! -- distribute the anthropogenic heat profile of the building to the corresponding surfaces
-          DO  m = LBOUND(b_surf_indexes), UBOUND(b_surf_indexes)
+          DO  m = LBOUND(b_surf_indexes, DIM=1), UBOUND(b_surf_indexes, DIM=1)
              b_surf_index = b_surf_indexes(m)
-             surf_usm%waste_heat(surf_ind) = ( building_ah%val(b, t_step + 1) * ( time_since_reference_point - ah_time(t_step) ) +   &
-                                               building_ah%val(b, t_step) * ( ah_time(t_step + 1) - time_since_reference_point ) )   &
-                                             / ( ah_time(t_int + 1) - ah_time(t_step) ) &
-                                             / SIZE(surf_indexes) &
+             surf_usm%waste_heat(b_surf_index) = ( building_ah%val(b, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
+                                               building_ah%val(b, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
+                                             / ( ah_time(t_step + 1) - ah_time(t_step) )                                              &
+                                             / SIZE(b_surf_indexes)                                                                    &
                                              / (dx * dy)
           ENDDO
        ENDDO
 
        ! -- for point sources
-       DO p = LBOUND(point_ids%val), UBOUND(point_ids%val)
+       DO p = LBOUND(point_ids%val, DIM=1), UBOUND(point_ids%val, DIM=1)
           CALL ah_point_id_to_surfaces(point_ids%val(p), p_surf_index)
-          surf_usm%waste_heat(p_surf_index) = ( point_ah%val(p, t_step + 1) * ( time_since_reference_point - ah_time(t_step) ) +   &
-                                                point_ah%val(p, t_step) * ( ah_time(t_step + 1) - time_since_reference_point ) )   &
-                                              / ( ah_time(t_int + 1) - ah_time(t_step) )
+          surf_usm%waste_heat(p_surf_index) = ( point_ah%val(p, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
+                                                point_ah%val(p, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
+                                              / ( ah_time(t_step + 1) - ah_time(t_step) )                                           &
                                               / (dx * dy)
        ENDDO
 
@@ -529,15 +526,15 @@
 
        IMPLICIT NONE
 
-       INTEGER(iwp), INTENT(IN) :: building_id                       !< building id
-       INTEGER(iwp), DIMENSION(:), INTENT(OUT) :: surf_indexes       !< surface index
+       INTEGER(iwp), INTENT(IN) :: building_id                               !< building id
+       INTEGER(iwp), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: surf_indexes  !< surface index
 
        INTEGER(iwp) :: b                                             !< auxiliary building index
        
 
-       DO b = lbound(buildings), ubound(buildings)
+       DO b = lbound(buildings, DIM=1), ubound(buildings, DIM=1)
           IF ( buildings(b)%id == building_id ) THEN
-             ALLOCATE( surf_indexes(lbound(buildings(b)%m):ubound(buildings(b)%m)) )
+             ALLOCATE( surf_indexes(lbound(buildings(b)%m, DIM=1):ubound(buildings(b)%m, DIM=1)) )
              surf_indexes = buildings(b)%m
              EXIT
           ENDIF
@@ -551,7 +548,7 @@
     ! ------------
     !> This routine fetches the ground surface tiles based on point-source ids
     !--------------------------------------------------------------------------------------------------!
-    SUBROUTINE ah_point_id_to_surface(point_id, surf_index)
+    SUBROUTINE ah_point_id_to_surfaces(point_id, surf_index)
 
        IMPLICIT NONE
 
@@ -612,8 +609,8 @@
 
        IMPLICIT NONE
 
-       REAL(wp), INTENT(IN) :: x_coord_metric  !< x-coordinate of the point source
-       REAL(wp), INTENT(IN) :: y_coord_metric  !< y-coordinate of the point source
+       REAL(wp), INTENT(IN)  :: x_coord_metric  !< x-coordinate of the point source
+       REAL(wp), INTENT(IN)  :: y_coord_metric  !< y-coordinate of the point source
        INTEGER(iwp), INTENT(OUT) :: i          !< x-index of the grid cell
        INTEGER(iwp), INTENT(OUT) :: j          !< y-index of the grid cell
 
@@ -628,10 +625,10 @@
        
        !
        ! -- Rotate the metric point coordinates to align with the model grid
-       x_coord = COS( init_model%rotation_angle * pi / 180.0_wp ) * x_coord_rel(t)            &
-               - SIN( init_model%rotation_angle * pi / 180.0_wp ) * y_coord_rel(t)
-       y_coord = SIN( init_model%rotation_angle * pi / 180.0_wp ) * x_coord_rel(t)            &
-               + COS( init_model%rotation_angle * pi / 180.0_wp ) * y_coord_rel(t)
+       x_coord = COS( init_model%rotation_angle * pi / 180.0_wp ) * x_coord_rel               &
+               - SIN( init_model%rotation_angle * pi / 180.0_wp ) * y_coord_rel
+       y_coord = SIN( init_model%rotation_angle * pi / 180.0_wp ) * x_coord_rel               &
+               + COS( init_model%rotation_angle * pi / 180.0_wp ) * y_coord_rel
 
        !
        ! -- Then, compute the indices of the grid cell in which the point source is located.

@@ -315,7 +315,8 @@
 
 !
 !-- Add INTERFACES that must be available to other modules
-    PUBLIC im_define_netcdf_grid,                                                                  &
+    PUBLIC buildings,                                                                              &
+           im_define_netcdf_grid,                                                                  &
            im_check_data_output,                                                                   &
            im_check_parameters,                                                                    &
            im_data_output_3d,                                                                      &
