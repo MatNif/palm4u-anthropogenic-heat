@@ -261,7 +261,7 @@
        IF ( n_buildings > 0 .AND. check_existence( var_names, 'building_id' ) )  THEN
           building_ids%from_file = .TRUE.
         
-          ALLOCATE( building_ids%val(1:n_buildings) ) 
+          ALLOCATE( building_ids%val(0:n_buildings-1) ) 
         
           CALL get_variable( id_netcdf, 'building_id', building_ids%val )
        ELSE
@@ -272,7 +272,7 @@
        IF ( n_streets > 0 .AND. check_existence( var_names, 'street_id' ) )  THEN
           street_ids%from_file = .TRUE.
       
-          ALLOCATE( street_ids%val(1:n_streets) ) 
+          ALLOCATE( street_ids%val(0:n_streets-1) ) 
       
           CALL get_variable( id_netcdf, 'street_id', street_ids%val )
        ELSE
@@ -283,7 +283,7 @@
        IF ( n_points > 0 .AND. check_existence( var_names, 'point_id' ) )  THEN
          point_ids%from_file = .TRUE.
      
-         ALLOCATE( point_ids%val(1:n_points) ) 
+         ALLOCATE( point_ids%val(0:n_points-1) ) 
      
          CALL get_variable( id_netcdf, 'point_id', point_ids%val )
       ELSE
@@ -293,7 +293,8 @@
     !-- Read timesteps from file
        IF ( n_timesteps > 0 .AND. check_existence( var_names, 'time' ) .AND.                       &
            ( building_ids%from_file .OR. street_ids%from_file .OR. point_ids%from_file ) )  THEN   
-          ALLOCATE( ah_time(1:n_timesteps) ) 
+
+            ALLOCATE( ah_time(0:n_timesteps-1) ) 
          
           CALL get_variable( id_netcdf, 'time', ah_time )
        ENDIF
@@ -304,12 +305,7 @@
           building_ah%from_file = .TRUE.
           CALL get_attribute( id_netcdf, char_fill, building_ah%fill, .FALSE., 'building_ah', .FALSE. )
         
-          ALLOCATE( building_ah%val(1:n_buildings,1:n_timesteps) )
-        
-         !  WRITE(*,*) 'n_buildings', n_buildings
-         !  WRITE(*,*) 'n_timesteps', n_timesteps
-         !  WRITE(*,*) 'lbound(val)', lbound(building_ah%val)
-         !  WRITE(*,*) 'ubound(val)', ubound(building_ah%val)
+          ALLOCATE( building_ah%val(0:n_timesteps-1,0:n_buildings-1) )
 
           ! TODO: check dimension of building_ah, might be necessary to swap dimensions so that read-routine works
           CALL get_variable( id_netcdf, 'building_ah', building_ah%val, 0, n_buildings-1, 0, n_timesteps-1 )
@@ -323,9 +319,9 @@
           point_ah%from_file = .TRUE.
           CALL get_attribute( id_netcdf, char_fill, point_ah%fill, .FALSE., 'point_ah', .FALSE. )
        
-          ALLOCATE( point_ah%val(1:n_points,1:n_timesteps) )
+          ALLOCATE( point_ah%val(0:n_timesteps-1,0:n_points-1) )
        
-          CALL get_variable( id_netcdf, 'point_ah', point_ah%val, 0, n_timesteps, 0, n_points )
+          CALL get_variable( id_netcdf, 'point_ah', point_ah%val, 0, n_points-1, 0, n_timesteps-1 )
           CALL ah_check_input_profiles('points', point_ah)
        ELSE
           point_ah%from_file = .FALSE.
@@ -338,8 +334,8 @@
          CALL get_attribute( id_netcdf, char_fill, point_coords%x_fill, .FALSE., 'point_x', .FALSE. )
          CALL get_attribute( id_netcdf, char_fill, point_coords%y_fill, .FALSE., 'point_y', .FALSE. )
       
-         ALLOCATE( point_coords%x(1:n_points) )
-         ALLOCATE( point_coords%y(1:n_points) )
+         ALLOCATE( point_coords%x(0:n_points-1) )
+         ALLOCATE( point_coords%y(0:n_points-1) )
       
          CALL get_variable( id_netcdf, 'point_x', point_coords%x )
          CALL get_variable( id_netcdf, 'point_y', point_coords%y )

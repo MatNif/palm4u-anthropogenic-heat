@@ -4170,10 +4170,6 @@
     ALLOCATE( tmp(is:ie,js:je) )
 !
 !-- Get variable
-    WRITE(*,*) 'is, ie', is, ie
-    WRITE(*,*) 'js, je', js, je
-    WRITE(*,*) 'count', (/ ie-is+1, je-js+1 /)
-    WRITE(*,*) 'bound(var)', lbound(var), ubound(var)
     nc_stat = NF90_GET_VAR( id, id_var, tmp, start = (/ is+1, js+1 /),                             &
                             count = (/ ie-is+1, je-js+1 /) )
     CALL handle_error( 'get_variable_2d_real', 530, variable_name )
