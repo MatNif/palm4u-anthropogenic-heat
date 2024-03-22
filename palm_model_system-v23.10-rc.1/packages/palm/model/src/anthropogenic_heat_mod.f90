@@ -32,6 +32,7 @@
 !>  a) a traffic model is available that provides heat profiles, and
 !>  b) PALM4U started working with unique street IDs, identifying each street in the model domain.
 !
+!> @TODO: Check if indoor_model is switched on
 !--------------------------------------------------------------------------------------------------!
  MODULE anthropogenic_heat_mod
 
@@ -143,11 +144,16 @@
        MODULE PROCEDURE ah_actions
     END INTERFACE ah_actions
     
+    INTERFACE ah_check_parameters
+       MODULE PROCEDURE ah_check_parameters
+    END INTERFACE ah_check_parameters
+    
     
     PUBLIC                                                                                         &
        ah_parin,                                                                                   &
        ah_init,                                                                                    &
-       ah_actions
+       ah_actions, &
+       ah_check_parameters
     
     
     CONTAINS
@@ -464,7 +470,7 @@
        INTEGER(iwp) :: t_step, b, m, p                            !< auxiliary indices
        INTEGER(iwp), DIMENSION(:), ALLOCATABLE :: b_surf_indexes  !< array of building surface indexes
        INTEGER(iwp) :: b_surf_index                               !< building surface index
-       INTEGER(iwp), ALLOCATABLE :: p_surf_index                  !< point source surface index
+       INTEGER(iwp) :: p_surf_index                               !< point source surface index
 
        REAL(wp)  :: t_exact                                       !< copy of time_since_reference_point
 
@@ -501,10 +507,12 @@
        ! -- for point sources
        DO p = LBOUND(point_ids%val, DIM=1), UBOUND(point_ids%val, DIM=1)
           CALL ah_point_id_to_surfaces(point_ids%val(p), p_surf_index)
-          surf_usm%waste_heat(p_surf_index) = ( point_ah%val(p, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
-                                                point_ah%val(p, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
-                                              / ( ah_time(t_step + 1) - ah_time(t_step) )                                           &
-                                              / (dx * dy)
+          IF ( .NOT. p_surf_index == -9999 )  THEN
+            surf_usm%waste_heat(p_surf_index) = ( point_ah%val(p, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
+                                                   point_ah%val(p, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
+                                                / ( ah_time(t_step + 1) - ah_time(t_step) )                                           &
+                                                / (dx * dy)
+          ENDIF
        ENDDO
 
 
@@ -556,6 +564,9 @@
        INTEGER(iwp) :: i, j, m, is, js          !< auxiliary surface indices
        LOGICAL :: found = .FALSE.               !< flag to indicate if a match was found for the point source
 
+
+       surf_index = -9999
+
        IF ( point_coords%from_file ) THEN
           !-- Retrieve metric coordinates of point sources from file
           x_coord_abs = point_coords%x(point_id)
@@ -571,11 +582,17 @@
              i = surf_lsm%i(m)
              j = surf_lsm%j(m)
              IF ( i == is .AND. j == js ) THEN
-                surf_index = m
+                ! surf_index = m
                 found = .TRUE.
                 EXIT
              ENDIF
           END DO
+
+          IF ( found )  THEN
+            message_string = 'Point source on lsm surface not implemented yet. Going to ignore point.'  ! TODO: add point id to message
+            CALL message( 'ah_point_id_to_surfaces', 'AH0007', 0, 1, 0, 6, 0 )
+          ENDIF
+
 
           ! -- If no match was found in the land surfaces, search the urban surfaces (usm).
           IF (.NOT. found) THEN
@@ -589,6 +606,8 @@
                 ENDIF
              END DO
           ENDIF
+
+          ! TODO: add treatment of default surfaces (surf_def ?)
          
        ENDIF
 
@@ -634,13 +653,33 @@
     END SUBROUTINE metric_coords_to_grid_indices
    
    
-    !--------------------------------------------------------------------------------------------------!
-    ! Description:
-    ! ------------
-    !> Check namelist parameter TODO: Check if this method is needed in AH mod
-    !--------------------------------------------------------------------------------------------------!
+!--------------------------------------------------------------------------------------------------!
+! Description:
+! ------------
+!> Check namelist parameter TODO: Check if this method is needed in AH mod
+!--------------------------------------------------------------------------------------------------!
     SUBROUTINE ah_check_parameters
+
+       USE control_parameters,                                                                     &
+          ONLY: indoor_model, urban_surface
+
+
+!--    Check if the indoor module is activated
+       IF ( .NOT. indoor_model ) THEN
+
+         message_string = 'Indoor module is required when using anthropogenic heat module.'
+         CALL message( 'ah_check_parameters', 'AH0005', 1, 2, 0, 6, 0 )
    
+       ENDIF
+
+!--    Check if the urban-surface module is activated
+       IF ( .NOT. urban_surface ) THEN
+
+         message_string = 'Urban-surface module is required when using anthropogenic heat module.'
+         CALL message( 'ah_check_parameters', 'AH0006', 1, 2, 0, 6, 0 )
+   
+       ENDIF
+
     END SUBROUTINE ah_check_parameters
 
 

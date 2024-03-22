@@ -76,7 +76,7 @@ class AHDriver:
         self.building_id = self.nc_file.createVariable('building_id', 'i4', ('building_id',))
         self.building_id.long_name = 'id of buildings that emit anthropogenic heat'
         self.building_id.units = '1'
-        self.building_id[:] = np.arange(0, (self.nbuildings), 1)
+        self.building_id[:] = np.arange(1, (self.nbuildings)+1, 1)
 
         self.nc_file.createDimension('street_id', self.nstreets)
         self.street_id = self.nc_file.createVariable('street_id', 'i4', ('street_id',))

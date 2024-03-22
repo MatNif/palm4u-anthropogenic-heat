@@ -31,7 +31,8 @@
     USE anthropogenic_heat_mod,                                                                    &
         ONLY:  ah_parin,                                                                           &
                ah_init,                                                                            &
-               ah_actions
+               ah_actions,                                                                         &
+               ah_check_parameters
 
     USE biometeorology_mod,                                                                        &
         ONLY:  bio_3d_data_averaging,                                                              &
@@ -715,6 +716,7 @@
 
     IF ( bulk_cloud_model )     CALL bcm_check_parameters
     IF ( air_chemistry )        CALL chem_check_parameters
+    IF ( external_anthropogenic_heat )  CALL ah_check_parameters
     IF ( fastv8_coupler_enabled )  CALL f8c_check_parameters
     IF ( gust_module_enabled )  CALL gust_check_parameters
     IF ( indoor_model )         CALL im_check_parameters
