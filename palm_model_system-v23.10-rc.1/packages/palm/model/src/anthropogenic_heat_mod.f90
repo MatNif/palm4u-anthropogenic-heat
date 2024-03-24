@@ -469,6 +469,7 @@
 
        INTEGER(iwp) :: t_step, b, m, p                            !< auxiliary indices
        INTEGER(iwp), DIMENSION(:), ALLOCATABLE :: b_surf_indexes  !< array of building surface indexes
+       INTEGER(iwp) ::  num_facades_per_building_h  !< total number of horzontal surfaces (up- and downward) per building
        INTEGER(iwp) :: b_surf_index                               !< building surface index
        INTEGER(iwp) :: p_surf_index                               !< point source surface index
 
@@ -492,16 +493,21 @@
        ! Identify the relevant surfaces and apply the anthropogenic heat profiles to them
        ! -- for buildings
        DO  b = LBOUND(building_ids%val, DIM=1), UBOUND(building_ids%val, DIM=1)
-          CALL ah_building_id_to_surfaces(building_ids%val(b), b_surf_indexes)
-          ! -- distribute the anthropogenic heat profile of the building to the corresponding surfaces
-          DO  m = LBOUND(b_surf_indexes, DIM=1), UBOUND(b_surf_indexes, DIM=1)
-             b_surf_index = b_surf_indexes(m)
-             surf_usm%waste_heat(b_surf_index) = ( building_ah%val(b, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
-                                               building_ah%val(b, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
-                                             / ( ah_time(t_step + 1) - ah_time(t_step) )                                              &
-                                             / SIZE(b_surf_indexes)                                                                    &
-                                             / (dx * dy)
-          ENDDO
+          CALL ah_building_id_to_surfaces(building_ids%val(b), b_surf_indexes, num_facades_per_building_h)
+          !-- Only do something if surfaces of building are found (i.e., building is loaced on local pe)
+          IF ( ALLOCATED( b_surf_indexes ) )  THEN
+             !-- distribute the anthropogenic heat profile of the building to the corresponding surfaces
+             DO  m = LBOUND(b_surf_indexes, DIM=1), UBOUND(b_surf_indexes, DIM=1)
+                b_surf_index = b_surf_indexes(m)
+                IF ( surf_usm%upward(b_surf_index)  .OR.  surf_usm%downward(b_surf_index) )  THEN
+                   surf_usm%waste_heat(b_surf_index) = ( building_ah%val(b, t_step + 1) * ( t_exact - ah_time(t_step) ) +   &
+                                                       building_ah%val(b, t_step) * ( ah_time(t_step + 1) - t_exact ) )   &
+                                                       / ( ah_time(t_step + 1) - ah_time(t_step) )                                              &
+                                                       / REAL( num_facades_per_building_h, wp )                                &
+                                                       / (dx * dy)
+                ENDIF
+             ENDDO
+          ENDIF
        ENDDO
 
        ! -- for point sources
@@ -524,22 +530,24 @@
     ! ------------
     !> This routine fetches the roof surface tiles based on building ids
     !--------------------------------------------------------------------------------------------------!
-    SUBROUTINE ah_building_id_to_surfaces(building_id, surf_indexes)
+    SUBROUTINE ah_building_id_to_surfaces(building_id, surf_indexes, num_facades_per_building_h)
 
        USE indoor_model_mod, ONLY: buildings
 
        IMPLICIT NONE
 
        INTEGER(iwp), INTENT(IN) :: building_id                               !< building id
+       INTEGER(iwp), INTENT(OUT) ::  num_facades_per_building_h  !< total number of horzontal surfaces (up- and downward) per building
        INTEGER(iwp), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: surf_indexes  !< surface index
 
        INTEGER(iwp) :: b                                             !< auxiliary building index
        
 
        DO b = lbound(buildings, DIM=1), ubound(buildings, DIM=1)
-          IF ( buildings(b)%id == building_id ) THEN
+          IF ( buildings(b)%id == building_id  .AND.  buildings(b)%on_pe )  THEN
              ALLOCATE( surf_indexes(lbound(buildings(b)%m, DIM=1):ubound(buildings(b)%m, DIM=1)) )
              surf_indexes = buildings(b)%m
+             num_facades_per_building_h = buildings(b)%num_facades_per_building_h
              EXIT
           ENDIF
        END DO
@@ -551,6 +559,9 @@
     ! Description:
     ! ------------
     !> This routine fetches the ground surface tiles based on point-source ids
+    !
+    !> TODO: call routine once during init and save values to reduce computing time and output of
+    !>       warning message during every timestep
     !--------------------------------------------------------------------------------------------------!
     SUBROUTINE ah_point_id_to_surfaces(point_id, surf_index)
 
